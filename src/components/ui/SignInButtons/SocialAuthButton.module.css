@@ -1,0 +1,53 @@
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	width: 100%;
+	padding: 10px 16px;
+	border-radius: 8px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s;
+	border: 1px solid transparent;
+}
+
+.google {
+	background: #212020;
+    color: #f6f8fa;
+}
+.google:hover, .github:hover {
+    opacity: 0.7;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.25);
+}
+
+.github {
+	background: #24292f;
+	color: white;
+}
+
+
+@media (prefers-color-scheme: dark) {
+	.github {
+		background: #f6f8fa;
+		color: #24292f;
+	}
+}
+
+.spinner {
+	width: 18px;
+	height: 18px;
+	border: 2px solid currentColor;
+	border-bottom-color: transparent;
+	border-radius: 50%;
+	animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
