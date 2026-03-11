@@ -1,13 +1,9 @@
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
-import { LogOutButton } from '../LogOutButton'
+import { LogOutButton } from '../../components/ui/SignInButtons/LogOutButton'
 import SignInButtons from '@/components/ui/SignInButtons/SignInButtons'
 import { getAuthSession } from '@/lib/auth-sessions'
 
 export default async function User() {
 	const session = await getAuthSession()
-
-	console.log(session?.user.image)
 
 	return (
 		<main>
