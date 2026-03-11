@@ -38,7 +38,10 @@ export default function HeaderAuthControlsButton() {
         p-2 
         rounded-lg 
         font-medium 
-		text-lg
+		text-sm
+		sm:text-md
+		lg:text-lg
+
         text-zinc-300 
         bg-zinc-900/50 
         border border-white/5 
@@ -55,14 +58,14 @@ export default function HeaderAuthControlsButton() {
 
 				<span className='relative z-10 flex items-center gap-2'>
 					Sign in
-					<span className='opacity-50 group-hover:translate-x-1 transition-transform'>
+					<span className='hidden sm:inline-block opacity-50 group-hover:translate-x-1 transition-transform'>
 						→
 					</span>
 				</span>
 			</button>
 
 			{isOpen && (
-				<AuthControlPanel handleClose={() => setIsOpen(false)}/>
+				<AuthControlPanel handleClose={() => setIsOpen(false)} />
 			)}
 		</>
 	)

@@ -2,6 +2,8 @@ import Link from 'next/link'
 import HeaderAuthControlsButton from '@/components/header/HeaderAuthControlsButton'
 import { getAuthSession } from '@/lib/auth-sessions'
 import SearchBar from './SearchBar'
+import MobileMenu from './MobileMenu'
+import UserDropdownMenu from './UserDropdownMenu'
 
 export default async function Header() {
 	const session = await getAuthSession()
@@ -14,13 +16,13 @@ export default async function Header() {
 			>
 				{' '}
 				<Link href='/'>
-					<h1 className='text-3xl font-semibold bg-linear-to-r from-zinc-100 via-zinc-400 to-zinc-600 bg-clip-text text-transparent'>
+					<h1 className='text-2xl sm:text-3xl font-semibold bg-linear-to-r from-zinc-100 via-zinc-400 to-zinc-600 bg-clip-text text-transparent'>
 						MovieMan
 					</h1>
 				</Link>
-				<div className='flex items-center gap-10'>
+				<div className='flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-10'>
 					<SearchBar />
-					<ul className='flex gap-5 font-semibold text-lg text-zinc-400 '>
+					<ul className='hidden lg:flex gap-5 font-semibold text-lg text-zinc-400 '>
 						<li>
 							<Link href={'/movies'}>Movies</Link>
 						</li>
@@ -31,7 +33,14 @@ export default async function Header() {
 							<Link href={'/about'}>About</Link>
 						</li>
 					</ul>
-					<HeaderAuthControlsButton />
+					<div className='block lg:hidden'>
+						<MobileMenu />
+					</div>
+					{session ? (
+						<UserDropdownMenu user={session.user} />
+					) : (
+						<HeaderAuthControlsButton />
+					)}
 				</div>
 			</div>
 		</header>

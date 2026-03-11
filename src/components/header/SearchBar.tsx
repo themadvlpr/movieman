@@ -10,6 +10,15 @@ export default function SearchBar() {
 
 	useEffect(() => {
 		setSearchText("")
+
+		if (isExpanded) {
+			document.body.style.overflow = 'hidden'
+		} else {
+			document.body.style.overflow = 'auto'
+		}
+		return () => {
+			document.body.style.overflow = 'auto'
+		}
 	}, [isExpanded])
 	return (
 		<>
@@ -18,7 +27,7 @@ export default function SearchBar() {
 				className='flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900/50 border border-white/5 hover:border-white/20 transition-all text-zinc-400 hover:cursor-text'
 			>
 				<Search size={18} />
-				<span className='text-[16px] hidden sm:inline hover:cursor-text'>
+				<span className='text-[16px] hidden sm:inline-block sm:max-w-[150px] md:max-w-xs hover:cursor-text truncate whitespace-nowrap'>
 					Search movies, actors, series...
 				</span>
 			</button>
@@ -37,6 +46,7 @@ export default function SearchBar() {
 							animate={{ y: 0, scale: 1 }}
 							exit={{ y: 20, scale: 0.95 }}
 							className='w-full max-w-2xl relative flex items-center'
+							onClick={(e) => e.stopPropagation()}
 						>
 							<Search
 								className='absolute left-3 top-3 text-zinc-500'
@@ -46,12 +56,13 @@ export default function SearchBar() {
 								autoFocus
 								type='text'
 								placeholder='Search movies, tv series or person...'
+								value={searchText}
 								className='w-full bg-zinc-900/60 border border-white/10 rounded-lg py-2 pl-10 pr-10 text-lg text-white outline-none focus:border-white/20 shadow-2xl transition-all'
 								onChange={e => setSearchText(e.target.value)}
 							/>
 							{searchText !== '' && (
 								<button
-									onClick={() => setIsExpanded(false)}
+									onClick={() => setSearchText('')}
 									className='absolute right-3 top-3.5 text-zinc-500 hover:text-white transition-colors'
 								>
 									<X size={20} className='cursor-pointer' />

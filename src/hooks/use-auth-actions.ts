@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 export function useAuthActions() {
 	const router = useRouter()
-	const [loadingType, setLoadingType] = useState<'github' | 'google' | null>(
+	const [loadingType, setLoadingType] = useState<'github' | 'google' | 'logout' | null>(
 		null,
 	)
 	const signInWithGithub = async () => {
@@ -42,7 +42,7 @@ export function useAuthActions() {
 	}
 
 	const signOut = async () => {
-		setLoadingType('github')
+		setLoadingType('logout')
 		await authClient.signOut({
 			fetchOptions: {
 				onSuccess: () => {
