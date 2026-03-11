@@ -10,7 +10,7 @@ export default async function Home() {
 			<div className='absolute top-0 inset-0 overflow-hidden'>
 				<div className='relative h-full'>
 					<img
-						src={`https://image.tmdb.org/t/p/original//1gLFGrxHqQebqLWpISmoFR6XWtJ.jpg`}
+						src={`https://image.tmdb.org/t/p/original/2RrLuIfIzGWWIH8IAEo6o0IYHmx.jpg`}
 						alt='Backdrop'
 						className='w-full h-full object-cover object-top animate-[kenburns_20s_ease-in-out_infinite_alternate]'
 						style={{

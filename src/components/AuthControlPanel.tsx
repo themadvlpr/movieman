@@ -1,4 +1,5 @@
 import SignInButtons from '@/components/ui/SignInButtons/SignInButtons'
+import { X } from 'lucide-react'
 
 export default function AuthControlPanel({
 	handleClose,
@@ -15,12 +16,10 @@ export default function AuthControlPanel({
 				onClick={event => event.stopPropagation()}
 			>
 				<button
-					type='button'
-					className='absolute right-4 top-4 text-zinc-400 hover:text-zinc-100'
 					onClick={handleClose}
-					aria-label='Close'
+					className='absolute right-3 top-3.5 text-zinc-500 hover:text-white transition-colors'
 				>
-					✕
+					<X size={20} className='cursor-pointer' />
 				</button>
 
 				<div
