@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { InfoIcon, Play } from "lucide-react"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 
 const movies = [
     {
@@ -67,14 +68,16 @@ export default function MainPage() {
             {/* Background Image Container */}
             <div className='absolute inset-x-0 top-0 h-[55dvh] lg:h-full lg:inset-0 bg-black lg:bg-transparent overflow-hidden pointer-events-none'>
                 <div className='relative h-full w-full'>
-                    <img
+                    <Image
                         key={poster}
                         src={poster}
-                        alt='Backdrop'
-                        className='w-full h-full object-cover object-top animate-[kenburns_20s_ease-in-out_infinite_alternate]'
-                        style={{
-                            animation: 'kenburns 20s ease-in-out infinite alternate',
-                        }}
+                        alt="Backdrop"
+                        fill
+                        priority
+                        quality={90}
+                        className="object-cover object-top animate-[kenburns_20s_ease-in-out_infinite_alternate]"
+                        sizes="100vw"
+                        draggable={false}
                     />
                     <div className='absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black via-70% lg:via-60% lg:to-[#010101]'></div>
                     <div className='absolute inset-0 bg-linear-to-r from-black/80 lg:via-black/40 to-transparent lg:via-50%'></div>
@@ -86,11 +89,17 @@ export default function MainPage() {
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-20 sm:pt-28 lg:pt-32 pb-6 sm:pb-8 md:pb-12 flex flex-col lg:flex-row items-start lg:items-end justify-end lg:justify-between gap-6 lg:gap-15 mt-auto bg-linear-to-t from-black via-black/90 to-transparent lg:bg-none">
                 <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out]">
                     {logo ? (
-                        <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left transition-transform duration-700">
-                            <img
+                        <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left">
+                            <Image
                                 src={logo}
                                 alt={title}
-                                className="w-auto max-h-24 sm:max-h-32 md:max-h-48 object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]"
+                                width={500}
+                                height={200}
+                                priority
+                                className="w-auto select-none 
+               max-h-24 sm:max-h-32 md:max-h-48 object-contain 
+               drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] pointer-events-none"
+                                draggable={false}
                             />
                         </div>
                     ) : (
@@ -196,12 +205,17 @@ export default function MainPage() {
                         <div className="absolute top-3 left-3 z-10 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] font-bold uppercase tracking-wider text-white/90 border border-white/10">
                             Next Up
                         </div>
-                        <img
-                            key={nextMovie.poster}
-                            src={nextMovie.poster}
-                            alt={nextMovie.title}
-                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-                        />
+                        <div className="relative w-full h-full overflow-hidden">
+                            <Image
+                                key={nextMovie.poster}
+                                src={nextMovie.poster}
+                                alt={nextMovie.title}
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                className="select-none object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                                draggable={false}
+                            />
+                        </div>
                         {/* Progress Overlay - unfades from left to right over 15s */}
                         <div
                             key={`progress-${currentPage}`}
