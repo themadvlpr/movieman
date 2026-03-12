@@ -24,7 +24,7 @@ export default function SearchBar() {
 		<>
 			<button
 				onClick={() => setIsExpanded(true)}
-				className='flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900/50 border border-white/5 hover:border-white/20 transition-all text-zinc-400 hover:cursor-text'
+				className='flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900/50 border border-white/5 hover:border-white/20 transition-all text-zinc-400 hover:cursor-text hover:scale-115 duration-500'
 			>
 				<Search size={18} />
 				<span className='text-[16px] hidden sm:inline-block sm:max-w-[150px] md:max-w-xs hover:cursor-text truncate whitespace-nowrap'>
