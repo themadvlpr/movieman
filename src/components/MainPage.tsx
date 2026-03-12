@@ -94,7 +94,7 @@ export default function MainPage() {
                 <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out]">
                     {logo ? (
                         <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left">
-                            <Link href={`/movie/${id}/${title}`} className="block group transition-transform duration-500 hover:scale-110 active:scale-95 border w-fit">
+                            <Link href={`/movie/${id}`} className="block group transition-transform duration-500 hover:scale-110 active:scale-95 w-fit">
                                 <Image
                                     src={logo}
                                     alt={title}
@@ -132,10 +132,10 @@ export default function MainPage() {
                         {overview}
                     </p>
 
-                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
+                    <div className="flex flex-wrap flex-col-reverse sm:flex-row items-start sm:items-center gap-3 sm:gap-4 pt-2">
                         <Link
-                            href={`/movie/${id}/${title}`}
-                            className="group flex flex-1 sm:flex-none justify-center gap-2 sm:gap-2.5 items-center px-5 sm:px-7 py-2.5 sm:py-3 bg-white text-black rounded hover:bg-white/90 transition-all active:scale-95"
+                            href={`/movie/${id}`}
+                            className="group max-w-fit flex flex-1 sm:flex-none justify-center gap-2 sm:gap-2.5 items-center px-5 sm:px-7 py-2.5 sm:py-3 bg-white text-black rounded hover:bg-white/90 transition-all active:scale-95"
                         >
                             <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-black" />
                             <span className="text-sm sm:text-base font-bold">Discover</span>
@@ -143,7 +143,7 @@ export default function MainPage() {
 
 
 
-                        <div className="flex items-center gap-3 ml-2">
+                        <div className="flex items-center gap-3">
                             <button
                                 aria-label="Add to Watched"
                                 className="p-2 bg-white/10 text-white rounded-sm hover:bg-white/20 border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer group"
