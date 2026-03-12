@@ -66,7 +66,7 @@ export default function UserDropdownMenu({ user }: UserDropdownMenuProps) {
 				<div className='relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-white/10 group-hover:border-white/30 transition-colors bg-zinc-800 flex items-center justify-center shrink-0'>
 					{user.image ? (
 						<img
-							src={user.image}
+							src={user.image || '/user.png'}
 							alt={user.name || 'User avatar'}
 							className='w-full h-full object-cover'
 						/>
