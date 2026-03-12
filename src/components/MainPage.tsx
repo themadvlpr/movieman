@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link"
-import { InfoIcon, Play } from "lucide-react"
+import { Bookmark, Eye, Heart, Play, Plus } from "lucide-react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 
@@ -11,36 +11,40 @@ const movies = [
         title: "Hoopers",
         rating: 7.7,
         release_date: "2026-01-01",
-        overview: "Scientists have discovered how to 'hop' human consciousness into lifelike robotic animals, allowing people to communicate with animals as animals. Animal lover Mabel seizes an opportunity to use the technology, uncovering mysteries within the animal world beyond anything she could have imagined.",
+        overview: "Act natural.",
         poster: 'https://image.tmdb.org/t/p/original/2RrLuIfIzGWWIH8IAEo6o0IYHmx.jpg',
-        logo: 'https://image.tmdb.org/t/p/w500/xS2WPzXYUkW9IZwSL56tV74APPm.png'
+        logo: 'https://image.tmdb.org/t/p/w500/xS2WPzXYUkW9IZwSL56tV74APPm.png',
+        country: 'US'
     },
     {
         id: 2,
         title: "Dune: Part Two",
         rating: 8.3,
         release_date: "2024-02-27",
-        overview: "Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against the conspirators who destroyed his family.",
+        overview: "Long live the fighters.",
         poster: "https://image.tmdb.org/t/p/original/ylkdrn23p3gQcHx7ukIfuy2CkTE.jpg",
-        logo: "https://image.tmdb.org/t/p/w500/woifx7xduIyJYq8ktCiN36zt9Xu.png"
+        logo: "https://image.tmdb.org/t/p/w500/woifx7xduIyJYq8ktCiN36zt9Xu.png",
+        country: 'UK'
     },
     {
         id: 3,
         title: "Oppenheimer",
         rating: 8.1,
         release_date: "2023-07-19",
-        overview: "The story of J. Robert Oppenheimer's role in the development of the atomic bomb during World War II.",
+        overview: "The world forever changes.",
         poster: "https://image.tmdb.org/t/p/original/ptpr0kGAckfQkJeJIt8st5dglvd.jpg",
-        logo: 'https://image.tmdb.org/t/p/w500/b07VisHvZb0WzUpA8VB77wfMXwg.png'
+        logo: 'https://image.tmdb.org/t/p/w500/b07VisHvZb0WzUpA8VB77wfMXwg.png',
+        country: 'AU'
     },
     {
         id: 4,
         title: "Scream 7",
         rating: 5.1,
         release_date: "2026-07-19",
-        overview: "The story of J. Robert Oppenheimer's role in the development of the atomic bomb during World War II.",
+        overview: "Burn it all down.",
         poster: "https://image.tmdb.org/t/p/original/hz7TdCrpLLt2Dz7S3PS2HG9rpAO.jpg",
-        logo: 'https://image.tmdb.org/t/p/w500/2JRh8uPqNGlZC72vJawAGHToOnk.png'
+        logo: 'https://image.tmdb.org/t/p/w500/2JRh8uPqNGlZC72vJawAGHToOnk.png',
+        country: 'ES'
     }
 ]
 
@@ -61,7 +65,7 @@ export default function MainPage() {
     const currentMovie = movies[currentPage]
     const nextMovie = movies[(currentPage + 1) % movies.length]
 
-    const { title, rating, release_date, overview, poster, logo } = currentMovie
+    const { id, title, rating, release_date, overview, poster, logo, country } = currentMovie
 
     return (
         <div className='flex-1 relative flex flex-col justify-end bg-black lg:bg-[#010101]'>
@@ -75,7 +79,7 @@ export default function MainPage() {
                         fill
                         priority
                         quality={90}
-                        className="object-cover object-top animate-[kenburns_20s_ease-in-out_infinite_alternate]"
+                        className="object-cover select-none object-top animate-[kenburns_20s_ease-in-out_infinite_alternate]"
                         sizes="100vw"
                         draggable={false}
                     />
@@ -90,17 +94,18 @@ export default function MainPage() {
                 <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out]">
                     {logo ? (
                         <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left">
-                            <Image
-                                src={logo}
-                                alt={title}
-                                width={500}
-                                height={200}
-                                priority
-                                className="w-auto select-none 
-               max-h-24 sm:max-h-32 md:max-h-48 object-contain 
-               drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] pointer-events-none"
-                                draggable={false}
-                            />
+                            <Link href={`/movie/${id}/${title}`} className="block group transition-transform duration-500 hover:scale-110 active:scale-95 border w-fit">
+                                <Image
+                                    src={logo}
+                                    alt={title}
+                                    width={500}
+                                    height={200}
+                                    priority
+                                    className="w-auto select-none max-h-24 sm:max-h-32 md:max-h-48 object-contain 
+                   drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] pointer-events-none"
+                                    draggable={false}
+                                />
+                            </Link>
                         </div>
                     ) : (
                         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-8 lg:mb-12 drop-shadow-2xl leading-[0.95] text-mdnichrome">
@@ -117,33 +122,53 @@ export default function MainPage() {
                             {release_date?.slice(0, 4)}
                         </span>
                         <span className="text-white/40">|</span>
-                        <span className="px-1.5 sm:px-2 py-0.5 border border-white/30 rounded text-[10px] sm:text-xs font-semibold uppercase bg-white/5">
-                            HD
+                        <span className="text-white/80">
+                            {country}
                         </span>
+
                     </div>
 
-                    <p className="text-sm sm:text-base md:text-lg leading-relaxed text-white/80 drop-shadow-lg line-clamp-3 sm:line-clamp-4 max-w-xl">
+                    <p className="text-sm italic sm:text-base md:text-lg leading-relaxed text-white/80 drop-shadow-lg line-clamp-3 sm:line-clamp-4 max-w-xl">
                         {overview}
                     </p>
 
                     <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
                         <Link
-                            href={`/movie/${title}`}
+                            href={`/movie/${id}/${title}`}
                             className="group flex flex-1 sm:flex-none justify-center gap-2 sm:gap-2.5 items-center px-5 sm:px-7 py-2.5 sm:py-3 bg-white text-black rounded hover:bg-white/90 transition-all active:scale-95"
                         >
                             <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-black" />
-                            <span className="text-sm sm:text-base font-bold">Watch Now</span>
+                            <span className="text-sm sm:text-base font-bold">Discover</span>
                         </Link>
 
-                        <button
-                            // onClick={() => handleOpenDialog(item.id)}
-                            className="group flex flex-1 sm:flex-none justify-center gap-2 sm:gap-2.5 items-center px-5 sm:px-7 py-2.5 sm:py-3 bg-white/20 text-white rounded hover:bg-white/30 backdrop-blur-md transition-all active:scale-95 cursor-pointer"
-                        >
-                            <InfoIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                            <span className="text-sm sm:text-base font-semibold">
-                                More Info
-                            </span>
-                        </button>
+
+
+                        <div className="flex items-center gap-3 ml-2">
+                            <button
+                                aria-label="Add to Watched"
+                                className="p-2 bg-white/10 text-white rounded-sm hover:bg-white/20 border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer group"
+                            >
+                                <Eye className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:fill-zinc-300 group-active:fill-zinc-50" />
+                            </button>
+                            <button
+                                aria-label="Add to Wishlist"
+                                className="p-2 bg-white/10 text-white rounded-sm hover:bg-white/20 border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer group"
+                            >
+                                <Plus className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:fill-zinc-300 group-active:fill-zinc-50" />
+                            </button>
+                            <button
+                                aria-label="Add to Favorites"
+                                className="p-2 bg-white/10 text-white rounded-sm hover:bg-white/20 border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer group"
+                            >
+                                <Heart className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:fill-zinc-300 group-active:fill-zinc-50" />
+                            </button>
+                            <button
+                                aria-label="Add to Favorites"
+                                className="p-2 bg-white/10 text-white rounded-sm hover:bg-white/20 border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer group"
+                            >
+                                <Bookmark className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:fill-zinc-300 group-active:fill-zinc-50" />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
