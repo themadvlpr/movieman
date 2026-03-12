@@ -4,6 +4,7 @@ import { Montserrat } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/header/Header'
 import Footer from '@/components/Footer'
+import PageTransition from '@/components/PageTransition'
 
 
 const montserrat = Montserrat({
@@ -28,7 +29,9 @@ export default function RootLayout({
 			>
 				<div className='flex flex-col  min-h-dvh'>
 					<Header />
-					<main className='flex-1 flex flex-col'>{children}</main>
+					<main className='flex-1 flex flex-col overflow-hidden'>
+						<PageTransition>{children}</PageTransition>
+					</main>
 					<Footer />
 				</div>
 			</body>
