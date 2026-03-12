@@ -63,43 +63,44 @@ export default function MainPage() {
     const { title, rating, release_date, overview, poster, logo } = currentMovie
 
     return (
-        <div className='flex-1 relative'>
-            <div className='absolute top-0 inset-0 overflow-hidden'>
-                <div className='relative h-full'>
+        <div className='flex-1 relative flex flex-col justify-end bg-black lg:bg-[#010101]'>
+            {/* Background Image Container */}
+            <div className='absolute inset-x-0 top-0 h-[55dvh] lg:h-full lg:inset-0 bg-black lg:bg-transparent overflow-hidden pointer-events-none'>
+                <div className='relative h-full w-full'>
                     <img
                         key={poster}
                         src={poster}
                         alt='Backdrop'
                         className='w-full h-full object-cover object-top animate-[kenburns_20s_ease-in-out_infinite_alternate]'
                         style={{
-                            animation:
-                                'kenburns 20s ease-in-out infinite alternate',
+                            animation: 'kenburns 20s ease-in-out infinite alternate',
                         }}
                     />
-                    <div className='absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-[#010101] via-60%'></div>
-                    <div className='absolute inset-0 bg-linear-to-r from-black/80 via-black/40 to-transparent via-50%'></div>
-                    <div className='absolute inset-0 bg-linear-to-t from-[#010101] via-transparent to-transparent opacity-10'></div>
+                    <div className='absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black via-70% lg:via-60% lg:to-[#010101]'></div>
+                    <div className='absolute inset-0 bg-linear-to-r from-black/80 lg:via-black/40 to-transparent lg:via-50%'></div>
+                    <div className='absolute inset-0 bg-linear-to-t from-black lg:from-[#010101] via-transparent to-transparent opacity-50 lg:opacity-10'></div>
                 </div>
             </div>
 
-            <div className="absolute z-30 inset-x-12 bottom-12 flex items-end justify-between gap-15">
-                <div key={title} className="space-y-5 max-w-2xl animate-[fadeInUp_0.8s_ease-out]">
+            {/* Content Container */}
+            <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-20 sm:pt-28 lg:pt-32 pb-6 sm:pb-8 md:pb-12 flex flex-col lg:flex-row items-start lg:items-end justify-end lg:justify-between gap-6 lg:gap-15 mt-auto bg-linear-to-t from-black via-black/90 to-transparent lg:bg-none">
+                <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out]">
                     {logo ? (
-                        <div className="mb-12 origin-bottom-left transition-transform duration-700">
+                        <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left transition-transform duration-700">
                             <img
                                 src={logo}
                                 alt={title}
-                                className="w-auto max-h-48 object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]"
+                                className="w-auto max-h-24 sm:max-h-32 md:max-h-48 object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]"
                             />
                         </div>
                     ) : (
-                        <h1 className="text-5xl md:text-6xl font-bold text-white mb-12 drop-shadow-2xl leading-[0.95] text-mdnichrome">
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-8 lg:mb-12 drop-shadow-2xl leading-[0.95] text-mdnichrome">
                             {title}
                         </h1>
                     )}
 
-                    <div className="flex items-center gap-3 mb-6 font-medium text-white/90 drop-shadow-md">
-                        <span className="text-[#46d369] font-bold text-base">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 font-medium text-white/90 drop-shadow-md text-sm sm:text-base cursor-default">
+                        <span className="text-[#46d369] font-bold">
                             {Math.floor(rating * 10)}% Match
                         </span>
                         <span className="text-white/40">|</span>
@@ -107,91 +108,89 @@ export default function MainPage() {
                             {release_date?.slice(0, 4)}
                         </span>
                         <span className="text-white/40">|</span>
-                        <span className="px-2 py-0.5 border border-white/30 rounded text-xs font-semibold uppercase bg-white/5">
+                        <span className="px-1.5 sm:px-2 py-0.5 border border-white/30 rounded text-[10px] sm:text-xs font-semibold uppercase bg-white/5">
                             HD
                         </span>
                     </div>
 
-                    <p className="text-base md:text-lg leading-relaxed text-white/80 drop-shadow-lg line-clamp-3 max-w-xl">
+                    <p className="text-sm sm:text-base md:text-lg leading-relaxed text-white/80 drop-shadow-lg line-clamp-3 sm:line-clamp-4 max-w-xl">
                         {overview}
                     </p>
 
-                    <div className="flex items-center gap-4 pt-2">
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
                         <Link
                             href={`/movie/${title}`}
-                            className="group flex gap-2.5 items-center px-7 py-3 bg-white text-black rounded hover:bg-white/90 transition-all active:scale-95"
+                            className="group flex flex-1 sm:flex-none justify-center gap-2 sm:gap-2.5 items-center px-5 sm:px-7 py-2.5 sm:py-3 bg-white text-black rounded hover:bg-white/90 transition-all active:scale-95"
                         >
-                            <Play className="w-5 h-5 fill-black" />
-                            <span className="text-base font-bold">Watch Now</span>
+                            <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-black" />
+                            <span className="text-sm sm:text-base font-bold">Watch Now</span>
                         </Link>
 
                         <button
                             // onClick={() => handleOpenDialog(item.id)}
-                            className="group flex gap-2.5 items-center px-7 py-3 bg-white/20 text-white rounded hover:bg-white/30 backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+                            className="group flex flex-1 sm:flex-none justify-center gap-2 sm:gap-2.5 items-center px-5 sm:px-7 py-2.5 sm:py-3 bg-white/20 text-white rounded hover:bg-white/30 backdrop-blur-md transition-all active:scale-95 cursor-pointer"
                         >
-                            <InfoIcon className="w-5 h-5" />
-                            <span className="text-base font-semibold">
+                            <InfoIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="text-sm sm:text-base font-semibold">
                                 More Info
                             </span>
                         </button>
                     </div>
                 </div>
 
-                <div className="flex flex-col items-end gap-6">
-                    {/* Switch slide buttons */}
-                    <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md p-1.5 rounded-full border border-white/10">
+                <div className="flex flex-row lg:flex-col items-center lg:items-end w-full lg:w-auto mt-4 lg:mt-0 gap-4 lg:gap-6">
+                    {/* Switch slide buttons & Dots for mobile */}
+                    <div className="flex items-center justify-between w-full lg:w-auto lg:bg-black/40 lg:backdrop-blur-md lg:p-1.5 lg:rounded-full lg:border lg:border-white/10">
+                        {/* Prev Button */}
                         <button
                             onClick={() =>
                                 changePage(
                                     currentPage > 0 ? currentPage - 1 : movies.length - 1
                                 )
                             }
-                            className="p-3 rounded-full hover:bg-white/20 transition-colors text-white cursor-pointer"
+                            className="p-3 lg:p-3 rounded-full bg-black/40 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none border border-white/10 lg:border-transparent hover:bg-white/20 transition-colors text-white cursor-pointer order-1"
                             aria-label="Previous"
                         >
-                            <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M15 19l-7-7 7-7"
-                                />
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-                        <div className="w-px h-6 bg-white/20"></div>
+
+                        {/* Divider for Desktop */}
+                        <div className="hidden lg:block w-px h-6 bg-white/20 order-2"></div>
+
+                        {/* Dots for Mobile */}
+                        <div className="flex lg:hidden items-center justify-center gap-2 flex-1 order-2">
+                            {movies.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => changePage(idx)}
+                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentPage ? "bg-white w-6" : "bg-white/40 hover:bg-white/60"
+                                        }`}
+                                    aria-label={`Go to slide ${idx + 1}`}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Next Button */}
                         <button
                             onClick={() =>
                                 changePage(
                                     currentPage < movies.length - 1 ? currentPage + 1 : 0
                                 )
                             }
-                            className="p-3 rounded-full hover:bg-white/20 transition-colors text-white cursor-pointer"
+                            className="p-3 lg:p-3 rounded-full bg-black/40 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none border border-white/10 lg:border-transparent hover:bg-white/20 transition-colors text-white cursor-pointer order-3"
                             aria-label="Next"
                         >
-                            <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 5l7 7-7 7"
-                                />
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                         </button>
                     </div>
 
                     {/* Mini preview of next movie */}
                     <div
-                        className="group relative w-96 aspect-video rounded-lg overflow-hidden cursor-pointer shadow-2xl ring-1 ring-white/30 hover:ring-white/40 transition-all duration-300 bg-[#1a1a1a]"
+                        className="hidden lg:block group relative w-96 aspect-video rounded-lg overflow-hidden cursor-pointer shadow-2xl ring-1 ring-white/30 hover:ring-white/40 transition-all duration-300 bg-[#1a1a1a]"
                         onClick={() => changePage((currentPage + 1) % movies.length)}
                     >
                         <div className="absolute top-3 left-3 z-10 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] font-bold uppercase tracking-wider text-white/90 border border-white/10">

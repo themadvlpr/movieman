@@ -53,7 +53,7 @@ export default function MobileMenu() {
 							{/* Close Button */}
 							<button
 								onClick={() => setIsOpen(false)}
-								className='fixed cursor-pointer top-5 right-5 sm:right-7 sm:top-5 text-zinc-400 hover:text-zinc-100 transition-colors p-2 z-50'
+								className='fixed cursor-pointer top-2 right-2 sm:right-7 sm:top-5 text-zinc-400 hover:text-zinc-100 transition-colors p-2 z-50'
 								aria-label='Close Menu'
 							>
 								<X className='w-8 h-8' />
