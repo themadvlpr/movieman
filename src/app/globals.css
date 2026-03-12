@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0b0b0f; /* deep charcoal */
-  --foreground: #e5e7eb; /* zinc-200 */
+  --background: #0b0b0f;
+  /* deep charcoal */
+  --foreground: #e5e7eb;
+  /* zinc-200 */
 }
 
 @theme inline {
@@ -39,6 +41,7 @@ html {
   0% {
     transform: scale(1) translateX(0);
   }
+
   100% {
     transform: scale(1.5) translateX(-1%);
   }
