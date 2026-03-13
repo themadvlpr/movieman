@@ -1,9 +1,10 @@
 'use client'
 
 import Link from "next/link"
-import { Bookmark, Eye, Heart, Play, Plus } from "lucide-react"
+import { Play } from "lucide-react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 
 const movies = [
     {
@@ -48,6 +49,28 @@ const movies = [
     }
 ]
 
+const genresById = {
+    28: "Action",
+    12: "Adventure",
+    16: "Animation",
+    35: "Comedy",
+    80: "Crime",
+    99: "Documentary",
+    18: "Drama",
+    10751: "Family",
+    14: "Fantasy",
+    36: "History",
+    27: "Horror",
+    10402: "Music",
+    9648: "Mystery",
+    10749: "Romance",
+    878: "Science Fiction",
+    10770: "TV Movie",
+    53: "Thriller",
+    10752: "War",
+    37: "Western",
+};
+
 export default function MainPage() {
     const [currentPage, setCurrentPage] = useState(0)
 
@@ -84,7 +107,8 @@ export default function MainPage() {
                         draggable={false}
                     />
                     <div className='absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black via-70% lg:via-60% lg:to-[#010101]'></div>
-                    <div className='absolute inset-0 bg-linear-to-r from-black/80 lg:via-black/40 to-transparent lg:via-50%'></div>
+                    {/* <div className='absolute inset-0 bg-linear-to-r from-black/80 lg:via-black/40 to-transparent lg:via-50%'></div> */}
+                    <div className='absolute inset-0 bg-linear-to-l from-black/80 lg:via-black/40 to-transparent lg:via-50%'></div>
                     <div className='absolute inset-0 bg-linear-to-t from-black lg:from-[#010101] via-transparent to-transparent opacity-50 lg:opacity-10'></div>
                 </div>
             </div>
@@ -94,15 +118,17 @@ export default function MainPage() {
                 <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out]">
                     {logo ? (
                         <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left">
-                            <Link href={`/movie/${id}`} className="block group transition-transform duration-500 hover:scale-110 active:scale-95 w-fit">
+                            <Link
+                                href={`/movie/${id}`}
+                                className="block group transition-transform duration-500 hover:scale-110 active:scale-95 w-fit"
+                            >
                                 <Image
                                     src={logo}
                                     alt={title}
-                                    width={500}
-                                    height={200}
+                                    width={600}
+                                    height={240}
                                     priority
-                                    className="w-auto select-none max-h-24 sm:max-h-32 md:max-h-48 object-contain 
-                   drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] pointer-events-none"
+                                    className="select-none w-64 sm:w-80 md:w-100 h-auto object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] pointer-events-none"
                                     draggable={false}
                                 />
                             </Link>
@@ -143,32 +169,7 @@ export default function MainPage() {
 
 
 
-                        <div className="flex items-center gap-3">
-                            <button
-                                aria-label="Add to Watched"
-                                className="p-2 bg-white/10 text-white rounded-sm hover:bg-white/20 border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer group"
-                            >
-                                <Eye className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:fill-zinc-300 group-active:fill-zinc-50" />
-                            </button>
-                            <button
-                                aria-label="Add to Wishlist"
-                                className="p-2 bg-white/10 text-white rounded-sm hover:bg-white/20 border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer group"
-                            >
-                                <Plus className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:fill-zinc-300 group-active:fill-zinc-50" />
-                            </button>
-                            <button
-                                aria-label="Add to Favorites"
-                                className="p-2 bg-white/10 text-white rounded-sm hover:bg-white/20 border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer group"
-                            >
-                                <Heart className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:fill-zinc-300 group-active:fill-zinc-50" />
-                            </button>
-                            <button
-                                aria-label="Add to Favorites"
-                                className="p-2 bg-white/10 text-white rounded-sm hover:bg-white/20 border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer group"
-                            >
-                                <Bookmark className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:fill-zinc-300 group-active:fill-zinc-50" />
-                            </button>
-                        </div>
+                        <LibraryControlsButtons />
                     </div>
                 </div>
 
