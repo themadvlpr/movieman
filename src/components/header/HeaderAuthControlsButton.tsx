@@ -25,10 +25,6 @@ export default function HeaderAuthControlsButton() {
 		}
 	}, [isOpen])
 
-	const handlePanelClick = () => {
-		setIsOpen(false)
-	}
-
 	return (
 		<>
 			<button
