@@ -26,12 +26,17 @@ export async function GET(request: Request) {
                 try {
                     const details = await tmdbFetch(
                         `/movie/${movie.id}`,
-                        {},
+                        {
+                            append_to_response: "images",
+                            include_image_language: "en,null"
+                        },
                         CacheConfig.DETAILS
                     );
-                    return { ...movie, tagline: details.tagline };
+                    const logo_path = details.images?.logos?.[0]?.file_path || "";
+                    const origin_country = details.production_countries?.[0]?.iso_3166_1 || "";
+                    return { ...movie, tagline: details.tagline, logo_path, origin_country };
                 } catch (e) {
-                    return { ...movie, tagline: "" };
+                    return { ...movie, tagline: "", logo_path: "", origin_country: "" };
                 }
             })
         );

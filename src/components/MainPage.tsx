@@ -23,6 +23,8 @@ interface Movie {
     video: boolean;
     vote_average: number;
     vote_count: number;
+    logo_path?: string;
+    origin_country?: string;
 }
 
 
@@ -102,15 +104,18 @@ export default function MainPage() {
         release_date,
         tagline,
         backdrop_path,
-        original_language: country
+        origin_country: country,
+        logo_path,
     } = currentMovie;
 
-    const logo = `https://image.tmdb.org/t/p/w500${currentMovie.poster_path}`;
+    console.log(movies);
+
+
 
     return (
         <div className='flex-1 relative flex flex-col justify-end bg-black lg:bg-[#010101]'>
             {/* Background Image Container */}
-            <div className='absolute inset-x-0 top-0 h-[55dvh] lg:h-full lg:inset-0 bg-black lg:bg-transparent overflow-hidden pointer-events-none'>
+            <div className='absolute inset-x-0 top-0 h-[75dvh] lg:h-full lg:inset-0 bg-black lg:bg-transparent overflow-hidden pointer-events-none'>
                 <div className='relative h-full w-full'>
                     <Image
                         key={id}
@@ -134,14 +139,14 @@ export default function MainPage() {
             {/* Content Container */}
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-20 sm:pt-28 lg:pt-32 pb-6 sm:pb-8 md:pb-12 flex flex-col sm:flex-row items-start sm:items-end justify-end sm:justify-between gap-6 sm:gap-15 mt-auto bg-linear-to-t from-black via-black/90 to-transparent sm:bg-none">
                 <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out]">
-                    {logo ? (
+                    {logo_path ? (
                         <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left">
                             <Link
                                 href={`/movie/${id}`}
                                 className="block group transition-transform duration-500 hover:scale-110 active:scale-95 w-fit"
                             >
                                 <Image
-                                    src={logo}
+                                    src={`https://image.tmdb.org/t/p/w500/${logo_path}`}
                                     alt={title}
                                     width={600}
                                     height={240}
@@ -152,9 +157,15 @@ export default function MainPage() {
                             </Link>
                         </div>
                     ) : (
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-8 lg:mb-12 drop-shadow-2xl leading-[0.95] text-mdnichrome">
-                            {title}
-                        </h1>
+                        <Link
+                            href={`/movie/${id}`}
+                            className="block group transition-transform duration-500 hover:scale-110 active:scale-95 w-fit"
+                        >
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-8 lg:mb-12 drop-shadow-2xl leading-[0.95] text-mdnichrome">
+                                {title}
+                            </h1>
+                        </Link>
+
                     )}
 
                     <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 font-medium text-white/90 drop-shadow-md text-sm sm:text-base cursor-default">
@@ -165,14 +176,17 @@ export default function MainPage() {
                         <span className="text-white/80">
                             {release_date?.slice(0, 4)}
                         </span>
-                        <span className="text-white/40">|</span>
-                        <span className="text-white/80">
-                            {country}
-                        </span>
+
+                        {country && <>
+                            <span className="text-white/40">|</span>
+                            <span className="text-white/80">
+                                {country}
+                            </span>
+                        </>}
                     </div>
-                    <p className="text-sm italic sm:text-base md:text-lg leading-relaxed text-white/80 drop-shadow-lg line-clamp-3 sm:line-clamp-4 max-w-xl">
+                    {tagline && <p className="text-sm italic sm:text-base md:text-lg leading-relaxed text-white/80 drop-shadow-lg line-clamp-3 sm:line-clamp-4 max-w-xl">
                         {tagline}
-                    </p>
+                    </p>}
 
                     <div className="flex flex-wrap flex-col-reverse sm:flex-row items-start sm:items-center gap-3 sm:gap-4 pt-2">
                         <Link
@@ -186,7 +200,7 @@ export default function MainPage() {
                     </div>
                 </div>
 
-                <div className="flex flex-row sm:flex-col items-center sm:items-end w-full sm:w-auto mt-4 sm:mt-0 gap-4 sm:gap-6">
+                <div className="border-t border-zinc-500 sm:border-0 pt-4 flex flex-row sm:flex-col items-center sm:items-end w-full sm:w-auto mt-0 gap-4 sm:gap-6">
                     {/* Switch slide buttons & Dots for mobile */}
                     <div className="flex items-center justify-between w-full sm:w-auto sm:bg-black/40 sm:backdrop-blur-md sm:p-1.5 sm:rounded-full sm:border sm:border-white/10">
                         {/* Prev Button */}
@@ -196,7 +210,7 @@ export default function MainPage() {
                                     currentPage > 0 ? currentPage - 1 : movies.length - 1
                                 )
                             }
-                            className="p-2 md:p-3 rounded-full bg-black/40 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/10 sm:border-transparent hover:bg-white/20 transition-colors text-white cursor-pointer order-1"
+                            className="p-2 md:p-3 rounded-full bg-black/40 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/10 sm:border-transparent hover:bg-white/20 transition-colors text-zinc-400 cursor-pointer order-1"
                             aria-label="Previous"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +226,7 @@ export default function MainPage() {
                                 <button
                                     key={idx}
                                     onClick={() => changePage(idx)}
-                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentPage ? "bg-white w-6" : "bg-white/40 hover:bg-white/60"
+                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentPage ? "bg-zinc-400 w-6" : "bg-zinc-400/40 hover:bg-zinc-400/60"
                                         }`}
                                     aria-label={`Go to slide ${idx + 1}`}
                                 />
@@ -226,7 +240,7 @@ export default function MainPage() {
                                     currentPage < movies.length - 1 ? currentPage + 1 : 0
                                 )
                             }
-                            className="p-2 md:p-3 rounded-full bg-black/40 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/10 sm:border-transparent hover:bg-white/20 transition-colors text-white cursor-pointer order-3"
+                            className="p-2 md:p-3 rounded-full bg-black/40 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/10 sm:border-transparent hover:bg-white/20 transition-colors text-zinc-400 cursor-pointer order-3"
                             aria-label="Next"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -285,6 +299,6 @@ export default function MainPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
