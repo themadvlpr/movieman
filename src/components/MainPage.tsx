@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Play } from "lucide-react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import { motion, AnimatePresence } from "framer-motion"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 
 
@@ -56,6 +57,12 @@ export default function MainPage() {
     const [currentPage, setCurrentPage] = useState(0)
     const [movies, setMovies] = useState<Movie[] | null>(null);
     const [loading, setLoading] = useState(true);
+    const [imageLoading, setImageLoading] = useState(true);
+
+    // Reset image loading state when movie changes
+    useEffect(() => {
+        setImageLoading(true);
+    }, [currentPage]);
 
     useEffect(() => {
         async function fetchData() {
@@ -108,7 +115,8 @@ export default function MainPage() {
         logo_path,
     } = currentMovie;
 
-    console.log(movies);
+
+    // console.log(movies);
 
 
 
@@ -117,28 +125,55 @@ export default function MainPage() {
             {/* Background Image Container */}
             <div className='absolute inset-x-0 top-0 h-[75dvh] lg:h-full lg:inset-0 bg-black lg:bg-transparent overflow-hidden pointer-events-none'>
                 <div className='relative h-full w-full'>
-                    <Image
-                        key={id}
-                        src={`https://image.tmdb.org/t/p/original${backdrop_path}`}
-                        alt={title}
-                        fill
-                        priority
-                        quality={90}
-                        className="object-cover select-none object-top animate-[kenburns_20s_ease-in-out_infinite_alternate]"
-                        sizes="100vw"
-                        draggable={false}
-                    />
+                    {/* Pulsing Loader (Skeleton) */}
+                    <AnimatePresence>
+                        {imageLoading && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-zinc-900 overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-                    <div className='absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black via-70% lg:via-60% lg:to-[#010101]'></div>
-                    {/* <div className='absolute inset-0 bg-linear-to-r from-black/80 lg:via-black/40 to-transparent lg:via-50%'></div> */}
-                    <div className='absolute inset-0 bg-linear-to-l from-black/80 lg:via-black/40 to-transparent lg:via-50%'></div>
-                    <div className='absolute inset-0 bg-linear-to-t from-black lg:from-[#010101] via-transparent to-transparent opacity-50 lg:opacity-10'></div>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 1, ease: "easeInOut" }}
+                            className="absolute inset-0"
+                        >
+                            <Image
+                                src={`https://image.tmdb.org/t/p/original${backdrop_path}`}
+                                alt={title}
+                                fill
+                                priority={true}
+                                quality={90}
+                                className="object-cover select-none object-top animate-kenburns"
+                                sizes="100vw"
+                                draggable={false}
+                                onLoadingComplete={() => setImageLoading(false)}
+                            />
+                        </motion.div>
+                    </AnimatePresence>
+
+                    {/* Optimized Overlay System */}
+                    <div className='absolute inset-0 bg-linear-to-t from-black via-black/40 to-black/20 lg:from-[#010101] z-10'></div>
+                    <div className='absolute inset-0 bg-linear-to-l from-black/60 via-transparent to-transparent lg:via-40% z-10'></div>
                 </div>
             </div>
 
             {/* Content Container */}
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-20 sm:pt-28 lg:pt-32 pb-6 sm:pb-8 md:pb-12 flex flex-col sm:flex-row items-start sm:items-end justify-end sm:justify-between gap-6 sm:gap-15 mt-auto bg-linear-to-t from-black via-black/90 to-transparent sm:bg-none">
-                <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out]">
+                <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out] will-change-transform">
                     {logo_path ? (
                         <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left">
                             <Link
@@ -150,7 +185,7 @@ export default function MainPage() {
                                     alt={title}
                                     width={600}
                                     height={240}
-                                    priority
+                                    priority={true}
                                     className="select-none w-64 sm:w-80 md:w-100 h-auto object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] pointer-events-none"
                                     draggable={false}
                                 />
@@ -268,15 +303,21 @@ export default function MainPage() {
                                 draggable={false}
                             />
                         </div>
-                        {/* Progress Overlay - unfades from left to right over 15s */}
+                        {/* Progress Overlay - unfades from left to right over 15s using scaleX */}
                         <div
                             key={`progress-${currentPage}`}
-                            className="absolute inset-0 bg-linear-to-r from-white/25 via-white/15 to-white/10 pointer-events-none"
+                            className="absolute inset-x-0 bottom-0 top-0 bg-white/15 origin-left pointer-events-none"
                             style={{
-                                animation: "progressUnfade 15s linear forwards",
+                                animation: "progressScale 15s linear forwards",
+                                willChange: "transform"
                             }}
                         ></div>
-                        <style jsx>{`@keyframes progressUnfade { from {clip-path: inset(0 0 0 0);}to {clip-path: inset(0 0 0 100%);}}`}</style>
+                        <style jsx>{`
+                            @keyframes progressScale { 
+                                from { transform: scaleX(0); }
+                                to { transform: scaleX(1); }
+                            }
+                        `}</style>
                         <div className="absolute inset-x-0 bottom-0 p-4 bg-linear-to-t from-black via-black/80 to-transparent pt-12">
                             <h4 className="text-white font-bold text-base truncate drop-shadow-md transition-colors">
                                 {nextMovie.title}

@@ -40,54 +40,41 @@ const PageTransition = ({ children }: PageTransitionProps) => {
 			<motion.div
 				key={pathname}
 				initial={{
-					opacity: 0.3,
-					scale: 0.5,
-					filter: 'blur(10px)',
-					x: 1300,
+					opacity: 0,
+					scale: 0.98,
+					x: 20,
 					transition: {
-						duration: 0.5,
+						duration: 0.4,
 						default: { duration: 0.8 }
 					},
 				}}
 				animate={{
 					opacity: 1,
 					scale: 1,
-					filter: 'blur(0px)',
 					x: 0,
 				}}
 				exit={{
-					opacity: 0.3,
-					scale: 0.5,
-					filter: 'blur(10px)',
-					x: -300,
+					opacity: 0,
+					scale: 0.98,
+					x: -20,
 					transition: {
-						duration: 0.5,
+						duration: 0.4,
 						ease: 'circIn',
 						default: { duration: 0.8 }
 					},
 				}}
 				transition={{
-					// Step 1: Fast scale up (0.5 to 1)
 					scale: {
-						duration: 1.7,
-						ease: [0.22, 1, 0.36, 1], // snappy cubic-bezier
+						duration: 0.8,
+						ease: [0.22, 1, 0.36, 1],
 					},
-					// Step 2: Smoothly fade in and remove blur as it scales
 					opacity: {
-						duration: 1.7,
+						duration: 0.8,
 						ease: 'linear',
-						delay: 0.05,
 					},
-					filter: {
-						duration: 1.7,
-						ease: 'easeOut',
-						delay: 0.1,
-					},
-					// Step 3: Finalize horizontal position to x: 0
 					x: {
-						duration: 1.7,
+						duration: 0.8,
 						ease: [0.16, 1, 0.3, 1],
-						delay: 0.15,
 					},
 				}}
 				className='w-full flex-1 flex flex-col'
