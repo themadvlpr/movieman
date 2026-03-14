@@ -41,8 +41,8 @@ const PageTransition = ({ children }: PageTransitionProps) => {
 				key={pathname}
 				initial={{
 					opacity: 0,
-					scale: 0.98,
-					x: 20,
+					// scale: 0.98,
+					x: 200,
 					transition: {
 						duration: 0.4,
 						default: { duration: 0.8 }
@@ -50,13 +50,13 @@ const PageTransition = ({ children }: PageTransitionProps) => {
 				}}
 				animate={{
 					opacity: 1,
-					scale: 1,
+					// scale: 1,
 					x: 0,
 				}}
 				exit={{
 					opacity: 0,
-					scale: 0.98,
-					x: -20,
+					// scale: 0.98,
+					x: -200,
 					transition: {
 						duration: 0.4,
 						ease: 'circIn',
@@ -64,10 +64,10 @@ const PageTransition = ({ children }: PageTransitionProps) => {
 					},
 				}}
 				transition={{
-					scale: {
-						duration: 0.8,
-						ease: [0.22, 1, 0.36, 1],
-					},
+					// scale: {
+					// 	duration: 0.8,
+					// 	ease: [0.22, 1, 0.36, 1],
+					// },
 					opacity: {
 						duration: 0.8,
 						ease: 'linear',
