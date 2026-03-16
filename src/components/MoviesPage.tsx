@@ -19,85 +19,96 @@ const years = [
     "All", "2026", "2025", "2024", "2023", "2022", "2021", "2020", "2010s", "2000s"
 ]
 
-const movies = [
-    {
-        id: 1,
-        title: "Hoopers",
-        rating: 7.7,
-        release_date: "2026-01-01",
-        overview: "Scientists have discovered how to 'hop' human consciousness into lifelike robotic animals, allowing people to communicate with animals as animals. Animal lover Mabel seizes an opportunity to use the technology, uncovering mysteries within the animal world beyond anything she could have imagined.",
-        poster: 'https://image.tmdb.org/t/p/original/2RrLuIfIzGWWIH8IAEo6o0IYHmx.jpg',
-        logo: 'https://image.tmdb.org/t/p/w500/xS2WPzXYUkW9IZwSL56tV74APPm.png',
-        genres: ["Sci-Fi", "Adventure"]
-    },
-    {
-        id: 2,
-        title: "Dune: Part Two",
-        rating: 8.3,
-        release_date: "2024-02-27",
-        overview: "Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against the conspirators who destroyed his family.",
-        poster: "https://image.tmdb.org/t/p/original/ylkdrn23p3gQcHx7ukIfuy2CkTE.jpg",
-        logo: "https://image.tmdb.org/t/p/w500/woifx7xduIyJYq8ktCiN36zt9Xu.png",
-        genres: ["Sci-Fi", "Action"]
-    },
-    {
-        id: 3,
-        title: "Oppenheimer",
-        rating: 8.1,
-        release_date: "2023-07-19",
-        overview: "The story of J. Robert Oppenheimer's role in the development of the atomic bomb during World War II.",
-        poster: "https://image.tmdb.org/t/p/original/ptpr0kGAckfQkJeJIt8st5dglvd.jpg",
-        logo: 'https://image.tmdb.org/t/p/w500/b07VisHvZb0WzUpA8VB77wfMXwg.png',
-        genres: ["Drama", "History"]
-    },
-    {
-        id: 4,
-        title: "Scream 7",
-        rating: 5.1,
-        release_date: "2026-07-19",
-        overview: "Return to Woodsboro as a new Ghostface killer emerges, targeting a new group of friends with a twist that connects to the past.",
-        poster: "https://image.tmdb.org/t/p/original/hz7TdCrpLLt2Dz7S3PS2HG9rpAO.jpg",
-        logo: 'https://image.tmdb.org/t/p/w500/2JRh8uPqNGlZC72vJawAGHToOnk.png',
-        genres: ["Horror", "Thriller"]
-    }
-]
-
-const categoryMovies: Record<string, typeof movies> = {
-    popular: [
-        { id: 1, title: "Dune: Part Two", rating: 8.3, release_date: "2024-02-27", overview: "Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against the conspirators who destroyed his family.", poster: "https://image.tmdb.org/t/p/original/ylkdrn23p3gQcHx7ukIfuy2CkTE.jpg", logo: "", genres: ["Sci-Fi", "Action"] },
-        { id: 2, title: "Oppenheimer", rating: 8.1, release_date: "2023-07-19", overview: "The story of J. Robert Oppenheimer's role in the development of the atomic bomb during World War II.", poster: "https://image.tmdb.org/t/p/original/ptpr0kGAckfQkJeJIt8st5dglvd.jpg", logo: "", genres: ["Drama", "History"] },
-        { id: 3, title: "Hoopers", rating: 7.7, release_date: "2026-01-01", overview: "Scientists have discovered how to 'hop' human consciousness into lifelike robotic animals.", poster: "https://image.tmdb.org/t/p/original/2RrLuIfIzGWWIH8IAEo6o0IYHmx.jpg", logo: "", genres: ["Sci-Fi", "Adventure"] },
-        { id: 4, title: "Scream 7", rating: 5.1, release_date: "2026-07-19", overview: "A new Ghostface killer emerges, targeting a new group of friends.", poster: "https://image.tmdb.org/t/p/original/hz7TdCrpLLt2Dz7S3PS2HG9rpAO.jpg", logo: "", genres: ["Horror", "Thriller"] },
-        { id: 5, title: "Inside Out 2", rating: 8.0, release_date: "2024-06-12", overview: "Teenager Riley's mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions!", poster: "https://image.tmdb.org/t/p/original/vpnVM9B6NMmQpWeZvzLv1oYIqfs.jpg", logo: "", genres: ["Animation", "Comedy"] },
-        { id: 6, title: "Godzilla x Kong", rating: 7.2, release_date: "2024-03-27", overview: "Two ancient titans, Godzilla and Kong, clash in an epic battle as humans unravel their intertwined origins.", poster: "https://image.tmdb.org/t/p/original/v48uWVv6mZ9pNiYyqXNve9v694s.jpg", logo: "", genres: ["Action", "Sci-Fi"] },
-    ],
-    topRated: [
-        { id: 1, title: "The Godfather", rating: 8.7, release_date: "1972-03-14", overview: "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family.", poster: "https://image.tmdb.org/t/p/original/3bhkrjR8vBqEnmZpLBAb6Lsb0BP.jpg", logo: "", genres: ["Crime", "Drama"] },
-        { id: 2, title: "The Shawshank Redemption", rating: 8.7, release_date: "1994-09-22", overview: "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.", poster: "https://image.tmdb.org/t/p/original/9dq7tYOTmCxXmS92sOllUMnI3fs.jpg", logo: "", genres: ["Drama", "Crime"] },
-        { id: 3, title: "Schindler's List", rating: 8.6, release_date: "1993-11-30", overview: "The true story of how businessman Oskar Schindler saved over a thousand Jewish lives from the Nazis.", poster: "https://image.tmdb.org/t/p/original/sF1U4EU7SZ4W3IeB6fewe9p6ivI.jpg", logo: "", genres: ["Drama", "History"] },
-        { id: 4, title: "Pulp Fiction", rating: 8.5, release_date: "1994-09-10", overview: "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine.", poster: "https://image.tmdb.org/t/p/original/d5iIl9h9mNpmsMCqKP6GgG9Iq1f.jpg", logo: "", genres: ["Crime", "Thriller"] },
-        { id: 5, title: "The Dark Knight", rating: 8.5, release_date: "2008-07-16", overview: "Batman raises the stakes in his war on crime as he attempts to dismantle the remaining criminal organizations that plague the streets.", poster: "https://image.tmdb.org/t/p/original/qJ2tW6ixuR7jWXBvH7B5H9aoSvs.jpg", logo: "", genres: ["Action", "Crime", "Drama"] },
-        { id: 6, title: "Forrest Gump", rating: 8.5, release_date: "1994-06-23", overview: "The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man.", poster: "https://image.tmdb.org/t/p/original/arw2vcBveWOVZr6pxY9L3vEWZzT.jpg", logo: "", genres: ["Drama", "Romance"] },
-    ],
-    upcoming: [
-        { id: 1, title: "Thunderbolts*", rating: 0, release_date: "2025-05-02", overview: "A group of anti-heroes is sent on a mission commissioned by the government.", poster: "https://image.tmdb.org/t/p/original/v8id5u0o9R3iWl8y0I5B1M6bXkP.jpg", logo: "", genres: ["Action", "Sci-Fi"] },
-        { id: 2, title: "Superman", rating: 0, release_date: "2025-07-11", overview: "Follows the titular superhero as he reconciles his heritage with his human upbringing.", poster: "https://image.tmdb.org/t/p/original/6v2uFvVvSgXToP3o7uXW9k1z9m7.jpg", logo: "", genres: ["Action", "Sci-Fi"] },
-        { id: 3, title: "The Fantastic Four", rating: 0, release_date: "2025-07-25", overview: "Reed Richards, Sue Storm, Johnny Storm, and Ben Grimm gain superpowers after being exposed to cosmic rays.", poster: "https://image.tmdb.org/t/p/original/eK4m5L9vM4W8W8W8W8W8W8W8W.jpg", logo: "", genres: ["Action", "Adventure"] },
-    ],
+const genreMap: Record<string, number> = {
+    "Action": 28,
+    "Adventure": 12,
+    "Animation": 16,
+    "Comedy": 35,
+    "Crime": 80,
+    "Documentary": 99,
+    "Drama": 18,
+    "Family": 10751,
+    "Fantasy": 14,
+    "History": 36,
+    "Horror": 27,
+    "Music": 10402,
+    "Mystery": 9648,
+    "Romance": 10749,
+    "Sci-Fi": 878,
+    "Thriller": 53,
+    "War": 10752,
+    "Western": 37
 }
 
-
+// Image base URL for TMDB
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 export default function MoviesPage() {
     const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'upcoming'>('popular')
+    const [moviesData, setMoviesData] = useState<any[]>([])
+    const [page, setPage] = useState(1)
+    const [isLoading, setIsLoading] = useState(true)
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
+    const [hasMore, setHasMore] = useState(true)
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedGenre, setSelectedGenre] = useState('All')
     const [selectedYear, setSelectedYear] = useState('All')
     const [isFilterVisible, setIsFilterVisible] = useState(false)
 
+    const fetchMovies = async (category: string, pageNum: number, isLoadMore: boolean = false) => {
+        if (isLoadMore) {
+            setIsLoadingMore(true)
+        } else {
+            setIsLoading(true)
+        }
+
+        try {
+            const response = await fetch(`/api/movies?category=${category}&page=${pageNum}`)
+            const data = await response.json()
+
+            if (data && data.results) {
+                const resultsWithFullPaths = data.results.map((movie: any) => ({
+                    ...movie,
+                    poster: movie.poster_path ? `${TMDB_IMAGE_BASE}${movie.poster_path}` : null,
+                }))
+
+                if (isLoadMore) {
+                    setMoviesData(prev => [...prev, ...resultsWithFullPaths])
+                } else {
+                    setMoviesData(resultsWithFullPaths)
+                }
+
+                setHasMore(data.page < data.total_pages)
+            }
+        } catch (error) {
+            console.error("Error fetching movies:", error)
+        } finally {
+            setIsLoading(false)
+            setIsLoadingMore(false)
+        }
+    }
+
+    // Effect for initial load and category change
+    useMemo(() => {
+        setPage(1)
+        fetchMovies(activeCategory, 1)
+    }, [activeCategory])
+
+    const handleLoadMore = () => {
+        const nextPage = page + 1
+        setPage(nextPage)
+        fetchMovies(activeCategory, nextPage, true)
+    }
+
     const filteredMovies = useMemo(() => {
-        return categoryMovies[activeCategory].filter(movie => {
-            const matchesGenre = selectedGenre === "All" || movie.genres?.includes(selectedGenre);
+        if (!moviesData) return [];
+        return moviesData.filter(movie => {
+            let matchesGenre = selectedGenre === "All";
+            if (selectedGenre !== "All") {
+                const genreId = genreMap[selectedGenre];
+                matchesGenre = movie.genre_ids?.includes(genreId);
+            }
+
             const releaseYear = movie.release_date?.slice(0, 4);
             let matchesYear = selectedYear === "All";
 
@@ -111,7 +122,7 @@ export default function MoviesPage() {
 
             return matchesGenre && matchesYear;
         });
-    }, [activeCategory, selectedGenre, selectedYear]);
+    }, [moviesData, selectedGenre, selectedYear]);
 
     return (
         <div className="pt-20 min-h-screen">
@@ -195,103 +206,130 @@ export default function MoviesPage() {
                 </div>
 
                 {/* ─── MOVIE CONTENT ─── */}
-                {filteredMovies.length > 0 ? (
-                    <div
-                        key={`${activeCategory}-${viewMode}-${selectedGenre}-${selectedYear}`}
-                        className={viewMode === 'grid'
-                            ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6"
-                            : "flex flex-col gap-3 sm:gap-4"}
-                        style={{ animation: 'fadeInUp 0.4s ease-out' }}
-                    >
-                        {filteredMovies.map((movie, idx) => (
-                            viewMode === 'grid' ? (
-                                <Link
-                                    key={`${movie.id}-${idx}`}
-                                    href={`/movie/${movie.title}`}
-                                    className="group relative flex flex-col gap-2 sm:gap-3 cursor-pointer"
-                                >
-                                    <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
-                                        <img
-                                            src={movie.poster}
-                                            alt={movie.title}
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                                        />
-                                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 w-6 sm:w-7 h-6 sm:h-7 rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[10px] sm:text-xs font-bold text-white border border-white/20">
-                                            {idx + 1}
-                                        </div>
-                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/30 scale-90 group-hover:scale-100 transition-transform duration-300">
-                                                <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-white ml-0.5" />
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center py-40">
+                        <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
+                    </div>
+                ) : filteredMovies.length > 0 ? (
+                    <div className="flex flex-col gap-10">
+                        <div
+                            key={`${activeCategory}-${viewMode}-${selectedGenre}-${selectedYear}`}
+                            className={viewMode === 'grid'
+                                ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6"
+                                : "flex flex-col gap-3 sm:gap-4"}
+                            style={{ animation: 'fadeInUp 0.4s ease-out' }}
+                        >
+                            {filteredMovies.map((movie, idx) => (
+                                viewMode === 'grid' ? (
+                                    <Link
+                                        key={`${movie.id}-${idx}`}
+                                        href={`/movie/${movie.id}`}
+                                        className="group relative flex flex-col gap-2 sm:gap-3 cursor-pointer"
+                                    >
+                                        <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
+                                            {movie.poster ? (
+                                                <img
+                                                    src={movie.poster}
+                                                    alt={movie.title}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-500 text-xs">No Poster</div>
+                                            )}
+                                            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 w-6 sm:w-7 h-6 sm:h-7 rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[10px] sm:text-xs font-bold text-white border border-white/20">
+                                                {idx + 1}
                                             </div>
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/30 scale-90 group-hover:scale-100 transition-transform duration-300">
+                                                    <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-white ml-0.5" />
+                                                </div>
+                                            </div>
+                                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                                         </div>
-                                        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                                    </div>
-                                    <div className="px-0.5 sm:px-1">
-                                        <p className="text-white text-xs sm:text-sm font-bold truncate group-hover:text-white transition-colors">
-                                            {movie.title}
-                                        </p>
-                                        <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
-                                            <div className="flex items-center gap-1">
-                                                <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                                                <span className="text-white text-[9px] sm:text-[10px] font-bold">
-                                                    {movie.rating > 0 ? movie.rating.toFixed(1) : "N/A"}
+                                        <div className="px-0.5 sm:px-1">
+                                            <p className="text-white text-xs sm:text-sm font-bold truncate group-hover:text-white transition-colors">
+                                                {movie.title}
+                                            </p>
+                                            <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
+                                                <div className="flex items-center gap-1">
+                                                    <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                                                    <span className="text-white text-[9px] sm:text-[10px] font-bold">
+                                                        {movie.vote_average > 0 ? movie.vote_average.toFixed(1) : "N/A"}
+                                                    </span>
+                                                </div>
+                                                <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">•</span>
+                                                <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">
+                                                    {movie.release_date?.slice(0, 4)}
                                                 </span>
                                             </div>
-                                            <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">•</span>
-                                            <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">
-                                                {movie.release_date?.slice(0, 4)}
-                                            </span>
                                         </div>
-                                    </div>
-                                </Link>
-                            ) : (
-                                <Link
-                                    key={`${movie.id}-${idx}`}
-                                    href={`/movie/${movie.title}`}
-                                    className="group flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
-                                >
-                                    <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
-                                        <img
-                                            src={movie.poster}
-                                            alt={movie.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                        <div className="absolute top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20">
-                                            {idx + 1}
-                                        </div>
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                            <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-white ml-0.5" />
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col justify-center gap-2 sm:gap-3 min-w-0">
-                                        <div>
-                                            <h3 className="text-white text-sm sm:text-xl font-bold group-hover:text-white transition-colors truncate">{movie.title}</h3>
-                                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 sm:mt-1.5">
-                                                <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
-                                                    <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
-                                                    <span className="text-white text-[10px] sm:text-xs font-bold">{movie.rating > 0 ? movie.rating.toFixed(1) : "N/A"}</span>
-                                                </div>
-                                                <span className="text-zinc-400 text-[10px] sm:text-sm">{movie.release_date?.slice(0, 4)}</span>
-                                                <div className="hidden xs:flex gap-1.5 sm:gap-2">
-                                                    {movie.genres?.slice(0, 2).map(g => (
-                                                        <span key={g} className="text-[8px] sm:text-[10px] uppercase tracking-wider text-zinc-500 font-bold border border-zinc-500/30 px-1 sm:px-1.5 py-0.5 rounded">
-                                                            {g}
-                                                        </span>
-                                                    ))}
-                                                </div>
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        key={`${movie.id}-${idx}`}
+                                        href={`/movie/${movie.id}`}
+                                        className="group flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
+                                    >
+                                        <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
+                                            {movie.poster ? (
+                                                <img
+                                                    src={movie.poster}
+                                                    alt={movie.title}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-500 text-xs">No Poster</div>
+                                            )}
+                                            <div className="absolute top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20">
+                                                {idx + 1}
+                                            </div>
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                                <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-white ml-0.5" />
                                             </div>
                                         </div>
-                                        <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
-                                            {movie.overview}
-                                        </p>
-                                        <div className="flex items-center gap-2 text-[#46d369] text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-0.5 sm:mt-1 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
-                                            Discover
-                                            <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[#46d369]" />
+                                        <div className="flex flex-col justify-center gap-2 sm:gap-3 min-w-0">
+                                            <div>
+                                                <h3 className="text-white text-sm sm:text-xl font-bold group-hover:text-white transition-colors truncate">{movie.title}</h3>
+                                                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 sm:mt-1.5">
+                                                    <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
+                                                        <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
+                                                        <span className="text-white text-[10px] sm:text-xs font-bold">{movie.vote_average > 0 ? movie.vote_average.toFixed(1) : "N/A"}</span>
+                                                    </div>
+                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{movie.release_date?.slice(0, 4)}</span>
+                                                </div>
+                                            </div>
+                                            <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
+                                                {movie.overview}
+                                            </p>
+                                            <div className="flex items-center gap-2 text-[#46d369] text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-0.5 sm:mt-1 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
+                                                Discover
+                                                <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[#46d369]" />
+                                            </div>
                                         </div>
-                                    </div>
-                                </Link>
-                            )
-                        ))}
+                                    </Link>
+                                )
+                            ))}
+                        </div>
+
+                        {/* Load More Button */}
+                        {hasMore && (
+                            <div className="flex justify-center mt-10">
+                                <button
+                                    onClick={handleLoadMore}
+                                    disabled={isLoadingMore}
+                                    className="px-10 py-4 rounded-2xl bg-white text-black font-bold text-sm tracking-widest uppercase hover:bg-zinc-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-xl shadow-white/5"
+                                >
+                                    {isLoadingMore ? (
+                                        <>
+                                            <div className="w-4 h-4 rounded-full border-2 border-black/20 border-t-black animate-spin" />
+                                            Loading...
+                                        </>
+                                    ) : (
+                                        "Load More"
+                                    )}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
