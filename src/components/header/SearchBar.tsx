@@ -38,7 +38,7 @@ export default function SearchBar() {
 						initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
 						animate={{ opacity: 1, backdropFilter: 'blur(20px)' }}
 						exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-						className='fixed inset-0 z-999 bg-black/80 flex flex-col items-center pt-5 px-4'
+						className='fixed top-0 left-0 w-screen h-dvh z-100 bg-black/80 flex flex-col items-center pt-5 px-4'
 						onClick={() => setIsExpanded(false)}
 					>
 						<motion.div

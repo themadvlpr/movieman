@@ -46,7 +46,7 @@ export default function MobileMenu() {
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
 						transition={{ duration: 0.3 }}
-						className='fixed inset-0 z-100 bg-black/80 backdrop-blur-sm overflow-y-auto'
+						className='fixed top-0 left-0 w-screen h-dvh z-100 bg-black/80 backdrop-blur-sm overflow-y-auto'
 						onClick={() => setIsOpen(false)}
 					>
 						<div className='min-h-full flex flex-col items-center justify-center py-24 px-4'>

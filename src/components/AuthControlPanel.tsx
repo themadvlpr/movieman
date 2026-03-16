@@ -8,7 +8,7 @@ export default function AuthControlPanel({
 }) {
 	return (
 		<div
-			className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm'
+			className='fixed top-0 left-0 w-screen h-dvh z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm'
 			onClick={handleClose}
 		>
 			<div
