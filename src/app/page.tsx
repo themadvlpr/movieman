@@ -1,10 +1,15 @@
-import MainPage from "@/components/MainPage";
-// import { tmdbFetch } from "@/lib/tmdb-api";
+import MainPage from "@/components/MainPage"
+import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies";
 
 export default async function Home() {
-    // const data = await tmdbFetch("/movie/popular", { page: 1 }, { revalidate: 3600 });
+    const genres = [
+        28, 12, 16, 35, 80, 18, 27, 878, 53
+    ]
 
-    return (
-        <MainPage />
-    )
+
+    const genre = "28";
+    const initialData = await getDiscoverMovies(genre);
+
+    return <MainPage initialMovies={initialData.results} />;
 }
+

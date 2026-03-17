@@ -53,10 +53,10 @@ const genresById = {
 };
 
 
-export default function MainPage() {
+export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) {
     const [currentPage, setCurrentPage] = useState(0)
-    const [movies, setMovies] = useState<Movie[] | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [movies, setMovies] = useState<Movie[] | null>(initialMovies);
+    const [loading, setLoading] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
 
     // Reset image loading state when movie changes
@@ -64,26 +64,26 @@ export default function MainPage() {
         setImageLoading(true);
     }, [currentPage]);
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const genreIds = Object.keys(genresById);
-                const randomGenreId = genreIds[Math.floor(Math.random() * genreIds.length)];
-                const response = await fetch(`/api/getMovieDiscover?genre=${randomGenreId}&page=1`);
-                const fetchedData = await response.json();
+    // useEffect(() => {
+    //     async function fetchData() {
+    //         try {
+    //             const genreIds = Object.keys(genresById);
+    //             const randomGenreId = genreIds[Math.floor(Math.random() * genreIds.length)];
+    //             const response = await fetch(`/api/getMovieDiscover?genre=${randomGenreId}&page=1`);
+    //             const fetchedData = await response.json();
 
-                if (fetchedData.results) {
-                    setMovies(fetchedData.results);
-                }
+    //             if (fetchedData.results) {
+    //                 setMovies(fetchedData.results);
+    //             }
 
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchData();
-    }, []);
+    //         } catch (error) {
+    //             console.error("Error fetching data:", error);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     }
+    //     fetchData();
+    // }, []);
 
     useEffect(() => {
         if (!movies || movies.length === 0) return;
@@ -96,6 +96,10 @@ export default function MainPage() {
     const changePage = (index: number) => {
         setCurrentPage(index);
     };
+
+
+    console.log("Movies:", movies);
+    console.log("LOading:", loading);
 
     if (loading || !movies || movies.length === 0) {
         return <div className="h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
@@ -114,10 +118,6 @@ export default function MainPage() {
         origin_country: country,
         logo_path,
     } = currentMovie;
-
-
-    // console.log(movies);
-
 
 
     return (
@@ -177,7 +177,7 @@ export default function MainPage() {
                     {logo_path ? (
                         <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left">
                             <Link
-                                href={`/movie/${id}`}
+                                href={`/movies/${id}`}
                                 className="block group transition-transform duration-500 hover:scale-110 active:scale-95 w-fit"
                             >
                                 <Image
@@ -193,7 +193,7 @@ export default function MainPage() {
                         </div>
                     ) : (
                         <Link
-                            href={`/movie/${id}`}
+                            href={`/movies/${id}`}
                             className="block group transition-transform duration-500 hover:scale-110 active:scale-95 w-fit"
                         >
                             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-8 lg:mb-12 drop-shadow-2xl leading-[0.95] text-mdnichrome">
@@ -225,7 +225,7 @@ export default function MainPage() {
 
                     <div className="flex flex-wrap flex-col-reverse sm:flex-row items-start sm:items-center gap-3 sm:gap-4 pt-2">
                         <Link
-                            href={`/movie/${id}`}
+                            href={`/movies/${id}`}
                             className="group max-w-fit flex flex-1 sm:flex-none justify-center gap-2 sm:gap-2.5 items-center px-5 sm:px-7 py-2.5 sm:py-3 bg-white text-black rounded hover:bg-white/90 transition-all active:scale-95"
                         >
                             <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-black" />

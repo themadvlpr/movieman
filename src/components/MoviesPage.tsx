@@ -223,7 +223,7 @@ export default function MoviesPage() {
                                 viewMode === 'grid' ? (
                                     <Link
                                         key={`${movie.id}-${idx}`}
-                                        href={`/movie/${movie.id}`}
+                                        href={`/movies/${movie.id}`}
                                         className="group relative flex flex-col gap-2 sm:gap-3 cursor-pointer"
                                     >
                                         <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
@@ -267,7 +267,7 @@ export default function MoviesPage() {
                                 ) : (
                                     <Link
                                         key={`${movie.id}-${idx}`}
-                                        href={`/movie/${movie.id}`}
+                                        href={`/movies/${movie.id}`}
                                         className="group flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
                                     >
                                         <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
@@ -313,11 +313,11 @@ export default function MoviesPage() {
 
                         {/* Load More Button */}
                         {hasMore && (
-                            <div className="flex justify-center mt-10">
+                            <div className="flex justify-center mt-1">
                                 <button
                                     onClick={handleLoadMore}
                                     disabled={isLoadingMore}
-                                    className="px-10 py-4 rounded-2xl bg-white text-black font-bold text-sm tracking-widest uppercase hover:bg-zinc-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-xl shadow-white/5"
+                                    className="px-10 cursor-pointer py-4 rounded-2xl bg-white text-black font-bold text-sm tracking-widest uppercase hover:bg-zinc-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-xl shadow-white/5"
                                 >
                                     {isLoadingMore ? (
                                         <>
@@ -347,7 +347,6 @@ export default function MoviesPage() {
                     </div>
                 )}
             </div>
-            <div className="h-20" />
         </div>
     )
 }

@@ -1,4 +1,4 @@
-import { tmdbFetch, CacheConfig, validateParams, createResponse, createErrorResponse } from "@/lib/tmdb-api";
+import { tmdbFetch, CacheConfig, validateParams, createResponse, createErrorResponse } from "@/lib/tmdb/tmdb-api";
 
 export async function GET(request: Request) {
     try {
