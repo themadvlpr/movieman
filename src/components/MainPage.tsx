@@ -205,7 +205,7 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
 
                     <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 font-medium text-white/90 drop-shadow-md text-sm sm:text-base cursor-default">
                         <span className="text-[#46d369] font-bold">
-                            {Math.floor(rating * 10)}% Match
+                            {Math.floor(rating * 10)}% Liked
                         </span>
                         <span className="text-white/40">|</span>
                         <span className="text-white/80">
@@ -328,7 +328,7 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
                                 </span>
                                 <span>•</span>
                                 <span className="text-[#46d369]">
-                                    {Math.floor(nextMovie.vote_average * 10)}% Match
+                                    {Math.floor(nextMovie.vote_average * 10)}% Liked
                                 </span>
                             </div>
                         </div>

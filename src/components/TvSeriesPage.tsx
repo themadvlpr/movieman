@@ -2,50 +2,46 @@
 
 import { useState, useMemo, useEffect, useRef } from "react"
 import Link from "next/link"
-import { Play, Grid, List, Filter, Calendar, ChevronDown, Star } from "lucide-react"
+import { Play, Grid, List, Star, Filter } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 
 const categories = [
     { key: 'popular', label: 'Popular' },
     { key: 'topRated', label: 'Top Rated' },
-    { key: 'upcoming', label: 'Upcoming' },
 ]
 
-const genres = [
-    "All", "Action", "Adventure", "Sci-Fi", "Drama", "Thriller", "Horror", "Comedy", "Crime"
+const tvGenres = [
+    "All", "Action & Adventure", "Animation", "Comedy", "Crime", "Documentary", "Drama", "Family", "Mystery", "Sci-Fi & Fantasy"
 ]
 
-const years = [
-    "All", "2026", "2025", "2024", "2023", "2022", "2021", "2020", "2010s", "2000s"
-]
-
-const genreMap: Record<string, number> = {
-    "Action": 28,
-    "Adventure": 12,
+const tvGenreMap: Record<string, number> = {
+    "Action & Adventure": 10759,
     "Animation": 16,
     "Comedy": 35,
     "Crime": 80,
     "Documentary": 99,
     "Drama": 18,
     "Family": 10751,
-    "Fantasy": 14,
-    "History": 36,
-    "Horror": 27,
-    "Music": 10402,
+    "Kids": 10762,
     "Mystery": 9648,
-    "Romance": 10749,
-    "Sci-Fi": 878,
-    "Thriller": 53,
-    "War": 10752,
+    "News": 10763,
+    "Reality": 10764,
+    "Sci-Fi & Fantasy": 10765,
+    "Soap": 10766,
+    "Talk": 10767,
+    "War & Politics": 10768,
     "Western": 37
 }
 
-// Image base URL for TMDB
+const years = [
+    "All", "2026", "2025", "2024", "2023", "2022", "2021", "2020", "2010s", "2000s"
+]
+
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
-export default function MoviesPage() {
-    const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'upcoming'>('popular')
-    const [moviesData, setMoviesData] = useState<any[]>([])
+export default function TvSeriesPage() {
+    const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated'>('popular')
+    const [tvData, setTvData] = useState<any[]>([])
     const [page, setPage] = useState(1)
     const [isLoading, setIsLoading] = useState(true)
     const [isLoadingMore, setIsLoadingMore] = useState(false)
@@ -53,10 +49,9 @@ export default function MoviesPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedGenre, setSelectedGenre] = useState('All')
     const [selectedYear, setSelectedYear] = useState('All')
-    const [isFilterVisible, setIsFilterVisible] = useState(false)
     const loaderRef = useRef<HTMLDivElement>(null)
 
-    const fetchMovies = async (category: string, pageNum: number, isLoadMore: boolean = false) => {
+    const fetchTvSeries = async (category: string, pageNum: number, isLoadMore: boolean = false) => {
         if (isLoadMore) {
             setIsLoadingMore(true)
         } else {
@@ -64,45 +59,45 @@ export default function MoviesPage() {
         }
 
         try {
-            const response = await fetch(`/api/movies?category=${category}&page=${pageNum}`)
+            const response = await fetch(`/api/tv?category=${category}&page=${pageNum}`)
             const data = await response.json()
 
             if (data && data.results) {
-                const resultsWithFullPaths = data.results.map((movie: any) => ({
-                    ...movie,
-                    poster: movie.poster_path ? `${TMDB_IMAGE_BASE}${movie.poster_path}` : null,
+                const resultsWithFullPaths = data.results.map((show: any) => ({
+                    ...show,
+                    title: show.name, // TMDB uses 'name' for TV shows
+                    poster: show.poster_path ? `${TMDB_IMAGE_BASE}${show.poster_path}` : null,
+                    release_date: show.first_air_date, // TMDB uses 'first_air_date' for TV shows
                 }))
 
                 if (isLoadMore) {
-                    setMoviesData(prev => [...prev, ...resultsWithFullPaths])
+                    setTvData(prev => [...prev, ...resultsWithFullPaths])
                 } else {
-                    setMoviesData(resultsWithFullPaths)
+                    setTvData(resultsWithFullPaths)
                 }
 
                 setHasMore(data.page < data.total_pages)
             }
         } catch (error) {
-            console.error("Error fetching movies:", error)
+            console.error("Error fetching TV series:", error)
         } finally {
             setIsLoading(false)
             setIsLoadingMore(false)
         }
     }
 
-    // Effect for initial load and category change
     useEffect(() => {
         setPage(1)
-        fetchMovies(activeCategory, 1)
+        fetchTvSeries(activeCategory, 1)
     }, [activeCategory])
 
     const handleLoadMore = () => {
         if (isLoadingMore || !hasMore || isLoading) return
         const nextPage = page + 1
         setPage(nextPage)
-        fetchMovies(activeCategory, nextPage, true)
+        fetchTvSeries(activeCategory, nextPage, true)
     }
 
-    // Intersection Observer for infinite scroll
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             const target = entries[0]
@@ -125,16 +120,16 @@ export default function MoviesPage() {
         }
     }, [hasMore, isLoadingMore, isLoading, page])
 
-    const filteredMovies = useMemo(() => {
-        if (!moviesData) return [];
-        return moviesData.filter(movie => {
+    const filteredTvSeries = useMemo(() => {
+        if (!tvData) return [];
+        return tvData.filter(show => {
             let matchesGenre = selectedGenre === "All";
             if (selectedGenre !== "All") {
-                const genreId = genreMap[selectedGenre];
-                matchesGenre = movie.genre_ids?.includes(genreId);
+                const genreId = tvGenreMap[selectedGenre];
+                matchesGenre = show.genre_ids?.includes(genreId);
             }
 
-            const releaseYear = movie.release_date?.slice(0, 4);
+            const releaseYear = show.release_date?.slice(0, 4);
             let matchesYear = selectedYear === "All";
 
             if (selectedYear === "2010s") {
@@ -147,14 +142,12 @@ export default function MoviesPage() {
 
             return matchesGenre && matchesYear;
         });
-    }, [moviesData, selectedGenre, selectedYear]);
+    }, [tvData, selectedGenre, selectedYear]);
 
     return (
         <div className="pt-20 min-h-screen">
-            {/* ─── HEADER & CONTROLS ─── */}
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 mb-8">
-                    {/* Categories */}
                     <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
                         {categories.map(({ key, label }) => (
                             <button
@@ -172,7 +165,6 @@ export default function MoviesPage() {
                     </div>
 
                     <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
-                        {/* View Toggles */}
                         <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
                             <button
                                 onClick={() => setViewMode('grid')}
@@ -187,19 +179,14 @@ export default function MoviesPage() {
                                 <List className="w-4 h-4" />
                             </button>
                         </div>
-                        {/* Sort by.. */}
-
                     </div>
                 </div>
 
-
-
-                {/* ─── MOVIE CONTENT ─── */}
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-40">
                         <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
                     </div>
-                ) : filteredMovies.length > 0 ? (
+                ) : filteredTvSeries.length > 0 ? (
                     <div className="flex flex-col gap-10">
                         <div
                             key={`${activeCategory}-${viewMode}-${selectedGenre}-${selectedYear}`}
@@ -208,18 +195,18 @@ export default function MoviesPage() {
                                 : "flex flex-col gap-3 sm:gap-4"}
                             style={{ animation: 'fadeInUp 0.4s ease-out' }}
                         >
-                            {filteredMovies.map((movie, idx) => (
+                            {filteredTvSeries.map((show, idx) => (
                                 viewMode === 'grid' ? (
                                     <Link
-                                        key={`${movie.id}-${idx}`}
-                                        href={`/movies/${movie.id}`}
+                                        key={`${show.id}-${idx}`}
+                                        href={`/tv/${show.id}`}
                                         className="group relative flex flex-col gap-2 sm:gap-3 cursor-pointer"
                                     >
                                         <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
-                                            {movie.poster ? (
+                                            {show.poster ? (
                                                 <img
-                                                    src={movie.poster}
-                                                    alt={movie.title}
+                                                    src={show.poster}
+                                                    alt={show.name}
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                                                 />
                                             ) : (
@@ -233,40 +220,40 @@ export default function MoviesPage() {
                                                     <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-white ml-0.5" />
                                                 </div>
                                                 <div className="scale-90 group-hover:scale-100 transition-transform duration-300 delay-75">
-                                                    <LibraryControlsButtons movieId={movie.id} size="sm" />
+                                                    <LibraryControlsButtons movieId={show.id} size="sm" />
                                                 </div>
                                             </div>
                                             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                                         </div>
                                         <div className="px-0.5 sm:px-1">
                                             <p className="text-white text-xs sm:text-sm font-bold truncate group-hover:text-white transition-colors">
-                                                {movie.title}
+                                                {show.name}
                                             </p>
                                             <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
                                                 <div className="flex items-center gap-1">
                                                     <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
                                                     <span className="text-white text-[9px] sm:text-[10px] font-bold">
-                                                        {movie.vote_average > 0 ? movie.vote_average.toFixed(1) : "N/A"}
+                                                        {show.vote_average > 0 ? show.vote_average.toFixed(1) : "N/A"}
                                                     </span>
                                                 </div>
                                                 <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">•</span>
                                                 <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">
-                                                    {movie.release_date?.slice(0, 4)}
+                                                    {show.release_date?.slice(0, 4)}
                                                 </span>
                                             </div>
                                         </div>
                                     </Link>
                                 ) : (
                                     <Link
-                                        key={`${movie.id}-${idx}`}
-                                        href={`/movies/${movie.id}`}
+                                        key={`${show.id}-${idx}`}
+                                        href={`/tv/${show.id}`}
                                         className="group flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
                                     >
                                         <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
-                                            {movie.poster ? (
+                                            {show.poster ? (
                                                 <img
-                                                    src={movie.poster}
-                                                    alt={movie.title}
+                                                    src={show.poster}
+                                                    alt={show.name}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                 />
                                             ) : (
@@ -281,24 +268,24 @@ export default function MoviesPage() {
                                         </div>
                                         <div className="flex flex-col justify-center gap-2 sm:gap-3 min-w-0">
                                             <div>
-                                                <h3 className="text-white text-sm sm:text-xl font-bold group-hover:text-white transition-colors truncate">{movie.title}</h3>
+                                                <h3 className="text-white text-sm sm:text-xl font-bold group-hover:text-white transition-colors truncate">{show.name}</h3>
                                                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 sm:mt-1.5">
                                                     <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
                                                         <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
-                                                        <span className="text-white text-[10px] sm:text-xs font-bold">{movie.vote_average > 0 ? movie.vote_average.toFixed(1) : "N/A"}</span>
+                                                        <span className="text-white text-[10px] sm:text-xs font-bold">{show.vote_average > 0 ? show.vote_average.toFixed(1) : "N/A"}</span>
                                                     </div>
-                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{movie.release_date?.slice(0, 4)}</span>
+                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{show.release_date?.slice(0, 4)}</span>
                                                 </div>
                                             </div>
                                             <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
-                                                {movie.overview}
+                                                {show.overview}
                                             </p>
                                             <div className="flex items-center gap-4 mt-1 sm:mt-2 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
                                                 <div className="flex items-center gap-2 text-[#46d369] text-[10px] sm:text-xs font-bold uppercase tracking-widest">
                                                     Discover
                                                     <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[#46d369]" />
                                                 </div>
-                                                <LibraryControlsButtons movieId={movie.id} size="md" />
+                                                <LibraryControlsButtons movieId={show.id} size="md" />
                                             </div>
                                         </div>
                                     </Link>
@@ -306,14 +293,13 @@ export default function MoviesPage() {
                             ))}
                         </div>
 
-                        {/* Infinite Scroll Sentinel */}
                         <div ref={loaderRef} className="flex justify-center py-10">
                             {hasMore ? (
                                 <div className="flex flex-col items-center gap-3">
                                     <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
                                     <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">Loading...</span>
                                 </div>
-                            ) : filteredMovies.length > 0 ? (
+                            ) : filteredTvSeries.length > 0 ? (
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="h-px w-20 bg-white/10" />
                                     <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">End of list</span>
@@ -326,7 +312,7 @@ export default function MoviesPage() {
                         <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
                             <Filter className="w-8 h-8 text-zinc-600" />
                         </div>
-                        <h3 className="text-white text-xl font-bold mb-2">No movies found</h3>
+                        <h3 className="text-white text-xl font-bold mb-2">No TV series found</h3>
                         <p className="text-zinc-500 text-sm max-w-xs">Try adjusting your filters to find what you're looking for.</p>
                         <button
                             onClick={() => { setSelectedGenre('All'); setSelectedYear('All'); }}
