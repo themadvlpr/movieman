@@ -5,6 +5,7 @@ import './globals.css'
 import Header from '@/components/header/Header'
 import Footer from '@/components/Footer'
 import PageTransition from '@/components/PageTransition'
+import ScrollToTop from '@/components/ScrollToTop'
 
 
 const montserrat = Montserrat({
@@ -32,6 +33,7 @@ export default function RootLayout({
 					<main className='flex-1 flex flex-col overflow-hidden'>
 						<PageTransition>{children}</PageTransition>
 					</main>
+					<ScrollToTop />
 					<Footer />
 				</div>
 			</body>

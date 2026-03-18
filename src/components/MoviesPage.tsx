@@ -53,7 +53,6 @@ export default function MoviesPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedGenre, setSelectedGenre] = useState('All')
     const [selectedYear, setSelectedYear] = useState('All')
-    const [isFilterVisible, setIsFilterVisible] = useState(false)
     const loaderRef = useRef<HTMLDivElement>(null)
 
     const fetchMovies = async (category: string, pageNum: number, isLoadMore: boolean = false) => {
