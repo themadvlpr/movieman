@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 const navLinks = [
 	{ title: 'Movies', href: '/movies' },
@@ -14,6 +15,8 @@ const navLinks = [
 
 export default function MobileMenu() {
 	const [isOpen, setIsOpen] = useState(false)
+
+	const pathname = usePathname()
 
 	// Prevent scrolling when menu is open
 	useEffect(() => {
@@ -26,6 +29,8 @@ export default function MobileMenu() {
 			document.body.style.overflow = 'auto'
 		}
 	}, [isOpen])
+
+
 
 	return (
 		<>
@@ -61,28 +66,35 @@ export default function MobileMenu() {
 
 							{/* Navigation Links */}
 							<ul className='flex flex-col items-center gap-8'>
-								{navLinks.map((link, idx) => (
-									<motion.li
-										key={link.title}
-										initial={{ opacity: 0, y: 20 }}
-										animate={{ opacity: 1, y: 0 }}
-										exit={{ opacity: 0, y: 20 }}
-										transition={{ delay: 0.1 * idx, duration: 0.3 }}
-									>
-										<Link
-											href={link.href}
-											onClick={() => setIsOpen(false)}
-											className='text-3xl font-semibold text-zinc-400 hover:text-zinc-100 transition-colors'
+								{navLinks.map((link, idx) => {
+									const isActiveLink = pathname === link.href
+
+									return (
+										< motion.li
+											key={link.title}
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											exit={{ opacity: 0, y: 20 }}
+											transition={{ delay: 0.1 * idx, duration: 0.3 }}
 										>
-											{link.title}
-										</Link>
-									</motion.li>
-								))}
+											<Link
+												href={link.href}
+												onClick={() => setIsOpen(false)}
+												className={`text-3xl font-semibold text-zinc-400 hover:text-zinc-100 transition-colors ${isActiveLink ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''}`}
+											>
+												{link.title}
+											</Link>
+										</motion.li>
+									)
+								}
+
+
+								)}
 							</ul>
 						</div>
 					</motion.div>
 				)}
-			</AnimatePresence>
+			</AnimatePresence >
 		</>
 	)
 }
