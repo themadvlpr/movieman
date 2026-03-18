@@ -5,6 +5,7 @@ import SearchBar from './SearchBar'
 import MobileMenu from './MobileMenu'
 import UserDropdownMenu from './UserDropdownMenu'
 import HeaderClient from './HeaderClient'
+import NavLinks from './NavLinks'
 
 export default async function Header() {
 	const session = await getAuthSession()
@@ -20,17 +21,7 @@ export default async function Header() {
 				</Link>
 				<div className='flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-10'>
 					<SearchBar />
-					<ul className='hidden lg:flex gap-5 font-semibold text-lg text-zinc-400 '>
-						<li className='hover:scale-115 transition-all duration-500 hover:text-amber-50'>
-							<Link href={'/movies'}>Movies</Link>
-						</li>
-						<li className='hover:scale-115 transition-all duration-500 hover:text-amber-50'>
-							<Link href={'/tvseries'}>TV Series</Link>
-						</li>
-						<li className='hover:scale-115 transition-all duration-500 hover:text-amber-50'>
-							<Link href={'/about'}>About</Link>
-						</li>
-					</ul>
+					<NavLinks />
 					<div className='block lg:hidden'>
 						<MobileMenu />
 					</div>
