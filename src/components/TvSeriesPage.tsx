@@ -147,6 +147,8 @@ export default function TvSeriesPage() {
     return (
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
+                <h1 className="text-3xl sm:text-5xl font-bold mb-5">TV Series: {categories.find((cat: { key: string; label: string; }) => cat.key === activeCategory)?.label}</h1>
+
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 mb-8">
                     <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
                         {categories.map(({ key, label }) => (

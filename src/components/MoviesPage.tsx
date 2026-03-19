@@ -124,8 +124,9 @@ export default function MoviesPage() {
 
     return (
         <div className="pt-20 min-h-screen">
-            {/* ─── HEADER & CONTROLS ─── */}
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
+                <h1 className="text-3xl sm:text-5xl font-bold mb-5">Movies: {categories.find((cat: { key: string; label: string; }) => cat.key === activeCategory)?.label}</h1>
+
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 mb-8">
                     {/* Categories */}
                     <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
@@ -144,7 +145,7 @@ export default function MoviesPage() {
                         ))}
                     </div>
 
-                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+                    <div className="flex items-center justify-between gap-3 sm:gap-4">
                         {/* View Toggles */}
                         <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
                             <button

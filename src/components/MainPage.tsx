@@ -115,7 +115,8 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
 
 
     return (
-        <div className='flex-1 relative flex flex-col justify-end bg-black lg:bg-[#010101]'>
+        <div className='flex-1 relative flex flex-col justify-end bg-black lg:bg-[#010101]'
+            onClick={() => setIsDropdownOpen(false)}>
             {/* Background Image Container */}
             <div className='absolute inset-x-0 top-0 h-[75dvh] lg:h-full lg:inset-0 bg-black lg:bg-transparent overflow-hidden pointer-events-none'>
                 <div className='relative h-full w-full'>
@@ -174,44 +175,6 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
             {/* Content Container */}
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-20 sm:pt-28 lg:pt-32 pb-6 sm:pb-8 md:pb-12 flex flex-col sm:flex-row items-start sm:items-end justify-end sm:justify-between gap-6 sm:gap-15 mt-auto bg-linear-to-t from-black via-black/90 to-transparent sm:bg-none">
                 <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out] will-change-transform">
-                    {/* Genre Dropdown */}
-                    <div className="relative inline-block text-left mb-2 sm:mb-4">
-                        <button
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition-all duration-300 text-sm font-semibold text-white/90"
-                        >
-                            <span className="opacity-60 font-medium">Genre:</span>
-                            <span>{genresById[selectedGenreId as keyof typeof genresById]}</span>
-                            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                        </button>
-
-                        <AnimatePresence>
-                            {isDropdownOpen && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="absolute bottom-full left-0 mb-3 w-48 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden z-50 py-2 scrollbar-thin scrollbar-thumb-white/10 max-h-[40dvh] overflow-y-auto"
-                                >
-                                    {Object.entries(genresById).map(([id, name]) => (
-                                        <button
-                                            key={id}
-                                            onClick={() => {
-                                                setSelectedGenreId(Number(id));
-                                                setIsDropdownOpen(false);
-                                            }}
-                                            className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
-                                        >
-                                            {name}
-                                            {selectedGenreId === Number(id) && <Check className="w-3.5 h-3.5 text-white" />}
-                                        </button>
-                                    ))}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-
                     {logo_path ? (
                         <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left">
                             <Link
@@ -274,7 +237,44 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
                 </div>
 
                 <div className="border-t border-zinc-500 sm:border-0 pt-4 flex flex-row sm:flex-col items-center sm:items-end w-full sm:w-auto mt-0 gap-4 sm:gap-6">
-                    {/* Switch slide buttons & Dots for mobile */}
+                    {/* Genre Dropdown - Desktop */}
+                    <div className="relative hidden sm:inline-block text-left mb-2 sm:mb-4">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen) }}
+                            className="group cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition-all duration-300 text-sm font-semibold text-white/90"
+                        >
+                            <span className="opacity-60 font-medium">Genre:</span>
+                            <span>{genresById[selectedGenreId as keyof typeof genresById]}</span>
+                            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        <AnimatePresence>
+                            {isDropdownOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="absolute bottom-full sm:bottom-auto sm:top-full left-0 w-48 rounded-lg bg-zinc-900/90 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden z-50 py-2 scrollbar-thin scrollbar-thumb-white/10 max-h-[40dvh] overflow-y-auto"
+                                >
+                                    {Object.entries(genresById).map(([id, name]) => (
+                                        <button
+                                            key={id}
+                                            onClick={() => {
+                                                setSelectedGenreId(Number(id));
+                                                setIsDropdownOpen(false);
+                                            }}
+                                            className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
+                                        >
+                                            {name}
+                                            {selectedGenreId === Number(id) && <Check className="w-3.5 h-3.5 text-white" />}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                    {/* Switch slide buttons & Genre Dropdown for mobile */}
                     <div className="flex items-center justify-between w-full sm:w-auto sm:bg-black/40 sm:backdrop-blur-md sm:p-1.5 sm:rounded-full sm:border sm:border-white/10">
                         {/* Prev Button */}
                         <button
@@ -283,7 +283,7 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
                                     currentPage > 0 ? currentPage - 1 : movies.length - 1
                                 )
                             }
-                            className="p-2 md:p-3 rounded-full bg-black/40 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/10 sm:border-transparent hover:bg-white/20 transition-colors text-zinc-400 cursor-pointer order-1"
+                            className="p-2 md:p-3 rounded-full bg-black/40 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/10 sm:border-transparent hover:bg-white/20 transition-colors text-zinc-400 cursor-pointer order-1 shrink-0"
                             aria-label="Previous"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -293,17 +293,42 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
 
                         {/* Divider for Desktop */}
                         <div className="hidden sm:block w-px h-6 bg-white/20 order-2"></div>
-                        {/* Dots for Mobile */}
-                        <div className="flex sm:hidden items-center justify-center flex-wrap px-10 gap-2 flex-1 order-2">
-                            {movies.map((_, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => changePage(idx)}
-                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentPage ? "bg-zinc-400 w-6" : "bg-zinc-400/40 hover:bg-zinc-400/60"
-                                        }`}
-                                    aria-label={`Go to slide ${idx + 1}`}
-                                />
-                            ))}
+                        
+                        {/* Genre Dropdown - Mobile */}
+                        <div className="relative flex sm:hidden order-2 flex-1 justify-center px-1">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen) }}
+                                className="group cursor-pointer mx-auto flex items-center justify-between w-full max-w-[160px] gap-1 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/10 transition-all duration-300 text-xs font-semibold text-white/90"
+                            >
+                                <span className="truncate">{genresById[selectedGenreId as keyof typeof genresById]}</span>
+                                <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            <AnimatePresence>
+                                {isDropdownOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-48 rounded-2xl bg-zinc-900/95 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden z-50 py-2 scrollbar-thin scrollbar-thumb-white/10 max-h-[40dvh] overflow-y-auto"
+                                    >
+                                        {Object.entries(genresById).map(([id, name]) => (
+                                            <button
+                                                key={id}
+                                                onClick={() => {
+                                                    setSelectedGenreId(Number(id));
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                                className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
+                                            >
+                                                {name}
+                                                {selectedGenreId === Number(id) && <Check className="w-3.5 h-3.5 text-white" />}
+                                            </button>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         {/* Next Button */}
