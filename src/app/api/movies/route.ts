@@ -7,17 +7,25 @@ export async function GET(request: Request) {
         const page = searchParams.get("page") || "1";
 
         // Map internal category keys to TMDB endpoints
-        const endpointMap: Record<string, string> = {
-            popular: "/movie/popular",
-            topRated: "/movie/top_rated",
-            upcoming: "/movie/upcoming"
-        };
+        let endpoint = '/movie/popular';
+        let params: any = { page };
 
-        const endpoint = endpointMap[category] || "/movie/popular";
+        if (category === 'popular') endpoint = '/movie/popular';
+        else if (category === 'topRated') endpoint = '/movie/top_rated';
+        else if (category === 'upcoming') {
+            endpoint = '/discover/movie';
+            const today = new Date().toISOString().split('T')[0];
+            params = {
+                page,
+                'primary_release_date.gte': today,
+                'sort_by': 'popularity.desc',
+                'with_release_type': '2|3'
+            };
+        }
 
         const data = await tmdbFetch(
             endpoint,
-            { page },
+            params,
             CacheConfig.LISTS
         );
 

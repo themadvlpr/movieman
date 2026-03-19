@@ -11,35 +11,6 @@ const categories = [
     { key: 'upcoming', label: 'Upcoming' },
 ]
 
-const genres = [
-    "All", "Action", "Adventure", "Sci-Fi", "Drama", "Thriller", "Horror", "Comedy", "Crime"
-]
-
-const years = [
-    "All", "2026", "2025", "2024", "2023", "2022", "2021", "2020", "2010s", "2000s"
-]
-
-const genreMap: Record<string, number> = {
-    "Action": 28,
-    "Adventure": 12,
-    "Animation": 16,
-    "Comedy": 35,
-    "Crime": 80,
-    "Documentary": 99,
-    "Drama": 18,
-    "Family": 10751,
-    "Fantasy": 14,
-    "History": 36,
-    "Horror": 27,
-    "Music": 10402,
-    "Mystery": 9648,
-    "Romance": 10749,
-    "Sci-Fi": 878,
-    "Thriller": 53,
-    "War": 10752,
-    "Western": 37
-}
-
 // Image base URL for TMDB
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
@@ -63,22 +34,40 @@ export default function MoviesPage() {
         }
 
         try {
-            const response = await fetch(`/api/movies?category=${category}&page=${pageNum}`)
-            const data = await response.json()
+            const timestamp = new Date().getTime(); // Additional cache buster
+            const response = await fetch(`/api/movies?category=${category}&page=${pageNum}&t=${timestamp}`, {
+                cache: 'no-store',
+                next: { revalidate: 0 }
+            });
+            const data = await response.json();
 
             if (data && data.results) {
+
+                // if (category.toLowerCase() === 'upcoming') {
+                //     const today = new Date();
+                //     today.setHours(0, 0, 0, 0);
+
+                //     finalResults = data.results.filter((movie: any) => {
+                //         if (!movie.release_date) return false;
+                //         const releaseDate = new Date(movie.release_date);
+                //         // console.log(`Фильм: ${movie.title}, Дата: ${movie.release_date}, Будущий: ${releaseDate > today}`);
+                //         return releaseDate > today;
+                //     });
+                // }
+
+
                 const resultsWithFullPaths = data.results.map((movie: any) => ({
                     ...movie,
                     poster: movie.poster_path ? `${TMDB_IMAGE_BASE}${movie.poster_path}` : null,
-                }))
+                }));
 
                 if (isLoadMore) {
-                    setMoviesData(prev => [...prev, ...resultsWithFullPaths])
+                    setMoviesData(prev => [...prev, ...resultsWithFullPaths]);
                 } else {
-                    setMoviesData(resultsWithFullPaths)
+                    setMoviesData(resultsWithFullPaths);
                 }
 
-                setHasMore(data.page < data.total_pages)
+                setHasMore(data.page < data.total_pages);
             }
         } catch (error) {
             console.error("Error fetching movies:", error)
@@ -88,24 +77,32 @@ export default function MoviesPage() {
         }
     }
 
+
     // Effect for initial load and category change
     useEffect(() => {
-        setPage(1)
-        fetchMovies(activeCategory, 1)
-    }, [activeCategory])
+        setHasMore(false);
+
+        setMoviesData([]);
+        setPage(1);
+
+        fetchMovies(activeCategory, 1, false);
+    }, [activeCategory]);
 
     const handleLoadMore = () => {
-        if (isLoadingMore || !hasMore || isLoading) return
-        const nextPage = page + 1
-        setPage(nextPage)
-        fetchMovies(activeCategory, nextPage, true)
-    }
+        console.log("Я выполняюсь!");
+
+        if (isLoading || isLoadingMore || !hasMore || moviesData.length === 0) return;
+
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchMovies(activeCategory, nextPage, true);
+    };
 
     // Intersection Observer for infinite scroll
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             const target = entries[0]
-            if (target.isIntersecting && hasMore && !isLoadingMore && !isLoading) {
+            if (target.isIntersecting && hasMore && !isLoadingMore && !isLoading && moviesData.length > 0) {
                 handleLoadMore()
             }
         }, {
@@ -122,31 +119,8 @@ export default function MoviesPage() {
                 observer.unobserve(loaderRef.current)
             }
         }
-    }, [hasMore, isLoadingMore, isLoading, page])
+    }, [hasMore, isLoadingMore, isLoading, page, activeCategory, moviesData.length])
 
-    const filteredMovies = useMemo(() => {
-        if (!moviesData) return [];
-        return moviesData.filter(movie => {
-            let matchesGenre = selectedGenre === "All";
-            if (selectedGenre !== "All") {
-                const genreId = genreMap[selectedGenre];
-                matchesGenre = movie.genre_ids?.includes(genreId);
-            }
-
-            const releaseYear = movie.release_date?.slice(0, 4);
-            let matchesYear = selectedYear === "All";
-
-            if (selectedYear === "2010s") {
-                matchesYear = (Number(releaseYear) >= 2010 && Number(releaseYear) <= 2019);
-            } else if (selectedYear === "2000s") {
-                matchesYear = (Number(releaseYear) >= 2000 && Number(releaseYear) <= 2009);
-            } else if (selectedYear !== "All") {
-                matchesYear = releaseYear === selectedYear;
-            }
-
-            return matchesGenre && matchesYear;
-        });
-    }, [moviesData, selectedGenre, selectedYear]);
 
     return (
         <div className="pt-20 min-h-screen">
@@ -198,7 +172,7 @@ export default function MoviesPage() {
                     <div className="flex flex-col items-center justify-center py-40">
                         <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
                     </div>
-                ) : filteredMovies.length > 0 ? (
+                ) : moviesData.length > 0 ? (
                     <div className="flex flex-col gap-10">
                         <div
                             key={`${activeCategory}-${viewMode}-${selectedGenre}-${selectedYear}`}
@@ -207,7 +181,7 @@ export default function MoviesPage() {
                                 : "flex flex-col gap-3 sm:gap-4"}
                             style={{ animation: 'fadeInUp 0.4s ease-out' }}
                         >
-                            {filteredMovies.map((movie, idx) => (
+                            {moviesData.map((movie, idx) => (
                                 viewMode === 'grid' ? (
                                     <Link
                                         key={`${movie.id}-${idx}`}
@@ -312,7 +286,7 @@ export default function MoviesPage() {
                                     <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
                                     <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">Loading...</span>
                                 </div>
-                            ) : filteredMovies.length > 0 ? (
+                            ) : moviesData.length > 0 ? (
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="h-px w-20 bg-white/10" />
                                     <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">End of list</span>

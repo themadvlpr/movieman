@@ -1,13 +1,11 @@
 import MainPage from "@/components/MainPage"
-import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies";
+import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies"
+import { cookies } from 'next/headers'
 
 export default async function Home() {
-    const genres = [
-        28, 12, 16, 35, 80, 18, 27, 878, 53
-    ]
 
-
-    const genre = "28";
+    const cookieStore = await cookies();
+    const genre = cookieStore.get('selectedGenreId')?.value || "28";
     const initialData = await getDiscoverMovies(genre);
 
     return <MainPage initialMovies={initialData.results} />;

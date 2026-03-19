@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import AuthControlPanel from '../AuthControlPanel'
+import AuthControlPanel from './AuthControlPanel'
 
 export default function HeaderAuthControlsButton() {
 	const [isOpen, setIsOpen] = useState(false)

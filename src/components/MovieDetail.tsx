@@ -6,38 +6,8 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, Clock, Calendar, Play, User, Eye, ChevronRight } from 'lucide-react'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
+import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 
-interface Cast {
-	id: number
-	name: string
-	character: string
-	profile_path: string | null
-}
-
-interface Crew {
-	id: number
-	name: string
-	job: string
-}
-
-interface Movie {
-	id: number
-	title: string
-	backdrop_path: string
-	poster_path: string
-	release_date: string
-	vote_average: number
-	runtime: number
-	tagline: string
-	overview: string
-	genres: { id: number; name: string }[]
-}
-
-interface MovieDetailProps {
-	movie: Movie
-	credits: { cast: Cast[]; crew: Crew[] }
-	similarMovies: any[]
-}
 
 export default function MovieDetail({ movie, credits, similarMovies }: MovieDetailProps) {
 	const [isWatched, setIsWatched] = useState(false)

@@ -5,7 +5,7 @@ import './globals.css'
 import Header from '@/components/header/Header'
 import Footer from '@/components/Footer'
 import PageTransition from '@/components/PageTransition'
-import ScrollToTop from '@/components/ScrollToTop'
+import ScrollToTop from '@/components/ui/ScrollToTop'
 
 
 const montserrat = Montserrat({

@@ -2,55 +2,14 @@
 
 import Link from "next/link"
 import { Play } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
+import { ChevronDown, Check } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
+import { Movie, genresById } from "@/lib/tmdb/types/tmdb-types"
+import Cookies from "js-cookie"
 
-
-interface Movie {
-    adult: boolean;
-    backdrop_path: string;
-    genre_ids: number[];
-    id: number;
-    original_language: string;
-    original_title: string;
-    overview: string;
-    popularity: number;
-    poster_path: string;
-    release_date: string;
-    tagline?: string;
-    title: string;
-    video: boolean;
-    vote_average: number;
-    vote_count: number;
-    logo_path?: string;
-    origin_country?: string;
-}
-
-
-
-const genresById = {
-    28: "Action",
-    12: "Adventure",
-    16: "Animation",
-    35: "Comedy",
-    80: "Crime",
-    99: "Documentary",
-    18: "Drama",
-    10751: "Family",
-    14: "Fantasy",
-    36: "History",
-    27: "Horror",
-    10402: "Music",
-    9648: "Mystery",
-    10749: "Romance",
-    878: "Science Fiction",
-    10770: "TV Movie",
-    53: "Thriller",
-    10752: "War",
-    37: "Western",
-};
 
 
 export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) {
@@ -58,32 +17,56 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
     const [movies, setMovies] = useState<Movie[] | null>(initialMovies);
     const [loading, setLoading] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
+    const [selectedGenreId, setSelectedGenreId] = useState<number>(() => {
+        const saved = Cookies.get('selectedGenreId');
+        return saved ? Number(saved) : 28;
+    }); const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        const savedGenre = Cookies.get('selectedGenreId');
+        if (savedGenre) {
+            setSelectedGenreId(Number(savedGenre));
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isFirstRender.current) {
+            Cookies.set('selectedGenreId', selectedGenreId.toString(), { expires: 7 });
+        }
+    }, [selectedGenreId]);
 
     // Reset image loading state when movie changes
     useEffect(() => {
         setImageLoading(true);
     }, [currentPage]);
 
-    // useEffect(() => {
-    //     async function fetchData() {
-    //         try {
-    //             const genreIds = Object.keys(genresById);
-    //             const randomGenreId = genreIds[Math.floor(Math.random() * genreIds.length)];
-    //             const response = await fetch(`/api/getMovieDiscover?genre=${randomGenreId}&page=1`);
-    //             const fetchedData = await response.json();
+    const isFirstRender = useRef(true);
 
-    //             if (fetchedData.results) {
-    //                 setMovies(fetchedData.results);
-    //             }
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
 
-    //         } catch (error) {
-    //             console.error("Error fetching data:", error);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     }
-    //     fetchData();
-    // }, []);
+        async function fetchMovies() {
+            setLoading(true);
+            try {
+                const response = await fetch(`/api/getMovieDiscover?genre=${selectedGenreId}&page=1`);
+                const fetchedData = await response.json();
+
+                if (fetchedData.results) {
+                    setMovies(fetchedData.results);
+                    setCurrentPage(0);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchMovies();
+    }, [selectedGenreId]);
 
     useEffect(() => {
         if (!movies || movies.length === 0) return;
@@ -98,11 +81,22 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
     };
 
 
-    console.log("Movies:", movies);
-    console.log("LOading:", loading);
-
     if (loading || !movies || movies.length === 0) {
-        return <div className="h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
+        return (
+            <div className="h-screen bg-[#050509] flex flex-col items-center justify-center gap-6 overflow-hidden relative">
+                <div className="absolute inset-0 bg-linear-to-b from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+                <div className="relative">
+                    <div className="w-16 h-16 rounded-full border-4 border-white/5 border-t-white/80 animate-spin" />
+                    <div className="absolute inset-0 blur-xl bg-white/10 rounded-full animate-pulse" />
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                    <h2 className="text-xl font-bold tracking-widest uppercase text-white/90 animate-pulse">Loading</h2>
+                    <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-linear-to-r from-transparent via-white/40 to-transparent w-full -translate-x-full animate-[shimmer_1.5s_infinite]" />
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     const currentMovie = movies[currentPage];
@@ -132,11 +126,17 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="absolute inset-0 bg-zinc-900 overflow-hidden"
+                                className="absolute inset-0 bg-zinc-900/90 overflow-hidden"
                             >
-                                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
+                                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/15 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                                    <div className="relative">
+                                        <div className="w-14 h-14 rounded-full border-4 border-white/10 border-t-white/90 animate-spin shadow-[0_0_20px_rgba(255,255,255,0.1)]" />
+                                        <div className="absolute inset-0 blur-lg bg-white/5 rounded-full" />
+                                    </div>
+                                    <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 animate-pulse">
+                                        Loading Poster
+                                    </span>
                                 </div>
                             </motion.div>
                         )}
@@ -160,7 +160,7 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
                                 className="object-cover select-none object-top animate-kenburns"
                                 sizes="100vw"
                                 draggable={false}
-                                onLoadingComplete={() => setImageLoading(false)}
+                                onLoad={() => setImageLoading(false)}
                             />
                         </motion.div>
                     </AnimatePresence>
@@ -174,6 +174,44 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
             {/* Content Container */}
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-20 sm:pt-28 lg:pt-32 pb-6 sm:pb-8 md:pb-12 flex flex-col sm:flex-row items-start sm:items-end justify-end sm:justify-between gap-6 sm:gap-15 mt-auto bg-linear-to-t from-black via-black/90 to-transparent sm:bg-none">
                 <div key={title} className="space-y-3 sm:space-y-5 w-full max-w-2xl animate-[fadeInUp_0.8s_ease-out] will-change-transform">
+                    {/* Genre Dropdown */}
+                    <div className="relative inline-block text-left mb-2 sm:mb-4">
+                        <button
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition-all duration-300 text-sm font-semibold text-white/90"
+                        >
+                            <span className="opacity-60 font-medium">Genre:</span>
+                            <span>{genresById[selectedGenreId as keyof typeof genresById]}</span>
+                            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        <AnimatePresence>
+                            {isDropdownOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="absolute bottom-full left-0 mb-3 w-48 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden z-50 py-2 scrollbar-thin scrollbar-thumb-white/10 max-h-[40dvh] overflow-y-auto"
+                                >
+                                    {Object.entries(genresById).map(([id, name]) => (
+                                        <button
+                                            key={id}
+                                            onClick={() => {
+                                                setSelectedGenreId(Number(id));
+                                                setIsDropdownOpen(false);
+                                            }}
+                                            className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
+                                        >
+                                            {name}
+                                            {selectedGenreId === Number(id) && <Check className="w-3.5 h-3.5 text-white" />}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
                     {logo_path ? (
                         <div className="mb-4 sm:mb-8 lg:mb-12 origin-bottom-left">
                             <Link
