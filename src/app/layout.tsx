@@ -30,7 +30,7 @@ export default function RootLayout({
 			>
 				<div className='flex flex-col  min-h-dvh'>
 					<Header />
-					<main className='flex-1 flex flex-col overflow-hidden'>
+					<main className='flex-1 flex flex-col'>
 						<PageTransition>{children}</PageTransition>
 					</main>
 					<ScrollToTop />
