@@ -58,7 +58,7 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 							<span className='text-zinc-800'>|</span>
 							<div className='flex items-center gap-1.5 text-zinc-300'>
 								<Calendar className='w-4 h-4' />
-								<span>{movie.release_date.split('-')[0]}</span>
+								<span>{movie.release_date.split('-').reverse().join('-')}</span>
 							</div>
 							<span className='text-zinc-800'>|</span>
 							<div className='flex items-center gap-1.5 text-zinc-300'>
@@ -181,13 +181,13 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 					<div className='flex gap-8 overflow-x-auto pb-10 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
 						{credits.cast.slice(0, 15).map((actor) => (
 							<div key={actor.id} className='w-44 shrink-0 group'>
-								<div className='relative aspect-4/5 rounded-2xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
+								<div className='relative aspect-4/5 cursor-pointer rounded-xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
 									{actor.profile_path ? (
 										<Image
 											src={`https://image.tmdb.org/t/p/w342${actor.profile_path}`}
 											alt={actor.name}
 											fill
-											className='object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out'
+											className='object-cover cursor-pointer group-hover:scale-105 transition-all duration-700 ease-out'
 										/>
 									) : (
 										<div className='w-full h-full flex items-center justify-center bg-zinc-800'>
