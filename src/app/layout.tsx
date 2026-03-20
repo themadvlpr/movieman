@@ -6,7 +6,9 @@ import Header from '@/components/header/Header'
 import Footer from '@/components/Footer'
 import PageTransition from '@/components/utils/PageTransition'
 import ScrollToTop from '@/components/ui/ScrollToTop'
-import Providers from '@/components/utils/Providers' // Тот самый клиентский провайдер
+import Providers from '@/components/utils/Providers'
+import { Suspense } from 'react'
+import Loader from '@/components/ui/Loader'
 
 const montserrat = Montserrat({
 	variable: '--font-montserrat',
@@ -37,13 +39,18 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body
-				className={`${montserrat.variable} antialiased bg-zinc-950 text-zinc-100`}
+				className={`${montserrat.className} antialiased bg-zinc-950 text-zinc-100 selection:bg-white selection:text-black overflow-x-hidden transition-colors duration-500`}
+				suppressHydrationWarning
 			>
 				<Providers>
 					<div className='flex flex-col min-h-dvh'>
 						<Header />
 						<main className='flex-1 flex flex-col'>
-							<PageTransition>{children}</PageTransition>
+							<PageTransition>
+								<Suspense fallback={<Loader />}>
+									{children}
+								</Suspense>
+							</PageTransition>
 						</main>
 						<ScrollToTop />
 						<Footer />

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 
 interface PageTransitionProps {
 	children: ReactNode
@@ -10,13 +10,16 @@ interface PageTransitionProps {
 
 const PageTransition = ({ children }: PageTransitionProps) => {
 	const pathname = usePathname()
+	const [isFirstMount, setIsFirstMount] = useState(true)
+
+	useEffect(() => {
+		setIsFirstMount(false)
+	}, [])
+
 	return (
 		<motion.div
 			key={pathname}
-			initial={{
-				opacity: 0,
-				y: 200, // Slide up looks more natural for standard web navigation than horizontal
-			}}
+			initial={isFirstMount ? false : { opacity: 0, y: 200 }}
 			animate={{
 				opacity: 1,
 				y: 0,

@@ -11,6 +11,7 @@ import { genresById } from "@/lib/tmdb/types/tmdb-types"
 import Cookies from "js-cookie"
 import { useQuery } from "@tanstack/react-query"
 import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies"
+import Loader from "@/components/ui/Loader"
 
 
 
@@ -47,21 +48,7 @@ export default function MainPage({ initialGenreId }: { initialGenreId: number })
 
 
     if (!movies || movies.length === 0) {
-        return (
-            <div className="h-screen bg-[#050509] flex flex-col items-center justify-center gap-6 overflow-hidden relative">
-                <div className="absolute inset-0 bg-linear-to-b from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none" />
-                <div className="relative">
-                    <div className="w-16 h-16 rounded-full border-4 border-white/5 border-t-white/80 animate-spin" />
-                    <div className="absolute inset-0 blur-xl bg-white/10 rounded-full animate-pulse" />
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                    <h2 className="text-xl font-bold tracking-widest uppercase text-white/90 animate-pulse">Loading</h2>
-                    <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-linear-to-r from-transparent via-white/40 to-transparent w-full -translate-x-full animate-[shimmer_1.5s_infinite]" />
-                    </div>
-                </div>
-            </div>
-        );
+        return <Loader />;
     }
 
     const currentMovie = movies[currentPage];

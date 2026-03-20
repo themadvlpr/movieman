@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Play, Grid, List, Filter, Star } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 import { useInfiniteQuery } from "@tanstack/react-query"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import Cookies from "js-cookie"
 
 const categories = [
@@ -17,52 +18,51 @@ const categories = [
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 import { AnimatePresence, motion } from "framer-motion"
-
-function MoviePoster({ src, alt, className }: { src: string | null, alt: string, className?: string }) {
-    const [isLoaded, setIsLoaded] = useState(false);
-
-    return (
-        <div className={`relative w-full h-full bg-zinc-900 overflow-hidden ${className}`}>
-            <AnimatePresence>
-                {!isLoaded && (
-                    <motion.div
-                        initial={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 z-10 bg-zinc-800"
-                    >
-                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {src ? (
-                <motion.img
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isLoaded ? 1 : 0 }}
-                    transition={{ duration: 0.4 }}
-                    src={src}
-                    alt={alt}
-                    onLoad={() => setIsLoaded(true)}
-                    className="w-full h-full object-cover"
-                />
-            ) : (
-                <div className="w-full h-full flex items-center justify-center text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
-                    No Poster
-                </div>
-            )}
-        </div>
-    );
-}
+import MoviePoster from "@/components/ui/MoviePoster"
 
 export default function MoviesPage() {
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+
     const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'upcoming'>(() => {
-        const savedCategory = localStorage.getItem('moviesCategory') as 'popular' | 'topRated' | 'upcoming'
-        return (['popular', 'topRated', 'upcoming'].includes(savedCategory)) ? savedCategory : 'popular';
+        // 1. Search Param
+        const urlCategory = searchParams.get('category') as any;
+        if (['popular', 'topRated', 'upcoming'].includes(urlCategory)) return urlCategory;
+
+        // 2. Local Storage (only if window is defined/client-side)
+        if (typeof window !== 'undefined') {
+            const savedCategory = localStorage.getItem('moviesCategory') as any;
+            if (['popular', 'topRated', 'upcoming'].includes(savedCategory)) return savedCategory;
+        }
+
+        return 'popular';
     })
+
     const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
-        const savedView = localStorage.getItem('moviesViewMode') as 'grid' | 'list'
-        return (['grid', 'list'].includes(savedView)) ? savedView : 'grid';
+        if (typeof window !== 'undefined') {
+            const savedView = localStorage.getItem('moviesViewMode') as any;
+            if (['grid', 'list'].includes(savedView)) return savedView;
+        }
+        return 'grid';
     })
+
+    // Sync state with URL if it changes (e.g. back button)
+    useEffect(() => {
+        const urlCategory = searchParams.get('category') as any;
+        if (urlCategory && ['popular', 'topRated', 'upcoming'].includes(urlCategory) && urlCategory !== activeCategory) {
+            setActiveCategory(urlCategory);
+        }
+    }, [searchParams]);
+
+    // Update URL when category changes
+    const handleCategoryChange = (key: 'popular' | 'topRated' | 'upcoming') => {
+        setActiveCategory(key);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('category', key);
+        router.push(pathname + '?' + params.toString(), { scroll: false });
+    };
+
     const [selectedGenre, setSelectedGenre] = useState('All')
     const [selectedYear, setSelectedYear] = useState('All')
     const loaderRef = useRef<HTMLDivElement>(null)
@@ -149,7 +149,7 @@ export default function MoviesPage() {
                         {categories.map(({ key, label }) => (
                             <button
                                 key={key}
-                                onClick={() => setActiveCategory(key as typeof activeCategory)}
+                                onClick={() => handleCategoryChange(key as any)}
                                 className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
                                     ${activeCategory === key
                                         ? 'bg-white text-black shadow-lg shadow-white/10'

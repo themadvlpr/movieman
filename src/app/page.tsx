@@ -2,8 +2,10 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import MainPage from "@/components/MainPage"
 import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies"
 import { cookies } from 'next/headers'
+import { Suspense } from 'react'
+import Loader from '@/components/ui/Loader'
 
-export default async function Home() {
+async function MainContent() {
     const queryClient = new QueryClient()
     const cookieStore = await cookies();
     const genreStr = cookieStore.get('selectedGenreId')?.value || "28";
@@ -18,5 +20,13 @@ export default async function Home() {
         <HydrationBoundary state={dehydrate(queryClient)}>
             <MainPage initialGenreId={genreId} />
         </HydrationBoundary>
+    )
+}
+
+export default function Home() {
+    return (
+        <Suspense fallback={<Loader />}>
+            <MainContent />
+        </Suspense>
     )
 }

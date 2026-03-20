@@ -4,6 +4,9 @@ import { useState, useMemo, useEffect, useRef } from "react"
 import Link from "next/link"
 import { Play, Grid, List, Star, Filter } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
+import { useInfiniteQuery } from "@tanstack/react-query"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import MoviePoster from "@/components/ui/MoviePoster"
 
 const categories = [
     { key: 'popular', label: 'Popular' },
@@ -15,69 +18,99 @@ const categories = [
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 export default function TvSeriesPage() {
-    const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated'>('popular')
-    const [tvData, setTvData] = useState<any[]>([])
-    const [page, setPage] = useState(1)
-    const [isLoading, setIsLoading] = useState(true)
-    const [isLoadingMore, setIsLoadingMore] = useState(false)
-    const [hasMore, setHasMore] = useState(true)
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+
+    const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated'>(() => {
+        const urlCategory = searchParams.get('category') as any;
+        if (['popular', 'topRated'].includes(urlCategory)) return urlCategory;
+
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('seriesCategory') as any;
+            if (['popular', 'topRated'].includes(saved)) return saved;
+        }
+        return 'popular'
+    })
+
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('seriesViewMode') as any;
+            if (['grid', 'list'].includes(saved)) return saved;
+        }
+        return 'grid'
+    })
+
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        status,
+    } = useInfiniteQuery({
+        queryKey: ['series-list', activeCategory],
+        queryFn: async ({ pageParam = 1 }) => {
+            const response = await fetch(`/api/tv?category=${activeCategory}&page=${pageParam}`)
+            if (!response.ok) throw new Error('Network response was not ok')
+            const result = await response.json()
+
+            const resultsWithFullPaths = result.results?.map((show: any) => ({
+                ...show,
+                title: show.name, // Consistency
+                poster: show.poster_path ? `${TMDB_IMAGE_BASE}${show.poster_path}` : null,
+                release_date: show.first_air_date,
+            })) || []
+
+            return {
+                ...result,
+                results: resultsWithFullPaths
+            }
+        },
+        getNextPageParam: (lastPage) => {
+            if (lastPage.page < lastPage.total_pages) {
+                return lastPage.page + 1
+            }
+            return undefined
+        },
+        initialPageParam: 1,
+    })
+
+    const tvData = data?.pages.flatMap((page) => page.results) || []
+
     const [selectedGenre, setSelectedGenre] = useState('All')
     const [selectedYear, setSelectedYear] = useState('All')
     const loaderRef = useRef<HTMLDivElement>(null)
 
-    const fetchTvSeries = async (category: string, pageNum: number, isLoadMore: boolean = false) => {
-        if (isLoadMore) {
-            setIsLoadingMore(true)
-        } else {
-            setIsLoading(true)
+    // Sync state with URL
+    useEffect(() => {
+        const urlCategory = searchParams.get('category') as any;
+        if (urlCategory && ['popular', 'topRated'].includes(urlCategory) && urlCategory !== activeCategory) {
+            setActiveCategory(urlCategory);
         }
+    }, [searchParams]);
 
-        try {
-            const response = await fetch(`/api/tv?category=${category}&page=${pageNum}`)
-            const data = await response.json()
+    // Update URL when category changes
+    const handleCategoryChange = (key: 'popular' | 'topRated') => {
+        setActiveCategory(key);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('category', key);
+        router.push(pathname + '?' + params.toString(), { scroll: false });
+    };
 
-            if (data && data.results) {
-                const resultsWithFullPaths = data.results.map((show: any) => ({
-                    ...show,
-                    title: show.name, // TMDB uses 'name' for TV shows
-                    poster: show.poster_path ? `${TMDB_IMAGE_BASE}${show.poster_path}` : null,
-                    release_date: show.first_air_date, // TMDB uses 'first_air_date' for TV shows
-                }))
-
-                if (isLoadMore) {
-                    setTvData(prev => [...prev, ...resultsWithFullPaths])
-                } else {
-                    setTvData(resultsWithFullPaths)
-                }
-
-                setHasMore(data.page < data.total_pages)
-            }
-        } catch (error) {
-            console.error("Error fetching TV series:", error)
-        } finally {
-            setIsLoading(false)
-            setIsLoadingMore(false)
-        }
-    }
+    // Persist to localStorage
+    useEffect(() => {
+        localStorage.setItem('seriesCategory', activeCategory)
+    }, [activeCategory]);
 
     useEffect(() => {
-        setPage(1)
-        fetchTvSeries(activeCategory, 1)
-    }, [activeCategory])
-
-    const handleLoadMore = () => {
-        if (isLoadingMore || !hasMore || isLoading) return
-        const nextPage = page + 1
-        setPage(nextPage)
-        fetchTvSeries(activeCategory, nextPage, true)
-    }
+        localStorage.setItem('seriesViewMode', viewMode)
+    }, [viewMode]);
 
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             const target = entries[0]
-            if (target.isIntersecting && hasMore && !isLoadingMore && !isLoading) {
-                handleLoadMore()
+            if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+                fetchNextPage()
             }
         }, {
             threshold: 0.1,
@@ -93,7 +126,7 @@ export default function TvSeriesPage() {
                 observer.unobserve(loaderRef.current)
             }
         }
-    }, [hasMore, isLoadingMore, isLoading, page])
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
 
     return (
@@ -106,7 +139,7 @@ export default function TvSeriesPage() {
                         {categories.map(({ key, label }) => (
                             <button
                                 key={key}
-                                onClick={() => setActiveCategory(key as typeof activeCategory)}
+                                onClick={() => handleCategoryChange(key as any)}
                                 className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
                                     ${activeCategory === key
                                         ? 'bg-white text-black shadow-lg shadow-white/10'
@@ -136,7 +169,7 @@ export default function TvSeriesPage() {
                     </div>
                 </div>
 
-                {isLoading ? (
+                {status === 'pending' ? (
                     <div className="flex flex-col items-center justify-center py-40">
                         <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
                     </div>
@@ -157,19 +190,15 @@ export default function TvSeriesPage() {
                                         className="group relative flex flex-col gap-2 sm:gap-3 cursor-pointer"
                                     >
                                         <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
-                                            {show.poster ? (
-                                                <img
-                                                    src={show.poster}
-                                                    alt={show.name}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-500 text-xs">No Poster</div>
-                                            )}
-                                            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 w-6 sm:w-7 h-6 sm:h-7 rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[10px] sm:text-xs font-bold text-white border border-white/20">
+                                            <MoviePoster 
+                                                src={show.poster} 
+                                                alt={show.name} 
+                                                className="group-hover:scale-110 transition-transform duration-700 ease-out"
+                                            />
+                                            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 w-6 sm:w-7 h-6 sm:h-7 rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[10px] sm:text-xs font-bold text-white border border-white/20 z-20">
                                                 {idx + 1}
                                             </div>
-                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 z-20">
                                                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/30 scale-90 group-hover:scale-100 transition-transform duration-300">
                                                     <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-white ml-0.5" />
                                                 </div>
@@ -204,19 +233,15 @@ export default function TvSeriesPage() {
                                         className="group flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
                                     >
                                         <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
-                                            {show.poster ? (
-                                                <img
-                                                    src={show.poster}
-                                                    alt={show.name}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-500 text-xs">No Poster</div>
-                                            )}
-                                            <div className="absolute top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20">
+                                            <MoviePoster 
+                                                src={show.poster} 
+                                                alt={show.name} 
+                                                className="group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                            <div className="absolute top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20 z-20">
                                                 {idx + 1}
                                             </div>
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
                                                 <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-white ml-0.5" />
                                             </div>
                                         </div>
@@ -248,7 +273,7 @@ export default function TvSeriesPage() {
                         </div>
 
                         <div ref={loaderRef} className="flex justify-center py-10">
-                            {hasMore ? (
+                            {hasNextPage ? (
                                 <div className="flex flex-col items-center gap-3">
                                     <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
                                     <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">Loading...</span>
