@@ -4,33 +4,27 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Clock, Calendar, Play, User, Eye, ChevronRight } from 'lucide-react'
+import { Star, Calendar, Play, User, Eye, ChevronRight, List, Info } from 'lucide-react'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
-import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
+import { TvSeriesDetailProps } from '@/lib/tmdb/types/tmdb-types'
 
-
-export default function MovieDetail({ movie, credits, similarMovies }: MovieDetailProps) {
+export default function TvSeriesDetail({ series, credits, similarSeries }: TvSeriesDetailProps) {
 	const [isWatched, setIsWatched] = useState(false)
 	const [watchDate, setWatchDate] = useState(new Date().toISOString().split('T')[0])
 	const [personalRating, setPersonalRating] = useState(5)
 	const [note, setNote] = useState('')
 
-	const directors = credits.crew.filter((c) => c.job === 'Director')
-	const writers = credits.crew.filter((c) => c.job === 'Writer' || c.job === 'Screenplay')
-
-	const formatRuntime = (minutes: number) => {
-		const h = Math.floor(minutes / 60)
-		const m = minutes % 60
-		return `${h}h ${m}m`
-	}
+	// 'Creator' or 'Executive Producer' are commonly used for TV series representation
+	const directors = credits.crew.filter((c) => c.job === 'Creator' || c.job === 'Executive Producer')
+	const writers = credits.crew.filter((c) => c.job === 'Writer' || c.job === 'Screenplay' || c.job === 'Producer')
 
 	return (
 		<div className='flex-1 relative bg-black text-white min-h-screen'>
 			{/* Backdrop Section */}
 			<div className='absolute inset-0 h-[35vh] sm:h-[45vh] lg:h-[80vh] w-full overflow-hidden pointer-events-none'>
 				<Image
-					src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-					alt={movie.title}
+					src={`https://image.tmdb.org/t/p/original${series.backdrop_path}`}
+					alt={series.name || 'Backdrop'}
 					fill
 					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 					priority
@@ -49,42 +43,50 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 						animate={{ opacity: 1, x: 0 }}
 						className='space-y-6'
 					>
-						<h1 className='text-5xl sm:text-7xl font-bold leading-[0.9] drop-shadow-2xl text-mdnichrome'>{movie.title}</h1>
+						<h1 className='text-5xl sm:text-7xl font-bold leading-[0.9] drop-shadow-2xl text-mdnichrome'>{series.name}</h1>
 
 						<div className='flex flex-wrap items-center gap-4 text-sm sm:text-base font-semibold text-zinc-400'>
 							<div className='flex items-center gap-1.5 text-zinc-100'>
 								<Star className='w-4 h-4 fill-white' />
-								<span>{movie.vote_average.toFixed(1)}</span>
+								<span>{series.vote_average ? series.vote_average.toFixed(1) : 'N/A'}</span>
 							</div>
 							<span className='text-zinc-800'>|</span>
 							<div className='flex items-center gap-1.5 text-zinc-300'>
 								<Calendar className='w-4 h-4' />
-								<span>{movie.release_date.split('-').reverse().join('-')}</span>
+								<span>
+									{series.first_air_date ? series.first_air_date.split('-').reverse().join('-') : 'Unknown'}
+									{(series.status === 'Ended' || series.status === 'Canceled') && series.last_air_date ? ` — ${series.last_air_date.split('-').reverse().join('-')}` : ''}
+								</span>
 							</div>
 							<span className='text-zinc-800'>|</span>
 							<div className='flex items-center gap-1.5 text-zinc-300'>
-								<Clock className='w-4 h-4' />
-								<span>{formatRuntime(movie.runtime)}</span>
+								<List className='w-4 h-4' />
+								<span>{series.number_of_seasons} Season{series.number_of_seasons !== 1 ? 's' : ''} • {series.number_of_episodes} Episode{series.number_of_episodes !== 1 ? 's' : ''}</span>
+							</div>
+							<span className='text-zinc-800'>|</span>
+							<div className='flex items-center gap-1.5 text-zinc-300'>
+								<Info className='w-4 h-4' />
+								<span>{series.status}</span>
 							</div>
 						</div>
 
 						{/* Genres */}
 						<div className='flex flex-wrap gap-2'>
-							{movie.genres.map((g) => (
+							{series.genres?.map((g) => (
 								<span key={g.id} className='px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md text-zinc-400'>
 									{g.name}
 								</span>
 							))}
 						</div>
 
-						{movie.tagline && (
+						{series.tagline && (
 							<p className='text-xl italic text-zinc-500 font-medium'>
-								"{movie.tagline}"
+								"{series.tagline}"
 							</p>
 						)}
 
 						<p className='text-zinc-300 leading-relaxed text-lg max-w-2xl font-medium'>
-							{movie.overview}
+							{series.overview}
 						</p>
 					</motion.div>
 
@@ -99,7 +101,7 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 							{isWatched ? 'Watched' : 'Mark as Watched'}
 						</button>
 
-						<LibraryControlsButtons movieId={movie.id} size="md" hideWatched={true} />
+						<LibraryControlsButtons movieId={series.id} size="md" hideWatched={true} />
 					</div>
 
 					{/* Watched Panel (Date & Rating) */}
@@ -150,19 +152,27 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 					<div className='grid grid-cols-1 sm:grid-cols-2 gap-12 mt-4'>
 						{directors.length > 0 && (
 							<div>
-								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Directors</h3>
+								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Creators / Exec Producers</h3>
 								<div className='flex flex-wrap gap-x-6 gap-y-3'>
-									{directors.map((d) => (
-										<button key={d.id} className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
-											{d.name}
-										</button>
-									))}
+									{directors
+										.filter((d, index, self) =>
+											index === self.findIndex((t) => t.id === d.id)
+										)
+										.map((d) => (
+											<button
+												key={d.id}
+												className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'
+											>
+												{d.name}
+											</button>
+										))
+									}
 								</div>
 							</div>
 						)}
 						{writers.length > 0 && (
 							<div>
-								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Writers</h3>
+								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Writers / Producers</h3>
 								<div className='flex flex-wrap gap-x-6 gap-y-3'>
 									{writers.map((w) => (
 										<button key={w.id} className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
@@ -223,7 +233,7 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 							<div className='bg-white/2 border border-white/5 rounded-3xl p-8 sm:p-10 shadow-3xl'>
 								<label className='text-[10px] font-black uppercase tracking-[0.4em] text-zinc-700 mb-6 block'>Your Personal Notes</label>
 								<textarea
-									placeholder='Write your thoughts about the movie here...'
+									placeholder='Write your thoughts about the TV series here...'
 									value={note}
 									onChange={(e) => setNote(e.target.value)}
 									className='w-full bg-transparent text-xl sm:text-2xl font-medium text-zinc-300 outline-none border-none resize-none min-h-[200px] placeholder:text-zinc-800'
@@ -233,7 +243,7 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 					)}
 				</AnimatePresence>
 
-				{/* Similar Movies */}
+				{/* Similar Series */}
 				<section className='mt-32'>
 					<div className='flex justify-between items-end mb-10'>
 						<div>
@@ -242,13 +252,13 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 						</div>
 					</div>
 					<div className='flex gap-8 overflow-x-auto pb-10 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
-						{similarMovies.slice(0, 15).map((m) => (
-							<Link key={m.id} href={`/movies/${m.id}`} className='w-48 shrink-0 group'>
+						{similarSeries.slice(0, 15).map((m: any) => (
+							<Link key={m.id} href={`/tvseries/${m.id}`} className='w-48 shrink-0 group'>
 								<div className='relative aspect-2/3 rounded-2xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
 									{m.poster_path ? (
 										<Image
 											src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
-											alt={m.title}
+											alt={m.name || 'Poster'}
 											fill
 											sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 											className='object-cover group-hover:scale-110 transition-transform duration-700 ease-out'
@@ -262,14 +272,14 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 										</div>
 									</div>
 								</div>
-								<h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{m.title}</h4>
+								<h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{m.name}</h4>
 								<div className='flex items-center gap-3 mt-1.5'>
 									<div className='flex items-center gap-1.5'>
 										<Star className='w-3 h-3 fill-white text-white' />
-										<span className='text-[10px] font-black text-zinc-100'>{m.vote_average.toFixed(1)}</span>
+										<span className='text-[10px] font-black text-zinc-100'>{m.vote_average ? m.vote_average.toFixed(1) : 'N/A'}</span>
 									</div>
 									<span className='text-zinc-800 font-bold'>|</span>
-									<span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{m.release_date?.slice(0, 4)}</span>
+									<span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{m.first_air_date?.slice(0, 4) || 'Unknown'}</span>
 								</div>
 							</Link>
 						))}

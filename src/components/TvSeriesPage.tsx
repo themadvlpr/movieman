@@ -10,32 +10,7 @@ const categories = [
     { key: 'topRated', label: 'Top Rated' },
 ]
 
-const tvGenres = [
-    "All", "Action & Adventure", "Animation", "Comedy", "Crime", "Documentary", "Drama", "Family", "Mystery", "Sci-Fi & Fantasy"
-]
 
-const tvGenreMap: Record<string, number> = {
-    "Action & Adventure": 10759,
-    "Animation": 16,
-    "Comedy": 35,
-    "Crime": 80,
-    "Documentary": 99,
-    "Drama": 18,
-    "Family": 10751,
-    "Kids": 10762,
-    "Mystery": 9648,
-    "News": 10763,
-    "Reality": 10764,
-    "Sci-Fi & Fantasy": 10765,
-    "Soap": 10766,
-    "Talk": 10767,
-    "War & Politics": 10768,
-    "Western": 37
-}
-
-const years = [
-    "All", "2026", "2025", "2024", "2023", "2022", "2021", "2020", "2010s", "2000s"
-]
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
@@ -120,29 +95,6 @@ export default function TvSeriesPage() {
         }
     }, [hasMore, isLoadingMore, isLoading, page])
 
-    const filteredTvSeries = useMemo(() => {
-        if (!tvData) return [];
-        return tvData.filter(show => {
-            let matchesGenre = selectedGenre === "All";
-            if (selectedGenre !== "All") {
-                const genreId = tvGenreMap[selectedGenre];
-                matchesGenre = show.genre_ids?.includes(genreId);
-            }
-
-            const releaseYear = show.release_date?.slice(0, 4);
-            let matchesYear = selectedYear === "All";
-
-            if (selectedYear === "2010s") {
-                matchesYear = (Number(releaseYear) >= 2010 && Number(releaseYear) <= 2019);
-            } else if (selectedYear === "2000s") {
-                matchesYear = (Number(releaseYear) >= 2000 && Number(releaseYear) <= 2009);
-            } else if (selectedYear !== "All") {
-                matchesYear = releaseYear === selectedYear;
-            }
-
-            return matchesGenre && matchesYear;
-        });
-    }, [tvData, selectedGenre, selectedYear]);
 
     return (
         <div className="pt-20 min-h-screen">
@@ -188,7 +140,7 @@ export default function TvSeriesPage() {
                     <div className="flex flex-col items-center justify-center py-40">
                         <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
                     </div>
-                ) : filteredTvSeries.length > 0 ? (
+                ) : tvData.length > 0 ? (
                     <div className="flex flex-col gap-10">
                         <div
                             key={`${activeCategory}-${viewMode}-${selectedGenre}-${selectedYear}`}
@@ -197,11 +149,11 @@ export default function TvSeriesPage() {
                                 : "flex flex-col gap-3 sm:gap-4"}
                             style={{ animation: 'fadeInUp 0.4s ease-out' }}
                         >
-                            {filteredTvSeries.map((show, idx) => (
+                            {tvData.map((show, idx) => (
                                 viewMode === 'grid' ? (
                                     <Link
                                         key={`${show.id}-${idx}`}
-                                        href={`/tv/${show.id}`}
+                                        href={`/tvseries/${show.id}`}
                                         className="group relative flex flex-col gap-2 sm:gap-3 cursor-pointer"
                                     >
                                         <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
@@ -248,7 +200,7 @@ export default function TvSeriesPage() {
                                 ) : (
                                     <Link
                                         key={`${show.id}-${idx}`}
-                                        href={`/tv/${show.id}`}
+                                        href={`/tvseries/${show.id}`}
                                         className="group flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
                                     >
                                         <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
@@ -301,7 +253,7 @@ export default function TvSeriesPage() {
                                     <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
                                     <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">Loading...</span>
                                 </div>
-                            ) : filteredTvSeries.length > 0 ? (
+                            ) : tvData.length > 0 ? (
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="h-px w-20 bg-white/10" />
                                     <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">End of list</span>

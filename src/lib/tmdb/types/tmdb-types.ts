@@ -60,3 +60,27 @@ export interface MovieDetailProps {
     credits: { cast: Cast[]; crew: Crew[] }
     similarMovies: any[]
 }
+
+export interface TvSeries {
+    id: number;
+    backdrop_path: string;
+    first_air_date: string;
+    last_air_date?: string;
+    genres: { id: number; name: string }[];
+    name: string;
+    overview: string;
+    popularity: number;
+    poster_path: string;
+    vote_average: number;
+    vote_count: number;
+    tagline?: string;
+    number_of_seasons: number;
+    number_of_episodes: number;
+    status: string;
+}
+
+export interface TvSeriesDetailProps {
+    series: TvSeries
+    credits: { cast: Cast[]; crew: Crew[] }
+    similarSeries: any[]
+}
