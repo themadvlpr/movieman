@@ -14,6 +14,7 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 	const [watchDate, setWatchDate] = useState(new Date().toISOString().split('T')[0])
 	const [personalRating, setPersonalRating] = useState(5)
 	const [note, setNote] = useState('')
+	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
 
 	const directors = credits.crew.filter((c) => c.job === 'Director')
 	const writers = credits.crew.filter((c) => c.job === 'Writer' || c.job === 'Screenplay')
@@ -83,9 +84,23 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 							</p>
 						)}
 
-						<p className='text-zinc-300 leading-relaxed text-lg max-w-2xl font-medium'>
-							{movie.overview}
-						</p>
+						<motion.div layout className="max-w-2xl">
+							<motion.p
+								layout
+								className={`text-zinc-300 leading-relaxed text-lg font-medium ${!isOverviewExpanded ? 'line-clamp-4' : ''}`}
+							>
+								{movie.overview}
+							</motion.p>
+							{movie.overview && movie.overview.length > 280 && (
+								<motion.button
+									layout
+									onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+									className='text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors text-left w-fit mt-2 cursor-pointer'
+								>
+									{isOverviewExpanded ? 'Show Less' : 'Read More'}
+								</motion.button>
+							)}
+						</motion.div>
 					</motion.div>
 
 					{/* Action Buttons */}
@@ -186,8 +201,8 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 						</div>
 					</div>
 					<div className='flex gap-8 overflow-x-auto pb-10 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
-						{credits.cast.slice(0, 15).map((actor) => (
-							<div key={actor.id} className='w-44 shrink-0 group'>
+						{credits.cast.map((actor) => (
+							<Link key={actor.id} href={`/person/${actor.id}`} className='w-44 shrink-0 group block'>
 								<div className='relative aspect-4/5 cursor-pointer rounded-xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
 									{actor.profile_path ? (
 										<Image
@@ -206,7 +221,7 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 								</div>
 								<h4 className='font-bold text-white group-hover:text-white transition-colors truncate'>{actor.name}</h4>
 								<p className='text-[10px] text-zinc-600 font-bold uppercase tracking-wider truncate mt-1'>{actor.character}</p>
-							</div>
+							</Link>
 						))}
 					</div>
 				</section>

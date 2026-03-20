@@ -13,10 +13,16 @@ export default function TvSeriesDetail({ series, credits, similarSeries }: TvSer
 	const [watchDate, setWatchDate] = useState(new Date().toISOString().split('T')[0])
 	const [personalRating, setPersonalRating] = useState(5)
 	const [note, setNote] = useState('')
+	const [isCreatorsExpanded, setIsCreatorsExpanded] = useState(false)
+	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
 
-	// 'Creator' or 'Executive Producer' are commonly used for TV series representation
-	const directors = credits.crew.filter((c) => c.job === 'Creator' || c.job === 'Executive Producer')
-	const writers = credits.crew.filter((c) => c.job === 'Writer' || c.job === 'Screenplay' || c.job === 'Producer')
+	console.log(credits);
+
+
+	const directors = series.created_by && series.created_by.length > 0
+		? series.created_by
+		: credits.crew.filter((c: any) => c.jobs ? c.jobs.some((j: any) => j.job === 'Creator' || j.job === 'Executive Producer') : (c.job === 'Creator' || c.job === 'Executive Producer'))
+
 
 	return (
 		<div className='flex-1 relative bg-black text-white min-h-screen'>
@@ -85,9 +91,23 @@ export default function TvSeriesDetail({ series, credits, similarSeries }: TvSer
 							</p>
 						)}
 
-						<p className='text-zinc-300 leading-relaxed text-lg max-w-2xl font-medium'>
-							{series.overview}
-						</p>
+						<motion.div layout className="max-w-2xl">
+							<motion.p
+								layout
+								className={`text-zinc-300 leading-relaxed text-lg font-medium ${!isOverviewExpanded ? 'line-clamp-4' : ''}`}
+							>
+								{series.overview}
+							</motion.p>
+							{series.overview && series.overview.length > 280 && (
+								<motion.button
+									layout
+									onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+									className='text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors text-left w-fit mt-2 cursor-pointer'
+								>
+									{isOverviewExpanded ? 'Show Less' : 'Read More'}
+								</motion.button>
+							)}
+						</motion.div>
 					</motion.div>
 
 					{/* Action Buttons */}
@@ -150,38 +170,44 @@ export default function TvSeriesDetail({ series, credits, similarSeries }: TvSer
 
 					{/* Credits Summary */}
 					<div className='grid grid-cols-1 sm:grid-cols-2 gap-12 mt-4'>
-						{directors.length > 0 && (
-							<div>
-								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Creators / Exec Producers</h3>
-								<div className='flex flex-wrap gap-x-6 gap-y-3'>
-									{directors
-										.filter((d, index, self) =>
-											index === self.findIndex((t) => t.id === d.id)
-										)
-										.map((d) => (
-											<button
-												key={d.id}
-												className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'
+						{directors.length > 0 && (() => {
+							const uniqueDirectors = directors.filter((d, index, self) => index === self.findIndex((t) => t.id === d.id))
+							const displayedDirectors = isCreatorsExpanded ? uniqueDirectors : uniqueDirectors.slice(0, 3)
+
+							return (
+								<div>
+									<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Creators / Exec Producers</h3>
+									<motion.div layout className='flex flex-col gap-3'>
+										<motion.div layout className='flex flex-wrap gap-x-6 gap-y-3'>
+											<AnimatePresence mode='popLayout'>
+												{displayedDirectors.map((d) => (
+													<motion.button
+														layout
+														initial={{ opacity: 0, scale: 0.9 }}
+														animate={{ opacity: 1, scale: 1 }}
+														exit={{ opacity: 0, scale: 0.9 }}
+														transition={{ duration: 0.2 }}
+														key={d.id}
+														className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300 origin-left'
+													>
+														{d.name}
+													</motion.button>
+												))}
+											</AnimatePresence>
+										</motion.div>
+										{uniqueDirectors.length > 3 && (
+											<motion.button
+												layout
+												onClick={() => setIsCreatorsExpanded(!isCreatorsExpanded)}
+												className='text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors text-left w-fit mt-1 cursor-pointer'
 											>
-												{d.name}
-											</button>
-										))
-									}
+												{isCreatorsExpanded ? 'Show Less' : `+ ${uniqueDirectors.length - 3} More`}
+											</motion.button>
+										)}
+									</motion.div>
 								</div>
-							</div>
-						)}
-						{writers.length > 0 && (
-							<div>
-								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Writers / Producers</h3>
-								<div className='flex flex-wrap gap-x-6 gap-y-3'>
-									{writers.map((w) => (
-										<button key={w.id} className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
-											{w.name}
-										</button>
-									))}
-								</div>
-							</div>
-						)}
+							)
+						})()}
 					</div>
 				</div>
 
@@ -196,8 +222,8 @@ export default function TvSeriesDetail({ series, credits, similarSeries }: TvSer
 						</div>
 					</div>
 					<div className='flex gap-8 overflow-x-auto pb-10 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
-						{credits.cast.slice(0, 15).map((actor) => (
-							<div key={actor.id} className='w-44 shrink-0 group'>
+						{credits.cast.map((actor) => (
+							<Link key={actor.id} href={`/person/${actor.id}`} className='w-44 shrink-0 group block'>
 								<div className='relative aspect-4/5 cursor-pointer rounded-xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
 									{actor.profile_path ? (
 										<Image
@@ -215,8 +241,10 @@ export default function TvSeriesDetail({ series, credits, similarSeries }: TvSer
 									<div className='absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60' />
 								</div>
 								<h4 className='font-bold text-white group-hover:text-white transition-colors truncate'>{actor.name}</h4>
-								<p className='text-[10px] text-zinc-600 font-bold uppercase tracking-wider truncate mt-1'>{actor.character}</p>
-							</div>
+								<p className='text-[10px] text-zinc-600 font-bold uppercase tracking-wider truncate mt-1'>
+									{(actor as any).roles ? (actor as any).roles[0]?.character : actor.character}
+								</p>
+							</Link>
 						))}
 					</div>
 				</section>

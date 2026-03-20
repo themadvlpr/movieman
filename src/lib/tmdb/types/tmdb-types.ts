@@ -66,6 +66,11 @@ export interface TvSeries {
     backdrop_path: string;
     first_air_date: string;
     last_air_date?: string;
+    created_by?: {
+        id: number;
+        name: string;
+        profile_path: string | null;
+    }[];
     genres: { id: number; name: string }[];
     name: string;
     overview: string;
@@ -83,4 +88,49 @@ export interface TvSeriesDetailProps {
     series: TvSeries
     credits: { cast: Cast[]; crew: Crew[] }
     similarSeries: any[]
+}
+
+export interface Person {
+    id: number;
+    name: string;
+    biography: string;
+    birthday: string | null;
+    deathday: string | null;
+    gender: number;
+    known_for_department: string;
+    place_of_birth: string | null;
+    profile_path: string | null;
+    popularity: number;
+}
+
+export interface PersonCredits {
+    cast: {
+        id: number;
+        title?: string;
+        name?: string;
+        character: string;
+        poster_path: string | null;
+        release_date?: string;
+        first_air_date?: string;
+        vote_average: number;
+        vote_count: number;
+    }[];
+    crew: {
+        id: number;
+        title?: string;
+        name?: string;
+        job: string;
+        department: string;
+        poster_path: string | null;
+        release_date?: string;
+        first_air_date?: string;
+        vote_average: number;
+        vote_count: number;
+    }[];
+}
+
+export interface PersonDetailProps {
+    person: Person;
+    movieCredits: PersonCredits;
+    tvCredits: PersonCredits;
 }
