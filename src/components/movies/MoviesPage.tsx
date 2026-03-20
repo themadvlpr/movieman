@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { Play, Grid, List, Filter, Star } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
+import { useInfiniteQuery } from "@tanstack/react-query"
 
 const categories = [
     { key: 'popular', label: 'Popular' },
@@ -16,81 +17,55 @@ const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 export default function MoviesPage() {
     const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'upcoming'>('popular')
-    const [moviesData, setMoviesData] = useState<any[]>([])
-    const [page, setPage] = useState(1)
-    const [isLoading, setIsLoading] = useState(true)
-    const [isLoadingMore, setIsLoadingMore] = useState(false)
-    const [hasMore, setHasMore] = useState(true)
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedGenre, setSelectedGenre] = useState('All')
     const [selectedYear, setSelectedYear] = useState('All')
     const loaderRef = useRef<HTMLDivElement>(null)
 
-    const fetchMovies = async (category: string, pageNum: number, isLoadMore: boolean = false) => {
-        if (isLoadMore) {
-            setIsLoadingMore(true)
-        } else {
-            setIsLoading(true)
-        }
-
-        try {
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        status,
+    } = useInfiniteQuery({
+        queryKey: ['movies-list', activeCategory],
+        queryFn: async ({ pageParam = 1 }) => {
             const timestamp = new Date().getTime(); // Additional cache buster
-            const response = await fetch(`/api/movies?category=${category}&page=${pageNum}&t=${timestamp}`, {
+            const response = await fetch(`/api/movies?category=${activeCategory}&page=${pageParam}&t=${timestamp}`, {
                 cache: 'no-store',
                 next: { revalidate: 0 }
             });
-            const data = await response.json();
+            if (!response.ok) throw new Error('Network response was not ok');
+            const result = await response.json();
 
-            if (data && data.results) {
+            const resultsWithFullPaths = result.results?.map((movie: any) => ({
+                ...movie,
+                poster: movie.poster_path ? `${TMDB_IMAGE_BASE}${movie.poster_path}` : null,
+            })) || [];
 
-                const resultsWithFullPaths = data.results.map((movie: any) => ({
-                    ...movie,
-                    poster: movie.poster_path ? `${TMDB_IMAGE_BASE}${movie.poster_path}` : null,
-                }));
-
-                if (isLoadMore) {
-                    setMoviesData(prev => [...prev, ...resultsWithFullPaths]);
-                } else {
-                    setMoviesData(resultsWithFullPaths);
-                }
-
-                setHasMore(data.page < data.total_pages);
+            return {
+                ...result,
+                results: resultsWithFullPaths
+            };
+        },
+        getNextPageParam: (lastPage) => {
+            if (lastPage.page < lastPage.total_pages) {
+                return lastPage.page + 1;
             }
-        } catch (error) {
-            console.error("Error fetching movies:", error)
-        } finally {
-            setIsLoading(false)
-            setIsLoadingMore(false)
-        }
-    }
+            return undefined;
+        },
+        initialPageParam: 1,
+    });
 
-
-    // Effect for initial load and category change
-    useEffect(() => {
-        setHasMore(false);
-
-        setMoviesData([]);
-        setPage(1);
-
-        fetchMovies(activeCategory, 1, false);
-    }, [activeCategory]);
-
-    const handleLoadMore = () => {
-        console.log("Я выполняюсь!");
-
-        if (isLoading || isLoadingMore || !hasMore || moviesData.length === 0) return;
-
-        const nextPage = page + 1;
-        setPage(nextPage);
-        fetchMovies(activeCategory, nextPage, true);
-    };
+    const moviesData = data?.pages.flatMap((page) => page.results) || [];
 
     // Intersection Observer for infinite scroll
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             const target = entries[0]
-            if (target.isIntersecting && hasMore && !isLoadingMore && !isLoading && moviesData.length > 0) {
-                handleLoadMore()
+            if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+                fetchNextPage()
             }
         }, {
             threshold: 0.1,
@@ -106,7 +81,7 @@ export default function MoviesPage() {
                 observer.unobserve(loaderRef.current)
             }
         }
-    }, [hasMore, isLoadingMore, isLoading, page, activeCategory, moviesData.length])
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
 
     return (
@@ -156,7 +131,7 @@ export default function MoviesPage() {
 
 
                 {/* ─── MOVIE CONTENT ─── */}
-                {isLoading ? (
+                {status === 'pending' ? (
                     <div className="flex flex-col items-center justify-center py-40">
                         <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
                     </div>
@@ -269,7 +244,7 @@ export default function MoviesPage() {
 
                         {/* Infinite Scroll Sentinel */}
                         <div ref={loaderRef} className="flex justify-center py-10">
-                            {hasMore ? (
+                            {hasNextPage ? (
                                 <div className="flex flex-col items-center gap-3">
                                     <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
                                     <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">Loading...</span>
