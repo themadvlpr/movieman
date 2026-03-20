@@ -1,4 +1,4 @@
-import TvSeriesPage from "@/components/TvSeriesPage"
+import TvSeriesPage from "@/components/tvseries/TvSeriesPage"
 
 export const metadata = {
     title: "TV Series | MovieMan",

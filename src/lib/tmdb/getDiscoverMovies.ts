@@ -1,3 +1,5 @@
+"use server";
+
 import { tmdbFetch, CacheConfig } from "@/lib/tmdb/tmdb-api";
 
 export async function getDiscoverMovies(genre: string, page = "1") {

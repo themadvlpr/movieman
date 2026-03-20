@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { Play, Grid, List, Filter, Calendar, ChevronDown, Star } from "lucide-react"
+import { Play, Grid, List, Filter, Star } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 
 const categories = [
@@ -42,19 +42,6 @@ export default function MoviesPage() {
             const data = await response.json();
 
             if (data && data.results) {
-
-                // if (category.toLowerCase() === 'upcoming') {
-                //     const today = new Date();
-                //     today.setHours(0, 0, 0, 0);
-
-                //     finalResults = data.results.filter((movie: any) => {
-                //         if (!movie.release_date) return false;
-                //         const releaseDate = new Date(movie.release_date);
-                //         // console.log(`Фильм: ${movie.title}, Дата: ${movie.release_date}, Будущий: ${releaseDate > today}`);
-                //         return releaseDate > today;
-                //     });
-                // }
-
 
                 const resultsWithFullPaths = data.results.map((movie: any) => ({
                     ...movie,

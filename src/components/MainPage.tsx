@@ -7,66 +7,31 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, Check } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
-import { Movie, genresById } from "@/lib/tmdb/types/tmdb-types"
+import { genresById } from "@/lib/tmdb/types/tmdb-types"
 import Cookies from "js-cookie"
+import { useQuery } from "@tanstack/react-query"
+import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies"
 
 
 
-export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) {
+export default function MainPage({ initialGenreId }: { initialGenreId: number }) {
+    const [selectedGenreId, setSelectedGenreId] = useState<number>(initialGenreId);
+
+    const { data } = useQuery({
+        queryKey: ['discovermovies', selectedGenreId],
+        queryFn: () => getDiscoverMovies(selectedGenreId.toString()),
+    })
+
+    const movies = data?.results || []
     const [currentPage, setCurrentPage] = useState(0)
-    const [movies, setMovies] = useState<Movie[] | null>(initialMovies);
-    const [loading, setLoading] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
-    const [selectedGenreId, setSelectedGenreId] = useState<number>(() => {
-        const saved = Cookies.get('selectedGenreId');
-        return saved ? Number(saved) : 28;
-    }); const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    useEffect(() => {
-        const savedGenre = Cookies.get('selectedGenreId');
-        if (savedGenre) {
-            setSelectedGenreId(Number(savedGenre));
-        }
-    }, []);
-
-    useEffect(() => {
-        if (!isFirstRender.current) {
-            Cookies.set('selectedGenreId', selectedGenreId.toString(), { expires: 7 });
-        }
-    }, [selectedGenreId]);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     // Reset image loading state when movie changes
     useEffect(() => {
         setImageLoading(true);
     }, [currentPage]);
-
-    const isFirstRender = useRef(true);
-
-    useEffect(() => {
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
-        }
-
-        async function fetchMovies() {
-            setLoading(true);
-            try {
-                const response = await fetch(`/api/getMovieDiscover?genre=${selectedGenreId}&page=1`);
-                const fetchedData = await response.json();
-
-                if (fetchedData.results) {
-                    setMovies(fetchedData.results);
-                    setCurrentPage(0);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchMovies();
-    }, [selectedGenreId]);
 
     useEffect(() => {
         if (!movies || movies.length === 0) return;
@@ -81,7 +46,7 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
     };
 
 
-    if (loading || !movies || movies.length === 0) {
+    if (!movies || movies.length === 0) {
         return (
             <div className="h-screen bg-[#050509] flex flex-col items-center justify-center gap-6 overflow-hidden relative">
                 <div className="absolute inset-0 bg-linear-to-b from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none" />
@@ -262,6 +227,7 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
                                             key={id}
                                             onClick={() => {
                                                 setSelectedGenreId(Number(id));
+                                                Cookies.set('selectedGenreId', id, { expires: 7 });
                                                 setIsDropdownOpen(false);
                                             }}
                                             className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
@@ -293,7 +259,7 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
 
                         {/* Divider for Desktop */}
                         <div className="hidden sm:block w-px h-6 bg-white/20 order-2"></div>
-                        
+
                         {/* Genre Dropdown - Mobile */}
                         <div className="relative flex sm:hidden order-2 flex-1 justify-center px-1">
                             <button
@@ -318,6 +284,7 @@ export default function MainPage({ initialMovies }: { initialMovies: Movie[] }) 
                                                 key={id}
                                                 onClick={() => {
                                                     setSelectedGenreId(Number(id));
+                                                    Cookies.set('selectedGenreId', id, { expires: 7 });
                                                     setIsDropdownOpen(false);
                                                 }}
                                                 className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"

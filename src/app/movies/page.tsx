@@ -1,4 +1,4 @@
-import MoviesPage from "@/components/MoviesPage";
+import MoviesPage from "@/components/movies/MoviesPage";
 
 
 export const metadata = {

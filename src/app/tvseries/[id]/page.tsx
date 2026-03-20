@@ -2,7 +2,7 @@ import { tmdbFetch, CacheConfig } from "@/lib/tmdb/tmdb-api";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getTVDetails } from "@/lib/tmdb/getTvSeriesDetails";
-import TvSeriesDetail from "@/components/TvSeriesDetail";
+import TvSeriesDetail from "@/components/tvseries/TvSeriesDetail";
 
 interface TvSeriesPageProps {
     params: Promise<{ id: string }>;
