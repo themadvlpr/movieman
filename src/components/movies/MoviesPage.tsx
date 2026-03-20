@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Play, Grid, List, Filter, Star } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 import { useInfiniteQuery } from "@tanstack/react-query"
+import Cookies from "js-cookie"
 
 const categories = [
     { key: 'popular', label: 'Popular' },
@@ -15,9 +16,53 @@ const categories = [
 // Image base URL for TMDB
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
+import { AnimatePresence, motion } from "framer-motion"
+
+function MoviePoster({ src, alt, className }: { src: string | null, alt: string, className?: string }) {
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    return (
+        <div className={`relative w-full h-full bg-zinc-900 overflow-hidden ${className}`}>
+            <AnimatePresence>
+                {!isLoaded && (
+                    <motion.div
+                        initial={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-10 bg-zinc-800"
+                    >
+                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {src ? (
+                <motion.img
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isLoaded ? 1 : 0 }}
+                    transition={{ duration: 0.4 }}
+                    src={src}
+                    alt={alt}
+                    onLoad={() => setIsLoaded(true)}
+                    className="w-full h-full object-cover"
+                />
+            ) : (
+                <div className="w-full h-full flex items-center justify-center text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                    No Poster
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function MoviesPage() {
-    const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'upcoming'>('popular')
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+    const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'upcoming'>(() => {
+        const savedCategory = localStorage.getItem('moviesCategory') as 'popular' | 'topRated' | 'upcoming'
+        return (['popular', 'topRated', 'upcoming'].includes(savedCategory)) ? savedCategory : 'popular';
+    })
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+        const savedView = localStorage.getItem('moviesViewMode') as 'grid' | 'list'
+        return (['grid', 'list'].includes(savedView)) ? savedView : 'grid';
+    })
     const [selectedGenre, setSelectedGenre] = useState('All')
     const [selectedYear, setSelectedYear] = useState('All')
     const loaderRef = useRef<HTMLDivElement>(null)
@@ -82,6 +127,15 @@ export default function MoviesPage() {
             }
         }
     }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+
+    // Persist preferences
+    useEffect(() => {
+        localStorage.setItem('moviesCategory', activeCategory)
+    }, [activeCategory]);
+
+    useEffect(() => {
+        localStorage.setItem('moviesViewMode', viewMode)
+    }, [viewMode]);
 
 
     return (
@@ -152,19 +206,15 @@ export default function MoviesPage() {
                                         className="group relative flex flex-col gap-2 sm:gap-3 cursor-pointer"
                                     >
                                         <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
-                                            {movie.poster ? (
-                                                <img
-                                                    src={movie.poster}
-                                                    alt={movie.title}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-500 text-xs">No Poster</div>
-                                            )}
-                                            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 w-6 sm:w-7 h-6 sm:h-7 rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[10px] sm:text-xs font-bold text-white border border-white/20">
+                                            <MoviePoster
+                                                src={movie.poster}
+                                                alt={movie.title}
+                                                className="group-hover:scale-110 transition-transform duration-700 ease-out"
+                                            />
+                                            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 w-6 sm:w-7 h-6 sm:h-7 rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[10px] sm:text-xs font-bold text-white border border-white/20 z-20">
                                                 {idx + 1}
                                             </div>
-                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 z-20">
                                                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/30 scale-90 group-hover:scale-100 transition-transform duration-300">
                                                     <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-white ml-0.5" />
                                                 </div>
@@ -199,19 +249,15 @@ export default function MoviesPage() {
                                         className="group flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
                                     >
                                         <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
-                                            {movie.poster ? (
-                                                <img
-                                                    src={movie.poster}
-                                                    alt={movie.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-500 text-xs">No Poster</div>
-                                            )}
-                                            <div className="absolute top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20">
+                                            <MoviePoster
+                                                src={movie.poster}
+                                                alt={movie.title}
+                                                className="group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                            <div className="absolute top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20 z-20">
                                                 {idx + 1}
                                             </div>
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
                                                 <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-white ml-0.5" />
                                             </div>
                                         </div>
