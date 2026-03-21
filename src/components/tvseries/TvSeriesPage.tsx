@@ -190,9 +190,9 @@ export default function TvSeriesPage() {
                                         className="group relative flex flex-col gap-2 sm:gap-3 cursor-pointer"
                                     >
                                         <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
-                                            <MoviePoster 
-                                                src={show.poster} 
-                                                alt={show.name} 
+                                            <MoviePoster
+                                                src={show.poster}
+                                                alt={show.name}
                                                 className="group-hover:scale-110 transition-transform duration-700 ease-out"
                                             />
                                             <div className="absolute top-2 sm:top-3 left-2 sm:left-3 w-6 sm:w-7 h-6 sm:h-7 rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[10px] sm:text-xs font-bold text-white border border-white/20 z-20">
@@ -213,15 +213,18 @@ export default function TvSeriesPage() {
                                                 {show.name}
                                             </p>
                                             <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
-                                                <div className="flex items-center gap-1">
-                                                    <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                                                    <span className="text-white text-[9px] sm:text-[10px] font-bold">
-                                                        {show.vote_average > 0 ? show.vote_average.toFixed(1) : "N/A"}
-                                                    </span>
-                                                </div>
-                                                <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">•</span>
+                                                {show.vote_average !== 0 && (
+                                                    <>
+                                                        <div className="flex items-center gap-1">
+                                                            <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                                                            <span className="text-white text-[9px] sm:text-[10px] font-bold">
+                                                                {show.vote_average.toFixed(1)}
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">•</span>
+                                                    </>)}
                                                 <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">
-                                                    {show.release_date?.slice(0, 4)}
+                                                    {show.release_date.split('-').reverse().join('-')}
                                                 </span>
                                             </div>
                                         </div>
@@ -233,9 +236,9 @@ export default function TvSeriesPage() {
                                         className="group flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
                                     >
                                         <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
-                                            <MoviePoster 
-                                                src={show.poster} 
-                                                alt={show.name} 
+                                            <MoviePoster
+                                                src={show.poster}
+                                                alt={show.name}
                                                 className="group-hover:scale-105 transition-transform duration-500"
                                             />
                                             <div className="absolute top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20 z-20">
@@ -253,7 +256,7 @@ export default function TvSeriesPage() {
                                                         <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
                                                         <span className="text-white text-[10px] sm:text-xs font-bold">{show.vote_average > 0 ? show.vote_average.toFixed(1) : "N/A"}</span>
                                                     </div>
-                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{show.release_date?.slice(0, 4)}</span>
+                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{show.release_date.split('-').reverse().join('-')}</span>
                                                 </div>
                                             </div>
                                             <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">

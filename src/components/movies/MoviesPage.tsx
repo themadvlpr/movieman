@@ -229,15 +229,18 @@ export default function MoviesPage() {
                                                 {movie.title}
                                             </p>
                                             <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
-                                                <div className="flex items-center gap-1">
-                                                    <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                                                    <span className="text-white text-[9px] sm:text-[10px] font-bold">
-                                                        {movie.vote_average > 0 ? movie.vote_average.toFixed(1) : "N/A"}
-                                                    </span>
-                                                </div>
-                                                <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">•</span>
+                                                {movie.vote_average !== 0 && (
+                                                    <>
+                                                        <div className="flex items-center gap-1">
+                                                            <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                                                            <span className="text-white text-[9px] sm:text-[10px] font-bold">
+                                                                {movie.vote_average.toFixed(1)}
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">•</span>
+                                                    </>)}
                                                 <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">
-                                                    {movie.release_date?.slice(0, 4)}
+                                                    {activeCategory === 'upcoming' ? movie.release_date.split('-').reverse().join('-') : movie.release_date.slice(0, 4)}
                                                 </span>
                                             </div>
                                         </div>
@@ -265,11 +268,13 @@ export default function MoviesPage() {
                                             <div>
                                                 <h3 className="text-white text-sm sm:text-xl font-bold group-hover:text-white transition-colors truncate">{movie.title}</h3>
                                                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 sm:mt-1.5">
-                                                    <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
-                                                        <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
-                                                        <span className="text-white text-[10px] sm:text-xs font-bold">{movie.vote_average > 0 ? movie.vote_average.toFixed(1) : "N/A"}</span>
-                                                    </div>
-                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{movie.release_date?.slice(0, 4)}</span>
+                                                    {movie.vote_average !== 0 && (
+                                                        <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
+                                                            <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
+                                                            <span className="text-white text-[10px] sm:text-xs font-bold">{movie.vote_average.toFixed(1)}</span>
+                                                        </div>
+                                                    )}
+                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{activeCategory === 'upcoming' ? movie.release_date.split('-').reverse().join('-') : movie.release_date.slice(0, 4)}</span>
                                                 </div>
                                             </div>
                                             <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">

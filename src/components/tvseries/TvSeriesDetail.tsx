@@ -7,16 +7,28 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Star, Calendar, Play, User, Eye, ChevronRight, List, Info } from 'lucide-react'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
 import { TvSeriesDetailProps } from '@/lib/tmdb/types/tmdb-types'
+import Loader from '../ui/Loader'
+import { useQuery } from '@tanstack/react-query'
+import { getTVDetails } from '@/lib/tmdb/getTvSeriesDetails'
 
-export default function TvSeriesDetail({ series, credits, similarSeries }: TvSeriesDetailProps) {
+
+export default function MovieDetail({ tvId }: { tvId: string }) {
+
+	const { data } = useQuery<TvSeriesDetailProps>({
+		queryKey: ['tv', tvId],
+		queryFn: () => getTVDetails(tvId),
+	})
+
+	if (!data) return <Loader />
+
+	const { series, credits, similarSeries } = data
+
 	const [isWatched, setIsWatched] = useState(false)
 	const [watchDate, setWatchDate] = useState(new Date().toISOString().split('T')[0])
 	const [personalRating, setPersonalRating] = useState(5)
 	const [note, setNote] = useState('')
 	const [isCreatorsExpanded, setIsCreatorsExpanded] = useState(false)
 	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
-
-	console.log(credits);
 
 
 	const directors = series.created_by && series.created_by.length > 0
@@ -52,11 +64,14 @@ export default function TvSeriesDetail({ series, credits, similarSeries }: TvSer
 						<h1 className='text-5xl sm:text-7xl font-bold leading-[0.9] drop-shadow-2xl text-mdnichrome'>{series.name}</h1>
 
 						<div className='flex flex-wrap items-center gap-4 text-sm sm:text-base font-semibold text-zinc-400'>
-							<div className='flex items-center gap-1.5 text-zinc-100'>
-								<Star className='w-4 h-4 fill-white' />
-								<span>{series.vote_average ? series.vote_average.toFixed(1) : 'N/A'}</span>
-							</div>
-							<span className='text-zinc-800'>|</span>
+							{series.vote_average !== 0 && (
+								<>
+									<div className='flex items-center gap-1.5 text-zinc-100'>
+										<Star className='w-4 h-4 fill-amber-400 text-amber-400' />
+										<span>{series.vote_average ? series.vote_average.toFixed(1) : 'N/A'}</span>
+									</div>
+									<span className='text-zinc-800'>|</span>
+								</>)}
 							<div className='flex items-center gap-1.5 text-zinc-300'>
 								<Calendar className='w-4 h-4' />
 								<span>
@@ -303,7 +318,7 @@ export default function TvSeriesDetail({ series, credits, similarSeries }: TvSer
 								<h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{m.name}</h4>
 								<div className='flex items-center gap-3 mt-1.5'>
 									<div className='flex items-center gap-1.5'>
-										<Star className='w-3 h-3 fill-white text-white' />
+										<Star className='w-3 h-3 fill-amber-400 text-amber-400' />
 										<span className='text-[10px] font-black text-zinc-100'>{m.vote_average ? m.vote_average.toFixed(1) : 'N/A'}</span>
 									</div>
 									<span className='text-zinc-800 font-bold'>|</span>

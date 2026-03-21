@@ -58,7 +58,7 @@ export interface Crew {
 export interface MovieDetailProps {
     movie: Movie
     credits: { cast: Cast[]; crew: Crew[] }
-    similarMovies: any[]
+    similarMovies: Movie[]
 }
 
 export interface TvSeries {

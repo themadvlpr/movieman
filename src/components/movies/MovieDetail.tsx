@@ -6,10 +6,23 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, Clock, Calendar, Play, User, Eye, ChevronRight } from 'lucide-react'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
+import { useQuery } from '@tanstack/react-query'
+import { getMovieDetails } from '@/lib/tmdb/getMovieDetails'
+import Loader from '../ui/Loader'
 import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 
 
-export default function MovieDetail({ movie, credits, similarMovies }: MovieDetailProps) {
+export default function MovieDetail({ movieId }: { movieId: string }) {
+
+	const { data } = useQuery<MovieDetailProps>({
+		queryKey: ['movie', movieId],
+		queryFn: () => getMovieDetails(movieId),
+	})
+
+	if (!data) return <Loader />
+
+	const { movie, credits, similarMovies } = data
+
 	const [isWatched, setIsWatched] = useState(false)
 	const [watchDate, setWatchDate] = useState(new Date().toISOString().split('T')[0])
 	const [personalRating, setPersonalRating] = useState(5)
@@ -53,20 +66,28 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 						<h1 className='text-5xl sm:text-7xl font-bold leading-[0.9] drop-shadow-2xl text-mdnichrome'>{movie.title}</h1>
 
 						<div className='flex flex-wrap items-center gap-4 text-sm sm:text-base font-semibold text-zinc-400'>
-							<div className='flex items-center gap-1.5 text-zinc-100'>
-								<Star className='w-4 h-4 fill-white' />
-								<span>{movie.vote_average.toFixed(1)}</span>
-							</div>
-							<span className='text-zinc-800'>|</span>
+							{movie.vote_average !== 0 && (
+								<>
+									<div className='flex items-center gap-1.5 text-zinc-100'>
+										<Star className='w-4 h-4 fill-amber-400 text-amber-400' />
+										<span>{movie.vote_average.toFixed(1)}</span>
+									</div>
+									<span className='text-zinc-800'>|</span>
+								</>
+							)}
 							<div className='flex items-center gap-1.5 text-zinc-300'>
 								<Calendar className='w-4 h-4' />
 								<span>{movie.release_date.split('-').reverse().join('-')}</span>
 							</div>
-							<span className='text-zinc-800'>|</span>
-							<div className='flex items-center gap-1.5 text-zinc-300'>
-								<Clock className='w-4 h-4' />
-								<span>{formatRuntime(movie.runtime)}</span>
-							</div>
+							{movie.runtime !== 0 && (
+								<>
+									<span className='text-zinc-800'>|</span>
+									<div className='flex items-center gap-1.5 text-zinc-300'>
+										<Clock className='w-4 h-4' />
+										<span>{formatRuntime(movie.runtime)}</span>
+									</div>
+								</>
+							)}
 						</div>
 
 						{/* Genres */}
@@ -280,7 +301,7 @@ export default function MovieDetail({ movie, credits, similarMovies }: MovieDeta
 								<h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{m.title}</h4>
 								<div className='flex items-center gap-3 mt-1.5'>
 									<div className='flex items-center gap-1.5'>
-										<Star className='w-3 h-3 fill-white text-white' />
+										<Star className='w-3 h-3 fill-amber-400 text-amber-400' />
 										<span className='text-[10px] font-black text-zinc-100'>{m.vote_average.toFixed(1)}</span>
 									</div>
 									<span className='text-zinc-800 font-bold'>|</span>
