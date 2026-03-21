@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Clock, Calendar, Play, User, Eye, ChevronRight } from 'lucide-react'
+import { Star, Clock, Calendar, Play, User, Eye, ChevronRight, Globe } from 'lucide-react'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
 import { useQuery } from '@tanstack/react-query'
 import { getMovieDetails } from '@/lib/tmdb/getMovieDetails'
@@ -79,6 +79,15 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 								<Calendar className='w-4 h-4' />
 								<span>{movie.release_date.split('-').reverse().join('-')}</span>
 							</div>
+							{movie.production_countries && movie.production_countries.length > 0 && (
+								<>
+									<span className='text-zinc-800'>|</span>
+									<div className='flex items-center gap-1.5 text-zinc-300'>
+										<Globe className='w-4 h-4' />
+										<span>{movie.production_countries.map(c => c.iso_3166_1).join(', ')}</span>
+									</div>
+								</>
+							)}
 							{movie.runtime !== 0 && (
 								<>
 									<span className='text-zinc-800'>|</span>
@@ -189,9 +198,9 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Directors</h3>
 								<div className='flex flex-wrap gap-x-6 gap-y-3'>
 									{directors.map((d) => (
-										<button key={d.id} className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
+										<Link key={d.id} href={`/person/${d.id}`} className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
 											{d.name}
-										</button>
+										</Link>
 									))}
 								</div>
 							</div>
@@ -201,9 +210,9 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Writers</h3>
 								<div className='flex flex-wrap gap-x-6 gap-y-3'>
 									{writers.map((w) => (
-										<button key={w.id} className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
+										<Link key={w.id} href={`/person/${w.id}`} className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
 											{w.name}
-										</button>
+										</Link>
 									))}
 								</div>
 							</div>

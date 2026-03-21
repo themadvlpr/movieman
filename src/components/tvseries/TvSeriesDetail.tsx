@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Calendar, Play, User, Eye, ChevronRight, List, Info } from 'lucide-react'
+import { Star, Calendar, Play, User, Eye, ChevronRight, List, Info, Globe } from 'lucide-react'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
 import { TvSeriesDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import Loader from '../ui/Loader'
@@ -79,6 +79,15 @@ export default function MovieDetail({ tvId }: { tvId: string }) {
 									{(series.status === 'Ended' || series.status === 'Canceled') && series.last_air_date ? ` — ${series.last_air_date.split('-').reverse().join('-')}` : ''}
 								</span>
 							</div>
+							{series.origin_country && series.origin_country.length > 0 && (
+								<>
+									<span className='text-zinc-800'>|</span>
+									<div className='flex items-center gap-1.5 text-zinc-300'>
+										<Globe className='w-4 h-4' />
+										<span>{series.origin_country.join(', ')}</span>
+									</div>
+								</>
+							)}
 							<span className='text-zinc-800'>|</span>
 							<div className='flex items-center gap-1.5 text-zinc-300'>
 								<List className='w-4 h-4' />
@@ -196,17 +205,18 @@ export default function MovieDetail({ tvId }: { tvId: string }) {
 										<motion.div layout className='flex flex-wrap gap-x-6 gap-y-3'>
 											<AnimatePresence mode='popLayout'>
 												{displayedDirectors.map((d) => (
-													<motion.button
-														layout
-														initial={{ opacity: 0, scale: 0.9 }}
-														animate={{ opacity: 1, scale: 1 }}
-														exit={{ opacity: 0, scale: 0.9 }}
-														transition={{ duration: 0.2 }}
-														key={d.id}
-														className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300 origin-left'
-													>
-														{d.name}
-													</motion.button>
+													<Link key={d.id} href={`/person/${d.id}`}>
+														<motion.span
+															layout
+															initial={{ opacity: 0, scale: 0.9 }}
+															animate={{ opacity: 1, scale: 1 }}
+															exit={{ opacity: 0, scale: 0.9 }}
+															transition={{ duration: 0.2 }}
+															className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300 origin-left inline-block'
+														>
+															{d.name}
+														</motion.span>
+													</Link>
 												))}
 											</AnimatePresence>
 										</motion.div>

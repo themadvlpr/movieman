@@ -6,8 +6,21 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Star, MapPin, Calendar, Play, User } from 'lucide-react'
 import { PersonDetailProps } from '@/lib/tmdb/types/tmdb-types'
+import { getPersonDetails } from '@/lib/tmdb/getPersonDetails'
+import { useQuery } from '@tanstack/react-query'
+import Loader from '@/components/ui/Loader'
 
-export default function PersonDetail({ person, movieCredits, tvCredits }: PersonDetailProps) {
+export default function MovieDetail({ personId }: { personId: string }) {
+
+	const { data } = useQuery<PersonDetailProps>({
+		queryKey: ['person', personId],
+		queryFn: () => getPersonDetails(personId),
+	})
+
+	if (!data) return <Loader />
+
+	const { person, movieCredits, tvCredits } = data
+
 	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
 
 	// Combine and sort best movies (cast or crew depending on volume)

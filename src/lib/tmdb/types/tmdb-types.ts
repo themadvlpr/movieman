@@ -15,7 +15,7 @@ export interface Movie {
     vote_average: number;
     vote_count: number;
     logo_path?: string;
-    origin_country?: string;
+    production_countries?: { iso_3166_1: string; name: string }[];
     runtime: number
     genres: { id: number; name: string }[]
 }
@@ -82,6 +82,7 @@ export interface TvSeries {
     number_of_seasons: number;
     number_of_episodes: number;
     status: string;
+    origin_country?: string[];
 }
 
 export interface TvSeriesDetailProps {

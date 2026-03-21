@@ -224,7 +224,7 @@ export default function TvSeriesPage() {
                                                         <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">•</span>
                                                     </>)}
                                                 <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">
-                                                    {show.release_date.split('-').reverse().join('-')}
+                                                    {show.release_date.slice(0, 4)}
                                                 </span>
                                             </div>
                                         </div>
@@ -256,7 +256,7 @@ export default function TvSeriesPage() {
                                                         <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
                                                         <span className="text-white text-[10px] sm:text-xs font-bold">{show.vote_average > 0 ? show.vote_average.toFixed(1) : "N/A"}</span>
                                                     </div>
-                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{show.release_date.split('-').reverse().join('-')}</span>
+                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{show.release_date.slice(0, 4)}</span>
                                                 </div>
                                             </div>
                                             <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
