@@ -35,7 +35,7 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                 </div>
             </div>
             <div className='flex gap-8 overflow-x-auto pb-10 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
-                {items.slice(0, 15).map((item) => {
+                {items.map((item) => {
                     if (type === 'cast') {
                         const actor = item as Actor
                         const displayCharacter = actor.roles?.[0]?.character ?? actor.character ?? 'Unknown Role'

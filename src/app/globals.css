@@ -91,7 +91,7 @@ html {
 .custom-scrollbar::-webkit-scrollbar {
   height: 6px;
   cursor: pointer;
-
+  width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -100,7 +100,7 @@ html {
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #4b5563;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
