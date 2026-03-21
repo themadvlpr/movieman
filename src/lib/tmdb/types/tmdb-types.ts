@@ -42,22 +42,18 @@ export const genresById = {
     37: "Western",
 };
 
-export interface Cast {
-    id: number
-    name: string
-    character: string
-    profile_path: string | null
-}
 
-export interface Crew {
-    id: number
-    name: string
-    job: string
+export interface CrewMember {
+    id: number;
+    name: string;
+    job: string;
+    department: string;
+    profile_path: string | null;
 }
 
 export interface MovieDetailProps {
     movie: Movie
-    credits: { cast: Cast[]; crew: Crew[] }
+    credits: { cast: Actor[]; crew: CrewMember[] }
     similarMovies: Movie[]
 }
 
@@ -87,7 +83,7 @@ export interface TvSeries {
 
 export interface TvSeriesDetailProps {
     series: TvSeries
-    credits: { cast: Cast[]; crew: Crew[] }
+    credits: { cast: Actor[]; crew: CrewMember[] }
     similarSeries: any[]
 }
 
@@ -104,30 +100,26 @@ export interface Person {
     popularity: number;
 }
 
-export interface PersonCredits {
-    cast: {
-        id: number;
-        title?: string;
-        name?: string;
+export interface Actor {
+    id: number;
+    title?: string;
+    name?: string;
+    character: string;
+    poster_path: string | null;
+    release_date?: string;
+    first_air_date?: string;
+    vote_average: number;
+    vote_count: number;
+    profile_path: string | null;
+    roles?: {
         character: string;
-        poster_path: string | null;
-        release_date?: string;
-        first_air_date?: string;
-        vote_average: number;
-        vote_count: number;
+        episode_count?: number;
     }[];
-    crew: {
-        id: number;
-        title?: string;
-        name?: string;
-        job: string;
-        department: string;
-        poster_path: string | null;
-        release_date?: string;
-        first_air_date?: string;
-        vote_average: number;
-        vote_count: number;
-    }[];
+}
+
+export interface PersonCredits {
+    cast: Actor[];
+    crew: CrewMember[];
 }
 
 export interface PersonDetailProps {

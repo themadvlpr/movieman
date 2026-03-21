@@ -10,9 +10,10 @@ import { TvSeriesDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import Loader from '../ui/Loader'
 import { useQuery } from '@tanstack/react-query'
 import { getTVDetails } from '@/lib/tmdb/getTvSeriesDetails'
+import DetailCarousel from '../ui/DetailCarousel'
 
 
-export default function MovieDetail({ tvId }: { tvId: string }) {
+export default function TvSeriesDetail({ tvId }: { tvId: string }) {
 
 	const { data } = useQuery<TvSeriesDetailProps>({
 		queryKey: ['tv', tvId],
@@ -239,40 +240,7 @@ export default function MovieDetail({ tvId }: { tvId: string }) {
 				<hr className='border-white/10 my-12' />
 
 				{/* Cast Carousel */}
-				<section className='mt-15'>
-					<div className='flex justify-between items-end mb-10'>
-						<div>
-							<h2 className='text-4xl font-bold mb-2'>Top Cast</h2>
-							<p className='text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]'>The actors and their roles</p>
-						</div>
-					</div>
-					<div className='flex gap-8 overflow-x-auto pb-10 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
-						{credits.cast.map((actor) => (
-							<Link key={actor.id} href={`/person/${actor.id}`} className='w-44 shrink-0 group block'>
-								<div className='relative aspect-4/5 cursor-pointer rounded-xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
-									{actor.profile_path ? (
-										<Image
-											src={`https://image.tmdb.org/t/p/w342${actor.profile_path}`}
-											alt={actor.name}
-											fill
-											sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-											className='object-cover cursor-pointer group-hover:scale-105 transition-all duration-700 ease-out'
-										/>
-									) : (
-										<div className='w-full h-full flex items-center justify-center bg-zinc-800'>
-											<User className='w-12 h-12 text-zinc-900 fill-zinc-700' />
-										</div>
-									)}
-									<div className='absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60' />
-								</div>
-								<h4 className='font-bold text-white group-hover:text-white transition-colors truncate'>{actor.name}</h4>
-								<p className='text-[10px] text-zinc-600 font-bold uppercase tracking-wider truncate mt-1'>
-									{(actor as any).roles ? (actor as any).roles[0]?.character : actor.character}
-								</p>
-							</Link>
-						))}
-					</div>
-				</section>
+				<DetailCarousel type='cast' items={credits.cast} mediaType='tv' />
 
 				{/* Note Section (Between Cast and Similar) */}
 				<AnimatePresence>
@@ -297,47 +265,7 @@ export default function MovieDetail({ tvId }: { tvId: string }) {
 				</AnimatePresence>
 
 				{/* Similar Series */}
-				<section className='mt-32'>
-					<div className='flex justify-between items-end mb-10'>
-						<div>
-							<h2 className='text-4xl font-bold mb-2'>More Like This</h2>
-							<p className='text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]'>Recommendations for you</p>
-						</div>
-					</div>
-					<div className='flex gap-8 overflow-x-auto pb-10 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
-						{similarSeries.slice(0, 15).map((m: any) => (
-							<Link key={m.id} href={`/tvseries/${m.id}`} className='w-48 shrink-0 group'>
-								<div className='relative aspect-2/3 rounded-2xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
-									{m.poster_path ? (
-										<Image
-											src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
-											alt={m.name || 'Poster'}
-											fill
-											sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-											className='object-cover group-hover:scale-110 transition-transform duration-700 ease-out'
-										/>
-									) : (
-										<div className='w-full h-full flex items-center justify-center text-zinc-700 text-[10px] font-bold'>NO POSTER</div>
-									)}
-									<div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
-										<div className='w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20'>
-											<Play className='w-6 h-6 fill-white ml-1' />
-										</div>
-									</div>
-								</div>
-								<h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{m.name}</h4>
-								<div className='flex items-center gap-3 mt-1.5'>
-									<div className='flex items-center gap-1.5'>
-										<Star className='w-3 h-3 fill-amber-400 text-amber-400' />
-										<span className='text-[10px] font-black text-zinc-100'>{m.vote_average ? m.vote_average.toFixed(1) : 'N/A'}</span>
-									</div>
-									<span className='text-zinc-800 font-bold'>|</span>
-									<span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{m.first_air_date?.slice(0, 4) || 'Unknown'}</span>
-								</div>
-							</Link>
-						))}
-					</div>
-				</section>
+				<DetailCarousel type='similar' items={similarSeries} mediaType='tv' />
 			</div>
 
 			<style jsx>{`

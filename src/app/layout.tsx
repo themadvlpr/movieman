@@ -46,11 +46,11 @@ export default function RootLayout({
 					<div className='flex flex-col min-h-dvh'>
 						<Header />
 						<main className='flex-1 flex flex-col'>
-							<PageTransition>
-								<Suspense fallback={<Loader />}>
+							<Suspense fallback={<Loader />}>
+								<PageTransition>
 									{children}
-								</Suspense>
-							</PageTransition>
+								</PageTransition>
+							</Suspense>
 						</main>
 						<ScrollToTop />
 						<Footer />

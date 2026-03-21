@@ -16,6 +16,7 @@ export default function Loader() {
             <div style={{
                 position: 'absolute',
                 inset: 0,
+                backgroundColor: 'black',
                 pointerEvents: 'none'
             }} />
 

@@ -11,7 +11,7 @@ export default function Footer() {
 		<motion.footer
 			initial={{ opacity: 0, }}
 			animate={{ opacity: 1, }}
-			transition={{ delay: 1, duration: 0.5 }}
+			transition={{ delay: 2, duration: 0.5 }}
 			className='w-full font-semibold flex justify-center items-center px-2 sm:px-7 pt-5 pb-1 sm:pb-5'
 		>
 			MovieMan {new Date().getFullYear()}

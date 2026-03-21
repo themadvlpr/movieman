@@ -19,7 +19,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
 	return (
 		<motion.div
 			key={pathname}
-			initial={isFirstMount ? false : { opacity: 0, y: 200 }}
+			initial={isFirstMount ? false : { opacity: 0, y: 20 }}
 			animate={{
 				opacity: 1,
 				y: 0,
