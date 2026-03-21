@@ -1,22 +1,33 @@
-import { Actor, Movie, TvSeries } from "@/lib/tmdb/types/tmdb-types"
+import { Actor, CreditMedia, Movie, TvSeries } from "@/lib/tmdb/types/tmdb-types"
 import Link from "next/link"
 import Image from "next/image"
 import { User, Star, Play } from "lucide-react"
 
 interface DetailCarouselProps {
-    type: 'cast' | 'similar'
+    type: 'cast' | 'similar' | 'person-credits'
     items: (Actor | Movie | TvSeries | any)[]
     mediaType: 'movie' | 'tv'
 }
 
 export default function DetailCarousel({ type, items, mediaType }: DetailCarouselProps) {
-    const title = type === 'cast' ? 'Top Cast' : 'More Like This'
-    const subtitle = type === 'cast' ? 'The actors and their roles' : 'Recommendations for you'
+    let title = ''
+    let subtitle = ''
+
+    if (type === 'cast') {
+        title = 'Top Cast'
+        subtitle = 'The actors and their roles'
+    } else if (type === 'similar') {
+        title = 'More Like This'
+        subtitle = 'Recommendations for you'
+    } else if (type === 'person-credits') {
+        title = mediaType === 'movie' ? 'Known For (Movies)' : 'Known For (TV)'
+        subtitle = mediaType === 'movie' ? 'Top rated films' : 'Top rated series'
+    }
 
     if (!items || items.length === 0) return null
 
     return (
-        <section className={type === 'cast' ? 'mt-15' : 'mt-32'}>
+        <section className={'mt-15 sm:mt-20'}>
             <div className='flex justify-between items-end mb-10'>
                 <div>
                     <h2 className='text-4xl font-bold mb-2'>{title}</h2>
@@ -28,7 +39,7 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                     if (type === 'cast') {
                         const actor = item as Actor
                         const displayCharacter = actor.roles?.[0]?.character ?? actor.character ?? 'Unknown Role'
-                        
+
                         return (
                             <Link key={actor.id} href={`/person/${actor.id}`} className='w-44 shrink-0 group block'>
                                 <div className='relative aspect-4/5 cursor-pointer rounded-xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
@@ -59,14 +70,22 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                             </Link>
                         )
                     } else {
-                        const media = item as (Movie | TvSeries)
-                        const id = media.id
-                        const mediaTitle = (media as Movie).title || (media as TvSeries).name
-                        const posterPath = media.poster_path
-                        const voteAverage = media.vote_average
-                        const date = (media as Movie).release_date || (media as TvSeries).first_air_date
-                        const year = date?.slice(0, 4) || 'Unknown'
-                        const href = mediaType === 'movie' ? `/movies/${id}` : `/tvseries/${id}`
+                        const media = item as CreditMedia;
+                        const id = media.id;
+
+                        const isMovie = 'title' in media;
+
+                        const mediaTitle = isMovie ? media.title : media.name;
+                        const date = isMovie ? media.release_date : media.first_air_date;
+
+                        const posterPath = media.poster_path;
+                        const voteAverage = media.vote_average;
+                        const year = date?.slice(0, 4) || 'Unknown';
+
+                        const href = isMovie ? `/movies/${id}` : `/tvseries/${id}`;
+
+                        const character = media.character;
+                        const job = media.job;
 
                         return (
                             <Link key={id} href={href} className='w-48 shrink-0 group'>
@@ -89,13 +108,20 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                                     </div>
                                 </div>
                                 <h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{mediaTitle}</h4>
-                                <div className='flex items-center gap-3 mt-1.5'>
-                                    <div className='flex items-center gap-1.5'>
-                                        <Star className='w-3 h-3 fill-amber-400 text-amber-400' />
-                                        <span className='text-[10px] font-black text-zinc-100'>{voteAverage ? voteAverage.toFixed(1) : 'N/A'}</span>
+                                <div className='flex flex-col gap-1 mt-1.5'>
+                                    <div className='flex items-center gap-3'>
+                                        <div className='flex items-center gap-1.5'>
+                                            <Star className='w-3 h-3 fill-amber-400 text-amber-400' />
+                                            <span className='text-[10px] font-black text-zinc-100'>{voteAverage ? voteAverage.toFixed(1) : 'N/A'}</span>
+                                        </div>
+                                        <span className='text-zinc-800 font-bold'>|</span>
+                                        <span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{year}</span>
                                     </div>
-                                    <span className='text-zinc-800 font-bold'>|</span>
-                                    <span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{year}</span>
+                                    {type === 'person-credits' && (
+                                        <span className='text-[10px] font-bold text-zinc-600 truncate'>
+                                            {character ? `as ${character}` : job}
+                                        </span>
+                                    )}
                                 </div>
                             </Link>
                         )

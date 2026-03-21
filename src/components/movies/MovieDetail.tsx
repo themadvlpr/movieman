@@ -30,8 +30,17 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 	const [note, setNote] = useState('')
 	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
 
-	const directors = credits.crew.filter((c) => c.job === 'Director')
-	const writers = credits.crew.filter((c) => c.job === 'Writer' || c.job === 'Screenplay')
+	const mainCrewMap: Record<number, { name: string, jobs: string[], id: number }> = {}
+	credits.crew.forEach(c => {
+		if (c.job === 'Director' || c.job === 'Writer' || c.job === 'Screenplay') {
+			if (!mainCrewMap[c.id]) {
+				mainCrewMap[c.id] = { id: c.id, name: c.name, jobs: [c.job] }
+			} else if (!mainCrewMap[c.id].jobs.includes(c.job)) {
+				mainCrewMap[c.id].jobs.push(c.job)
+			}
+		}
+	})
+	const mainCrew = Object.values(mainCrewMap)
 
 	const formatRuntime = (minutes: number) => {
 		const h = Math.floor(minutes / 60)
@@ -42,7 +51,7 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 	return (
 		<div className='flex-1 relative bg-black text-white min-h-screen'>
 			{/* Backdrop Section */}
-			<div className='absolute inset-0 h-[35vh] sm:h-[45vh] lg:h-[80vh] w-full overflow-hidden pointer-events-none'>
+			<div className='absolute inset-0 h-[35vh] sm:h-[45vh] lg:h-screen w-full overflow-hidden pointer-events-none'>
 				<Image
 					src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
 					alt={movie.title}
@@ -193,32 +202,24 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 					</AnimatePresence>
 
 					{/* Credits Summary */}
-					<div className='grid grid-cols-1 sm:grid-cols-2 gap-12 mt-4'>
-						{directors.length > 0 && (
-							<div>
-								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Directors</h3>
-								<div className='flex flex-wrap gap-x-6 gap-y-3'>
-									{directors.map((d) => (
-										<Link key={d.id} href={`/person/${d.id}`} className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
-											{d.name}
+					{/* Credits Summary */}
+					{mainCrew.length > 0 && (
+						<div className='mt-4'>
+							<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6'>Main Crew</h3>
+							<div className='flex flex-wrap gap-x-12 gap-y-6'>
+								{mainCrew.map((person) => (
+									<div key={person.id} className='flex flex-col gap-1'>
+										<Link href={`/person/${person.id}`} className='text-xl sm:text-2xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
+											{person.name}
 										</Link>
-									))}
-								</div>
+										<span className='text-[10px] font-black uppercase tracking-widest text-zinc-600'>
+											{person.jobs.join(' / ')}
+										</span>
+									</div>
+								))}
 							</div>
-						)}
-						{writers.length > 0 && (
-							<div>
-								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Writers</h3>
-								<div className='flex flex-wrap gap-x-6 gap-y-3'>
-									{writers.map((w) => (
-										<Link key={w.id} href={`/person/${w.id}`} className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
-											{w.name}
-										</Link>
-									))}
-								</div>
-							</div>
-						)}
-					</div>
+						</div>
+					)}
 				</div>
 
 				<hr className='border-white/10 my-12' />

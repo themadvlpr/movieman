@@ -32,9 +32,25 @@ export default function TvSeriesDetail({ tvId }: { tvId: string }) {
 	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
 
 
-	const directors = series.created_by && series.created_by.length > 0
-		? series.created_by
-		: credits.crew.filter((c: any) => c.jobs ? c.jobs.some((j: any) => j.job === 'Creator' || j.job === 'Executive Producer') : (c.job === 'Creator' || c.job === 'Executive Producer'))
+	const creators = series.created_by || []
+	const execProducers = credits.crew.filter((c: any) => c.job === 'Executive Producer' || c.job === 'Creator')
+
+	const mainTvCrewMap: Record<number, { name: string, jobs: string[], id: number }> = {}
+
+	creators.forEach((c: any) => {
+		mainTvCrewMap[c.id] = { id: c.id, name: c.name, jobs: ['Creator'] }
+	})
+
+	execProducers.forEach((c: any) => {
+		if (!mainTvCrewMap[c.id]) {
+			mainTvCrewMap[c.id] = { id: c.id, name: c.name, jobs: [c.job] }
+		} else if (!mainTvCrewMap[c.id].jobs.includes(c.job)) {
+			// Replace "Executive Producer" with "Exec Producer" for brevity if needed, 
+			// but I'll stay consistent with what TMDB provides.
+			mainTvCrewMap[c.id].jobs.push(c.job)
+		}
+	})
+	const mainTvCrew = Object.values(mainTvCrewMap)
 
 
 	return (
@@ -194,47 +210,49 @@ export default function TvSeriesDetail({ tvId }: { tvId: string }) {
 					</AnimatePresence>
 
 					{/* Credits Summary */}
-					<div className='grid grid-cols-1 sm:grid-cols-2 gap-12 mt-4'>
-						{directors.length > 0 && (() => {
-							const uniqueDirectors = directors.filter((d, index, self) => index === self.findIndex((t) => t.id === d.id))
-							const displayedDirectors = isCreatorsExpanded ? uniqueDirectors : uniqueDirectors.slice(0, 3)
+					{mainTvCrew.length > 0 && (() => {
+						const displayedCrew = isCreatorsExpanded ? mainTvCrew : mainTvCrew.slice(0, 3)
 
-							return (
-								<div>
-									<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4'>Creators / Exec Producers</h3>
-									<motion.div layout className='flex flex-col gap-3'>
-										<motion.div layout className='flex flex-wrap gap-x-6 gap-y-3'>
-											<AnimatePresence mode='popLayout'>
-												{displayedDirectors.map((d) => (
-													<Link key={d.id} href={`/person/${d.id}`}>
+						return (
+							<div className='mt-4'>
+								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6'>Main Crew</h3>
+								<motion.div layout className='flex flex-col gap-3'>
+									<motion.div layout className='flex flex-wrap gap-x-12 gap-y-6'>
+										<AnimatePresence mode='popLayout'>
+											{displayedCrew.map((person) => (
+												<div key={person.id} className='flex flex-col gap-1'>
+													<Link href={`/person/${person.id}`}>
 														<motion.span
 															layout
 															initial={{ opacity: 0, scale: 0.9 }}
 															animate={{ opacity: 1, scale: 1 }}
 															exit={{ opacity: 0, scale: 0.9 }}
 															transition={{ duration: 0.2 }}
-															className='text-xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300 origin-left inline-block'
+															className='text-xl sm:text-2xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300 origin-left inline-block'
 														>
-															{d.name}
+															{person.name}
 														</motion.span>
 													</Link>
-												))}
-											</AnimatePresence>
-										</motion.div>
-										{uniqueDirectors.length > 3 && (
-											<motion.button
-												layout
-												onClick={() => setIsCreatorsExpanded(!isCreatorsExpanded)}
-												className='text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors text-left w-fit mt-1 cursor-pointer'
-											>
-												{isCreatorsExpanded ? 'Show Less' : `+ ${uniqueDirectors.length - 3} More`}
-											</motion.button>
-										)}
+													<span className='text-[10px] font-black uppercase tracking-widest text-zinc-600'>
+														{person.jobs.join(' / ')}
+													</span>
+												</div>
+											))}
+										</AnimatePresence>
 									</motion.div>
-								</div>
-							)
-						})()}
-					</div>
+									{mainTvCrew.length > 3 && (
+										<motion.button
+											layout
+											onClick={() => setIsCreatorsExpanded(!isCreatorsExpanded)}
+											className='text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors text-left w-fit mt-1 cursor-pointer'
+										>
+											{isCreatorsExpanded ? 'Show Less' : `+ ${mainTvCrew.length - 3} More`}
+										</motion.button>
+									)}
+								</motion.div>
+							</div>
+						)
+					})()}
 				</div>
 
 				<hr className='border-white/10 my-12' />

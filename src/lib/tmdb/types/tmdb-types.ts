@@ -127,3 +127,8 @@ export interface PersonDetailProps {
     movieCredits: PersonCredits;
     tvCredits: PersonCredits;
 }
+
+export type CreditMedia = (Movie | TvSeries) & {
+    character?: string;
+    job?: string;
+};

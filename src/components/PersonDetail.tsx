@@ -9,6 +9,7 @@ import { PersonDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import { getPersonDetails } from '@/lib/tmdb/getPersonDetails'
 import { useQuery } from '@tanstack/react-query'
 import Loader from '@/components/ui/Loader'
+import DetailCarousel from './ui/DetailCarousel'
 
 export default function MovieDetail({ personId }: { personId: string }) {
 
@@ -23,12 +24,36 @@ export default function MovieDetail({ personId }: { personId: string }) {
 
 	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
 
+	const mergeCredits = (credits: any[]) => {
+		const merged: Record<string, any> = {}
+		credits.forEach((item) => {
+			const id = item.id.toString()
+			if (!merged[id]) {
+				merged[id] = { ...item }
+				if (item.character) merged[id].characters = [item.character]
+				if (item.job) merged[id].jobs = [item.job]
+			} else {
+				if (item.character && !merged[id].characters?.includes(item.character)) {
+					merged[id].characters = [...(merged[id].characters || []), item.character]
+				}
+				if (item.job && !merged[id].jobs?.includes(item.job)) {
+					merged[id].jobs = [...(merged[id].jobs || []), item.job]
+				}
+			}
+		})
+		return Object.values(merged).map((item) => ({
+			...item,
+			character: item.characters?.join(' / ') || item.character,
+			job: item.jobs?.join(' / ') || item.job
+		}))
+	}
+
 	// Combine and sort best movies (cast or crew depending on volume)
 	const isActor = person.known_for_department === 'Acting'
-	const movieWorks = isActor ? movieCredits.cast : movieCredits.crew.filter(c => c.department === person.known_for_department)
+	const movieWorks = isActor ? mergeCredits(movieCredits.cast) : mergeCredits(movieCredits.crew.filter(c => c.department === person.known_for_department))
 	const bestMovies = [...movieWorks].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0)).slice(0, 15)
 
-	const tvWorks = isActor ? tvCredits.cast : tvCredits.crew.filter(c => c.department === person.known_for_department)
+	const tvWorks = isActor ? mergeCredits(tvCredits.cast) : mergeCredits(tvCredits.crew.filter(c => c.department === person.known_for_department))
 	const bestTv = [...tvWorks].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0)).slice(0, 15)
 
 	return (
@@ -143,104 +168,10 @@ export default function MovieDetail({ personId }: { personId: string }) {
 				<hr className='border-white/10 my-20' />
 
 				{/* Best Movies */}
-				{bestMovies.length > 0 && (
-					<section>
-						<div className='flex justify-between items-end mb-10'>
-							<div>
-								<h2 className='text-4xl font-bold mb-2'>Known For (Movies)</h2>
-								<p className='text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]'>Top rated films</p>
-							</div>
-						</div>
-						<div className='flex gap-8 overflow-x-auto pb-10 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
-							{bestMovies.map((m: any) => (
-								<Link key={`${m.id}-${m.credit_id}`} href={`/movies/${m.id}`} className='w-48 shrink-0 group'>
-									<div className='relative aspect-2/3 rounded-2xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
-										{m.poster_path ? (
-											<Image
-												src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
-												alt={m.title || 'Poster'}
-												fill
-												sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-												className='object-cover group-hover:scale-110 transition-transform duration-700 ease-out'
-											/>
-										) : (
-											<div className='w-full h-full flex items-center justify-center text-zinc-700 text-[10px] font-bold'>NO POSTER</div>
-										)}
-										<div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
-											<div className='w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20'>
-												<Play className='w-6 h-6 fill-white ml-1' />
-											</div>
-										</div>
-									</div>
-									<h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{m.title}</h4>
-									<div className='flex flex-col gap-1 mt-1.5'>
-										<div className='flex items-center gap-3'>
-											<div className='flex items-center gap-1.5'>
-												<Star className='w-3 h-3 fill-white text-white' />
-												<span className='text-[10px] font-black text-zinc-100'>{m.vote_average ? m.vote_average.toFixed(1) : 'N/A'}</span>
-											</div>
-											<span className='text-zinc-800 font-bold'>|</span>
-											<span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{m.release_date?.slice(0, 4) || 'Unknown'}</span>
-										</div>
-										<span className='text-[10px] font-bold text-zinc-600 truncate'>
-											{isActor ? (m.character ? `as ${m.character}` : '') : (m.job || m.department)}
-										</span>
-									</div>
-								</Link>
-							))}
-						</div>
-					</section>
-				)}
+				<DetailCarousel type='person-credits' items={bestMovies} mediaType='movie' />
 
 				{/* Best TV Series */}
-				{bestTv.length > 0 && (
-					<section className={bestMovies.length > 0 ? 'mt-16' : ''}>
-						<div className='flex justify-between items-end mb-10'>
-							<div>
-								<h2 className='text-4xl font-bold mb-2'>Known For (TV)</h2>
-								<p className='text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]'>Top rated series</p>
-							</div>
-						</div>
-						<div className='flex gap-8 overflow-x-auto pb-10 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
-							{bestTv.map((m: any) => (
-								<Link key={`${m.id}-${m.credit_id}`} href={`/tvseries/${m.id}`} className='w-48 shrink-0 group'>
-									<div className='relative aspect-2/3 rounded-2xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
-										{m.poster_path ? (
-											<Image
-												src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
-												alt={m.name || 'Poster'}
-												fill
-												sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-												className='object-cover group-hover:scale-110 transition-transform duration-700 ease-out'
-											/>
-										) : (
-											<div className='w-full h-full flex items-center justify-center text-zinc-700 text-[10px] font-bold'>NO POSTER</div>
-										)}
-										<div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
-											<div className='w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20'>
-												<Play className='w-6 h-6 fill-white ml-1' />
-											</div>
-										</div>
-									</div>
-									<h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{m.name}</h4>
-									<div className='flex flex-col gap-1 mt-1.5'>
-										<div className='flex items-center gap-3'>
-											<div className='flex items-center gap-1.5'>
-												<Star className='w-3 h-3 fill-white text-white' />
-												<span className='text-[10px] font-black text-zinc-100'>{m.vote_average ? m.vote_average.toFixed(1) : 'N/A'}</span>
-											</div>
-											<span className='text-zinc-800 font-bold'>|</span>
-											<span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{m.first_air_date?.slice(0, 4) || 'Unknown'}</span>
-										</div>
-										<span className='text-[10px] font-bold text-zinc-600 truncate'>
-											{isActor ? (m.character ? `as ${m.character}` : '') : (m.job || m.department)}
-										</span>
-									</div>
-								</Link>
-							))}
-						</div>
-					</section>
-				)}
+				<DetailCarousel type='person-credits' items={bestTv} mediaType='tv' />
 
 			</div>
 
