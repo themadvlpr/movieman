@@ -11,12 +11,19 @@ import { genresById } from "@/lib/tmdb/types/tmdb-types"
 import Cookies from "js-cookie"
 import { useQuery } from "@tanstack/react-query"
 import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import Loader from "@/components/ui/Loader"
 
 
 
 export default function MainPage({ initialGenreId }: { initialGenreId: number }) {
-    const [selectedGenreId, setSelectedGenreId] = useState<number>(initialGenreId);
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+
+    // Derive selectedGenreId from URL if present, otherwise use initialGenreId
+    const urlGenre = searchParams.get('genre');
+    const selectedGenreId = urlGenre ? parseInt(urlGenre, 10) : initialGenreId;
 
     const { data } = useQuery({
         queryKey: ['discovermovies', selectedGenreId],
@@ -28,6 +35,11 @@ export default function MainPage({ initialGenreId }: { initialGenreId: number })
     const [imageLoading, setImageLoading] = useState(true);
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    // Reset carousel page when genre changes
+    useEffect(() => {
+        setCurrentPage(0);
+    }, [selectedGenreId]);
 
     // Reset image loading state when movie changes
     useEffect(() => {
@@ -213,9 +225,13 @@ export default function MainPage({ initialGenreId }: { initialGenreId: number })
                                         <button
                                             key={id}
                                             onClick={() => {
-                                                setSelectedGenreId(Number(id));
-                                                Cookies.set('selectedGenreId', id, { expires: 7 });
+                                                const genreIdStr = id;
+                                                Cookies.set('selectedGenreId', genreIdStr, { expires: 7 });
                                                 setIsDropdownOpen(false);
+
+                                                const params = new URLSearchParams(searchParams.toString());
+                                                params.set('genre', genreIdStr);
+                                                router.push(pathname + '?' + params.toString(), { scroll: false });
                                             }}
                                             className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
                                         >
@@ -270,9 +286,13 @@ export default function MainPage({ initialGenreId }: { initialGenreId: number })
                                             <button
                                                 key={id}
                                                 onClick={() => {
-                                                    setSelectedGenreId(Number(id));
-                                                    Cookies.set('selectedGenreId', id, { expires: 7 });
+                                                    const genreIdStr = id;
+                                                    Cookies.set('selectedGenreId', genreIdStr, { expires: 7 });
                                                     setIsDropdownOpen(false);
+
+                                                    const params = new URLSearchParams(searchParams.toString());
+                                                    params.set('genre', genreIdStr);
+                                                    router.push(pathname + '?' + params.toString(), { scroll: false });
                                                 }}
                                                 className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
                                             >

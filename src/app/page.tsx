@@ -5,15 +5,17 @@ import { cookies } from 'next/headers'
 import { Suspense } from 'react'
 import Loader from '@/components/ui/Loader'
 
-async function MainContent() {
+async function MainContent({ searchParams }: { searchParams: { genre?: string } }) {
     const queryClient = new QueryClient()
     const cookieStore = await cookies();
-    const genreStr = cookieStore.get('selectedGenreId')?.value || "28";
+    
+    // Prioritize URL search param over cookie
+    const genreStr = searchParams.genre || cookieStore.get('selectedGenreId')?.value || "28";
     const genreId = parseInt(genreStr, 10);
 
     await queryClient.prefetchQuery({
         queryKey: ['discovermovies', genreId],
-        queryFn: () => getDiscoverMovies(genreStr),
+        queryFn: () => getDiscoverMovies(genreId.toString()),
     })
 
     return (
@@ -23,10 +25,12 @@ async function MainContent() {
     )
 }
 
-export default function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ genre?: string }> }) {
+    const resolvedSearchParams = await searchParams;
+
     return (
         <Suspense fallback={<Loader />}>
-            <MainContent />
+            <MainContent searchParams={resolvedSearchParams} />
         </Suspense>
     )
 }
