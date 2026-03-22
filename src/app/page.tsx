@@ -8,7 +8,7 @@ import Loader from '@/components/ui/Loader'
 async function MainContent({ searchParams }: { searchParams: { genre?: string } }) {
     const queryClient = new QueryClient()
     const cookieStore = await cookies();
-    
+
     // Prioritize URL search param over cookie
     const genreStr = searchParams.genre || cookieStore.get('selectedGenreId')?.value || "28";
     const genreId = parseInt(genreStr, 10);

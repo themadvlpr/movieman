@@ -2,10 +2,10 @@
 
 import Link from "next/link"
 import { Play } from "lucide-react"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, Check } from "lucide-react"
+import { ChevronDown, Check, Star } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 import { genresById } from "@/lib/tmdb/types/tmdb-types"
 import Cookies from "js-cookie"
@@ -169,10 +169,15 @@ export default function MainPage({ initialGenreId }: { initialGenreId: number })
                     )}
 
                     <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 font-medium text-white/90 drop-shadow-md text-sm sm:text-base cursor-default">
-                        <span className="text-[#46d369] font-bold">
-                            {Math.floor(rating * 10)}% Liked
-                        </span>
-                        <span className="text-white/40">|</span>
+                        {rating > 0 && (
+                            <>
+                                <div className='flex items-center gap-1.5 text-zinc-100'>
+                                    <Star className='w-4 h-4 fill-amber-400 text-amber-400' />
+                                    <span>{rating && rating.toFixed(1)}</span>
+                                </div>
+                                <span className="text-white/40">|</span>
+                            </>
+                        )}
                         <span className="text-white/80">
                             {release_date?.slice(0, 4)}
                         </span>
@@ -363,10 +368,15 @@ export default function MainPage({ initialGenreId }: { initialGenreId: number })
                                 <span>
                                     {nextMovie.release_date?.slice(0, 4)}
                                 </span>
-                                <span>•</span>
-                                <span className="text-[#46d369]">
-                                    {Math.floor(nextMovie.vote_average * 10)}% Liked
-                                </span>
+                                {nextMovie.vote_average > 0 && (
+                                    <>
+                                        <span>•</span>
+                                        <div className='flex items-center gap-1.5 text-zinc-100'>
+                                            <Star className='w-3 h-3 fill-amber-400 text-amber-400' />
+                                            <span>{nextMovie.vote_average.toFixed(1)}</span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">

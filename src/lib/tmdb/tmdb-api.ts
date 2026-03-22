@@ -17,10 +17,14 @@ export async function tmdbFetch(endpoint: string, params: TmdbParams = {}, optio
     }
 
     const url = new URL(`${TMDB_BASE_URL}${endpoint}`);
-    url.searchParams.append("language", "en-US");
-
+    
     // Add parameters from arguments
-    Object.entries(params).forEach(([key, value]) => {
+    const finalParams = { ...params };
+    if (!finalParams.language) {
+        finalParams.language = "en-US";
+    }
+
+    Object.entries(finalParams).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
             url.searchParams.append(key, String(value));
         }

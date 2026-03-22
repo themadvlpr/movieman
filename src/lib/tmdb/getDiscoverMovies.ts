@@ -2,13 +2,14 @@
 
 import { tmdbFetch, CacheConfig } from "@/lib/tmdb/tmdb-api";
 
-export async function getDiscoverMovies(genre: string, page = "1") {
+export async function getDiscoverMovies(genre: string, page = "1", language = "en-US") {
     const data = await tmdbFetch(
         `/discover/movie`,
         {
             with_genres: genre,
             page,
             sort_by: "popularity.desc",
+            language,
         },
         CacheConfig.LISTS
     );
@@ -21,6 +22,7 @@ export async function getDiscoverMovies(genre: string, page = "1") {
                     {
                         append_to_response: "images",
                         include_image_language: "en,null",
+                        language,
                     },
                     CacheConfig.DETAILS
                 );
