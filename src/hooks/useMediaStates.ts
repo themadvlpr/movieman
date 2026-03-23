@@ -7,10 +7,9 @@ interface MediaData {
     year?: string;
 }
 
-export function useMediaActions(mediaId: number, userId: string | undefined, type: string) {
+export function useMediaActions(mediaId: number, userId: string | undefined, type: 'movie' | 'tv') {
     const queryClient = useQueryClient();
 
-    // Запрос состояния из БД
     const { data: dbState, isLoading } = useQuery({
         queryKey: ["media-state", mediaId, userId],
         queryFn: async () => {
@@ -22,7 +21,6 @@ export function useMediaActions(mediaId: number, userId: string | undefined, typ
         staleTime: 0,
     });
 
-    // Мутация для изменения состояния
     const mutation = useMutation({
         mutationFn: async ({ action, mediaData }: { action: string, mediaData: MediaData }) => {
             const res = await fetch("/api/db", {

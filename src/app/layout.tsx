@@ -9,6 +9,7 @@ import ScrollToTop from '@/components/ui/ScrollToTop'
 import Providers from '@/components/utils/Providers'
 import { Suspense } from 'react'
 import Loader from '@/components/ui/Loader'
+import { getAuthSession } from '@/lib/auth-sessions'
 
 const montserrat = Montserrat({
 	variable: '--font-montserrat',
@@ -31,11 +32,15 @@ export const metadata: Metadata = {
 	manifest: '/icons/site.webmanifest',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+
+
+	const session = await getAuthSession();
+
 	return (
 		<html lang='en'>
 			<body
@@ -44,7 +49,7 @@ export default function RootLayout({
 			>
 				<Providers>
 					<div className='flex flex-col min-h-dvh'>
-						<Header />
+						<Header userSession={session} />
 						<main className='flex-1 flex flex-col'>
 							<Suspense fallback={<Loader />}>
 								<PageTransition>

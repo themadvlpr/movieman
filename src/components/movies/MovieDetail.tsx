@@ -1,29 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Clock, Calendar, Play, User, Eye, ChevronRight, Globe } from 'lucide-react'
+import { Star, Clock, Calendar, ChevronRight, Globe } from 'lucide-react'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
 import { useQuery } from '@tanstack/react-query'
 import { getMovieDetails } from '@/lib/tmdb/getMovieDetails'
 import Loader from '../ui/Loader'
 import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import DetailCarousel from '../ui/DetailCarousel'
-import { authClient } from '@/lib/auth-client'
 import { useMediaActions } from '@/hooks/useMediaStates'
 
 
-export default function MovieDetail({ movieId }: { movieId: string }) {
+export default function MovieDetail({ movieId, userId }: { movieId: string, userId: string }) {
+	const [imageLoading, setImageLoading] = useState(true);
 
 	const { data } = useQuery<MovieDetailProps>({
 		queryKey: ['movie', movieId],
 		queryFn: () => getMovieDetails(movieId),
 	})
 
-	const { data: session } = authClient.useSession();
-	const userId = session?.user?.id;
+
 
 	const { dbState } = useMediaActions(Number(movieId), userId, "movie");
 
@@ -54,17 +53,44 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 		return `${h}h ${m}m`
 	}
 
+	useEffect(() => {
+		setImageLoading(true);
+	}, []);
+
 	return (
 		<div className='flex-1 relative bg-black text-white min-h-screen'>
-			{/* Backdrop Section */}
 			<div className='absolute inset-0 h-[35vh] sm:h-[45vh] lg:h-screen w-full overflow-hidden pointer-events-none'>
+				{/* Backdrop Section */}
+				<AnimatePresence>
+					{imageLoading && (
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							className="absolute inset-0 bg-zinc-900/90 overflow-hidden"
+						>
+							<div className="absolute inset-0 bg-linear-to-r from-transparent via-white/15 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+							<div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+								<div className="relative">
+									<div className="w-14 h-14 rounded-full border-4 border-white/10 border-t-white/90 animate-spin shadow-[0_0_20px_rgba(255,255,255,0.1)]" />
+									<div className="absolute inset-0 blur-lg bg-white/5 rounded-full" />
+								</div>
+								<span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 animate-pulse">
+									Loading Poster
+								</span>
+							</div>
+						</motion.div>
+					)}
+				</AnimatePresence>
 				<Image
 					src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
 					alt={movie.title}
 					fill
-					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+					sizes='100vw'
 					priority
 					className='object-cover opacity-40 select-none'
+					onLoad={() => setImageLoading(false)}
+
 				/>
 				<div className='absolute inset-0 bg-linear-to-t from-black via-black/40 to-black/20 lg:from-[#010101]' />
 				<div className='absolute inset-0 bg-linear-to-r from-black via-transparent to-transparent lg:from-black/80' />
@@ -150,20 +176,19 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 					</motion.div>
 
 					{/* Action Buttons */}
-					<div className='flex flex-wrap items-center gap-6 pt-4'>
 
 
-						<LibraryControlsButtons
-							mediaId={movie.id}
-							mediaData={{
-								title: movie.title,
-								poster: movie.poster_path,
-								rating: movie.vote_average,
-								year: movie.release_date
-							}}
-							type="movie"
-						/>
-					</div>
+					<LibraryControlsButtons
+						mediaId={movie.id}
+						mediaData={{
+							title: movie.title,
+							poster: movie.poster_path,
+							rating: movie.vote_average,
+							year: movie.release_date
+						}}
+						type="movie"
+						userId={userId}
+					/>
 
 					{/* Watched Panel (Date & Rating) */}
 					<AnimatePresence mode="wait">

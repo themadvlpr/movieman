@@ -1,4 +1,6 @@
 import TvSeriesPage from "@/components/tvseries/TvSeriesPage"
+import { cookies } from 'next/headers';
+import { getAuthSession } from "@/lib/auth-sessions";
 
 export const metadata = {
     title: "TV Series | MovieMan",
@@ -10,6 +12,12 @@ export const metadata = {
     },
 };
 
-export default function SeriesPage() {
-    return <TvSeriesPage />
+export default async function SeriesPage() {
+    const cookieStore = await cookies();
+    const viewMode = cookieStore.get('tvseriesViewMode')?.value || 'grid';
+
+    const session = await getAuthSession();
+    const userId = session?.user?.id;
+
+    return <TvSeriesPage initialViewMode={viewMode as 'grid' | 'list'} userId={userId || ""} />
 }

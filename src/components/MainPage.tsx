@@ -16,7 +16,7 @@ import Loader from "@/components/ui/Loader"
 
 
 
-export default function MainPage({ initialGenreId }: { initialGenreId: number }) {
+export default function MainPage({ initialGenreId, userId }: { initialGenreId: number, userId: string }) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -123,7 +123,7 @@ export default function MainPage({ initialGenreId }: { initialGenreId: number })
                                 priority={true}
                                 quality={90}
                                 className="object-cover select-none object-top animate-kenburns"
-                                sizes="100vw"
+                                sizes='100vw'
                                 draggable={false}
                                 onLoad={() => setImageLoading(false)}
                             />
@@ -210,6 +210,7 @@ export default function MainPage({ initialGenreId }: { initialGenreId: number })
                                 year: release_date
                             }}
                             type="movie"
+                            userId={userId}
                         />
                     </div>
                 </div>

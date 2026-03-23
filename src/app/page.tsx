@@ -4,6 +4,7 @@ import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies"
 import { cookies } from 'next/headers'
 import { Suspense } from 'react'
 import Loader from '@/components/ui/Loader'
+import { getAuthSession } from "@/lib/auth-sessions";
 
 async function MainContent({ searchParams }: { searchParams: { genre?: string } }) {
     const queryClient = new QueryClient()
@@ -13,6 +14,9 @@ async function MainContent({ searchParams }: { searchParams: { genre?: string } 
     const genreStr = searchParams.genre || cookieStore.get('selectedGenreId')?.value || "28";
     const genreId = parseInt(genreStr, 10);
 
+    const session = await getAuthSession();
+    const userId = session?.user?.id;
+
     await queryClient.prefetchQuery({
         queryKey: ['discovermovies', genreId],
         queryFn: () => getDiscoverMovies(genreId.toString()),
@@ -20,13 +24,15 @@ async function MainContent({ searchParams }: { searchParams: { genre?: string } 
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-            <MainPage initialGenreId={genreId} />
+            <MainPage initialGenreId={genreId} userId={userId || ""} />
         </HydrationBoundary>
     )
 }
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ genre?: string }> }) {
     const resolvedSearchParams = await searchParams;
+
+
 
     return (
         <Suspense fallback={<Loader />}>

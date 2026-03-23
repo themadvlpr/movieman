@@ -3,30 +3,18 @@ import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-sessions";
 
 
+import { getMediaState } from "@/lib/db/media-service";
+
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
-    const mediaId = searchParams.get("mediaId");
+    const mediaId = Number(searchParams.get("mediaId"));
     const userId = searchParams.get("userId");
     const type = searchParams.get("type") || "movie";
 
-    if (!userId || !mediaId) {
-        return NextResponse.json(null);
-    }
+    if (!userId || !mediaId) return new Response("Missing params", { status: 400 });
 
-    try {
-        const state = await prisma.userMedia.findUnique({
-            where: {
-                userId_mediaId_type: {
-                    userId,
-                    mediaId: Number(mediaId),
-                    type
-                }
-            }
-        });
-        return NextResponse.json(state);
-    } catch (error) {
-        return NextResponse.json(null);
-    }
+    const state = await getMediaState(mediaId, userId, type);
+    return Response.json(state);
 }
 
 

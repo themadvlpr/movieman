@@ -7,6 +7,7 @@ import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import MoviePoster from "@/components/ui/MoviePoster"
+import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 
 const categories = [
     { key: 'popular', label: 'Popular' },
@@ -17,29 +18,24 @@ const categories = [
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
-export default function TvSeriesPage() {
+export default function TvSeriesPage({ initialViewMode, userId }: { initialViewMode: 'grid' | 'list', userId: string }) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
+
 
     const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated'>(() => {
         const urlCategory = searchParams.get('category') as any;
         if (['popular', 'topRated'].includes(urlCategory)) return urlCategory;
-
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('seriesCategory') as any;
-            if (['popular', 'topRated'].includes(saved)) return saved;
-        }
         return 'popular'
     })
 
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('seriesViewMode') as any;
-            if (['grid', 'list'].includes(saved)) return saved;
-        }
-        return 'grid'
-    })
+    const toggleView = async (mode: 'grid' | 'list') => {
+        const newMode = mode === 'grid' ? 'list' : 'grid'
+        setViewMode(newMode)
+        await updateViewMode(newMode, 'tvseries')
+    }
 
     const {
         data,
@@ -154,13 +150,13 @@ export default function TvSeriesPage() {
                     <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
                         <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
                             <button
-                                onClick={() => setViewMode('grid')}
+                                onClick={() => toggleView('list')}
                                 className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
                             >
                                 <Grid className="w-4 h-4" />
                             </button>
                             <button
-                                onClick={() => setViewMode('list')}
+                                onClick={() => toggleView('grid')}
                                 className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
                             >
                                 <List className="w-4 h-4" />
@@ -184,93 +180,120 @@ export default function TvSeriesPage() {
                         >
                             {tvData.map((show, idx) => (
                                 viewMode === 'grid' ? (
-                                    <Link
+                                    <div className="relative group"
                                         key={`${show.id}-${idx}`}
-                                        href={`/tvseries/${show.id}`}
-                                        className="group relative flex flex-col gap-2 sm:gap-3 cursor-pointer"
                                     >
-                                        <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
-                                            <MoviePoster
-                                                src={show.poster}
-                                                alt={show.name}
-                                                className="group-hover:scale-110 transition-transform duration-700 ease-out"
-                                            />
-                                            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 w-6 sm:w-7 h-6 sm:h-7 rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[10px] sm:text-xs font-bold text-white border border-white/20 z-20">
-                                                {idx + 1}
-                                            </div>
-                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 z-20">
-                                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/30 scale-90 group-hover:scale-100 transition-transform duration-300">
-                                                    <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-white ml-0.5" />
-                                                </div>
-                                                <div className="scale-90 group-hover:scale-100 transition-transform duration-300 delay-75">
-                                                    <LibraryControlsButtons movieId={show.id} size="sm" />
-                                                </div>
-                                            </div>
-                                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                                        </div>
-                                        <div className="px-0.5 sm:px-1">
-                                            <p className="text-white text-xs sm:text-sm font-bold truncate group-hover:text-white transition-colors">
-                                                {show.name}
-                                            </p>
-                                            <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
-                                                {show.vote_average !== 0 && (
-                                                    <>
-                                                        <div className="flex items-center gap-1">
-                                                            <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                                                            <span className="text-white text-[9px] sm:text-[10px] font-bold">
-                                                                {show.vote_average.toFixed(1)}
-                                                            </span>
-                                                        </div>
-                                                        <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">•</span>
-                                                    </>)}
-                                                <span className="text-zinc-500 text-[9px] sm:text-[10px] font-medium">
-                                                    {show.release_date.slice(0, 4)}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ) : (
-                                    <Link
-                                        key={`${show.id}-${idx}`}
-                                        href={`/tvseries/${show.id}`}
-                                        className="group flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
-                                    >
-                                        <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
-                                            <MoviePoster
-                                                src={show.poster}
-                                                alt={show.name}
-                                                className="group-hover:scale-105 transition-transform duration-500"
-                                            />
-                                            <div className="absolute top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20 z-20">
-                                                {idx + 1}
-                                            </div>
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
-                                                <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-white ml-0.5" />
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col justify-center gap-2 sm:gap-3 min-w-0">
-                                            <div>
-                                                <h3 className="text-white text-sm sm:text-xl font-bold group-hover:text-white transition-colors truncate">{show.name}</h3>
-                                                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 sm:mt-1.5">
-                                                    <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
-                                                        <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
-                                                        <span className="text-white text-[10px] sm:text-xs font-bold">{show.vote_average > 0 ? show.vote_average.toFixed(1) : "N/A"}</span>
+                                        <Link
+                                            key={`${show.id}-${idx}`}
+                                            href={`/tvseries/${show.id}`}
+                                            className="flex flex-col gap-2 sm:gap-3 cursor-pointer"
+                                        >
+                                            <div className="relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500">
+                                                <MoviePoster
+                                                    src={show.poster}
+                                                    alt={show.name}
+                                                    className="group-hover:scale-110 transition-transform duration-700 ease-out"
+                                                />
+
+                                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+                                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/30 scale-90 group-hover:scale-100 transition-transform duration-300">
+                                                        <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-white ml-0.5" />
                                                     </div>
-                                                    <span className="text-zinc-400 text-[10px] sm:text-sm">{show.release_date.slice(0, 4)}</span>
                                                 </div>
                                             </div>
-                                            <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
-                                                {show.overview}
-                                            </p>
-                                            <div className="flex items-center gap-4 mt-1 sm:mt-2 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
-                                                <div className="flex items-center gap-2 text-[#46d369] text-[10px] sm:text-xs font-bold uppercase tracking-widest">
-                                                    Discover
-                                                    <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[#46d369]" />
-                                                </div>
-                                                <LibraryControlsButtons movieId={show.id} size="md" />
+
+                                            <div className="px-0.5 sm:px-1">
+                                                <p className="text-white text-xs sm:text-sm font-bold truncate transition-colors">
+                                                    {show.name}
+                                                </p>
+                                            </div>
+                                        </Link>
+
+                                        <div className="absolute top-0 inset-0 pointer-events-none z-20 flex flex-col items-center justify-end">
+                                            <div className="mb-15 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
+                                                <LibraryControlsButtons
+                                                    mediaId={show.id}
+                                                    mediaData={{
+                                                        title: show.name,
+                                                        poster: show.poster_path,
+                                                        rating: show.vote_average,
+                                                        year: show.release_date
+                                                    }}
+                                                    type="tv"
+                                                    detailPage={false}
+                                                    userId={userId}
+                                                />
                                             </div>
                                         </div>
-                                    </Link>
+
+                                        <div className="absolute top-2 left-2 w-6 h-6 rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[10px] font-bold text-white border border-white/20 z-30 pointer-events-none">
+                                            {idx + 1}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        key={`${show.id}-${idx}`}
+                                        className="relative group">
+                                        <Link
+                                            key={`${show.id}-${idx}`}
+                                            href={`/tvseries/${show.id}`}
+                                            className="flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
+                                        >
+                                            <div className="relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0">
+                                                <MoviePoster
+                                                    src={show.poster}
+                                                    alt={show.name}
+                                                    className="group-hover:scale-105 transition-transform duration-500"
+                                                />
+                                                <div className="absolute top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20 z-20">
+                                                    {idx + 1}
+                                                </div>
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+                                                    <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-white ml-0.5" />
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-col justify-center gap-2 sm:gap-3 min-w-0 pr-20"> {/* pr-20 чтобы текст не залезал под кнопки */}
+                                                <div>
+                                                    <h3 className="text-white text-sm sm:text-xl font-bold transition-colors truncate">{show.name}</h3>
+                                                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5">
+                                                        <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
+                                                            <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
+                                                            <span className="text-white text-[10px] sm:text-xs font-bold">{show.vote_average > 0 ? show.vote_average.toFixed(1) : "N/A"}</span>
+                                                        </div>
+                                                        <span className="text-zinc-400 text-[10px] sm:text-sm">{show.release_date?.slice(0, 4)}</span>
+                                                    </div>
+                                                </div>
+                                                <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
+                                                    {show.overview}
+                                                </p>
+
+                                                <div className="flex items-center gap-4 mt-2 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
+                                                    <div className="flex items-center gap-2 text-[#414141] text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+                                                        Discover
+                                                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[#292929]" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Link>
+
+                                        <div className="absolute bottom-6 right-6 z-30 pointer-events-none translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                                            <div className="pointer-events-auto">
+                                                <LibraryControlsButtons
+                                                    mediaId={show.id}
+                                                    mediaData={{
+                                                        title: show.name,
+                                                        poster: show.poster_path,
+                                                        rating: show.vote_average,
+                                                        year: show.release_date
+                                                    }}
+                                                    type="tv"
+                                                    detailPage={false}
+                                                    userId={userId}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 )
                             ))}
                         </div>

@@ -4,6 +4,7 @@ import MovieDetail from "@/components/movies/MovieDetail";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
+import { getAuthSession } from "@/lib/auth-sessions";
 
 interface MoviePageProps {
     params: Promise<{ id: string }>;
@@ -27,6 +28,9 @@ export async function generateMetadata({ params }: MoviePageProps): Promise<Meta
 
 export default async function MoviePage({ params }: MoviePageProps) {
     const { id } = await params
+    const session = await getAuthSession();
+    const userId = session?.user?.id;
+
     const queryClient = new QueryClient()
 
     await queryClient.prefetchQuery({
@@ -43,7 +47,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
     return (
         <HydrationBoundary state={state}>
-            <MovieDetail movieId={id} />
+            <MovieDetail movieId={id} userId={userId || ""} />
         </HydrationBoundary>
     )
 }

@@ -1,5 +1,6 @@
 import MoviesPage from "@/components/movies/MoviesPage";
-
+import { cookies } from 'next/headers';
+import { getAuthSession } from "@/lib/auth-sessions";
 
 export const metadata = {
     title: "Movies | MovieMan",
@@ -11,8 +12,14 @@ export const metadata = {
     },
 };
 
-export default function Movies() {
+export default async function Movies() {
+    const cookieStore = await cookies();
+    const viewMode = cookieStore.get('moviesViewMode')?.value || 'grid';
+
+    const session = await getAuthSession();
+    const userId = session?.user?.id;
+
     return (
-        <MoviesPage />
+        <MoviesPage initialViewMode={viewMode as 'grid' | 'list'} userId={userId || ""} />
     );
 }

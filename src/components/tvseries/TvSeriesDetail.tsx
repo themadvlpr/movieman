@@ -1,30 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Calendar, Play, User, Eye, ChevronRight, List, Info, Globe } from 'lucide-react'
+import { Star, Calendar, ChevronRight, List, Info, Globe } from 'lucide-react'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
 import { TvSeriesDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import Loader from '../ui/Loader'
 import { useQuery } from '@tanstack/react-query'
 import { getTVDetails } from '@/lib/tmdb/getTvSeriesDetails'
 import DetailCarousel from '../ui/DetailCarousel'
+import { useMediaActions } from '@/hooks/useMediaStates'
 
 
-export default function TvSeriesDetail({ tvId }: { tvId: string }) {
+
+export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId: string }) {
+
+	const [imageLoading, setImageLoading] = useState(true);
+
 
 	const { data } = useQuery<TvSeriesDetailProps>({
 		queryKey: ['tv', tvId],
 		queryFn: () => getTVDetails(tvId),
 	})
 
+
+	const { dbState } = useMediaActions(Number(tvId), userId, "tv");
+
+
 	if (!data) return <Loader />
+
+
+	console.log(data);
+
 
 	const { series, credits, similarSeries } = data
 
-	const [isWatched, setIsWatched] = useState(false)
 	const [watchDate, setWatchDate] = useState(new Date().toISOString().split('T')[0])
 	const [personalRating, setPersonalRating] = useState(5)
 	const [note, setNote] = useState('')
@@ -45,25 +57,48 @@ export default function TvSeriesDetail({ tvId }: { tvId: string }) {
 		if (!mainTvCrewMap[c.id]) {
 			mainTvCrewMap[c.id] = { id: c.id, name: c.name, jobs: [c.job] }
 		} else if (!mainTvCrewMap[c.id].jobs.includes(c.job)) {
-			// Replace "Executive Producer" with "Exec Producer" for brevity if needed, 
-			// but I'll stay consistent with what TMDB provides.
 			mainTvCrewMap[c.id].jobs.push(c.job)
 		}
 	})
 	const mainTvCrew = Object.values(mainTvCrewMap)
 
+	useEffect(() => {
+		setImageLoading(true);
+	}, []);
 
 	return (
 		<div className='flex-1 relative bg-black text-white min-h-screen'>
 			{/* Backdrop Section */}
-			<div className='absolute inset-0 h-[35vh] sm:h-[45vh] lg:h-[80vh] w-full overflow-hidden pointer-events-none'>
+			<div className='absolute inset-0 h-[35vh] sm:h-[45vh] lg:h-screen w-full overflow-hidden pointer-events-none'>
+				<AnimatePresence>
+					{imageLoading && (
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							className="absolute inset-0 bg-zinc-900/90 overflow-hidden"
+						>
+							<div className="absolute inset-0 bg-linear-to-r from-transparent via-white/15 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+							<div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+								<div className="relative">
+									<div className="w-14 h-14 rounded-full border-4 border-white/10 border-t-white/90 animate-spin shadow-[0_0_20px_rgba(255,255,255,0.1)]" />
+									<div className="absolute inset-0 blur-lg bg-white/5 rounded-full" />
+								</div>
+								<span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 animate-pulse">
+									Loading Poster
+								</span>
+							</div>
+						</motion.div>
+					)}
+				</AnimatePresence>
 				<Image
 					src={`https://image.tmdb.org/t/p/original${series.backdrop_path}`}
 					alt={series.name || 'Backdrop'}
 					fill
-					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+					sizes='100vw'
 					priority
 					className='object-cover opacity-40 select-none'
+					onLoad={() => setImageLoading(false)}
 				/>
 				<div className='absolute inset-0 bg-linear-to-t from-black via-black/40 to-black/20 lg:from-[#010101]' />
 				<div className='absolute inset-0 bg-linear-to-r from-black via-transparent to-transparent lg:from-black/80' />
@@ -152,31 +187,21 @@ export default function TvSeriesDetail({ tvId }: { tvId: string }) {
 					</motion.div>
 
 					{/* Action Buttons */}
-					<div className='flex flex-wrap items-center gap-6 pt-4'>
-						<button
-							onClick={() => setIsWatched(!isWatched)}
-							className={`flex items-center gap-2.5 px-6 py-2.5 rounded-lg font-black uppercase tracking-widest text-[10px] transition-all active:scale-95 cursor-pointer 
-								${isWatched ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'}`}
-						>
-							<Eye strokeWidth={3} className={`w-3.5 h-3.5 ${isWatched ? 'fill-black' : ''}`} />
-							{isWatched ? 'Watched' : 'Mark as Watched'}
-						</button>
-
-						<LibraryControlsButtons
-							mediaId={series.id}
-							mediaData={{
-								title: series.name,
-								poster: series.poster_path,
-								rating: series.vote_average,
-								year: series.first_air_date
-							}}
-							type="tv"
-						/>
-					</div>
+					<LibraryControlsButtons
+						mediaId={series.id}
+						mediaData={{
+							title: series.name,
+							poster: series.poster_path,
+							rating: series.vote_average,
+							year: series.first_air_date
+						}}
+						type="tv"
+						userId={userId}
+					/>
 
 					{/* Watched Panel (Date & Rating) */}
 					<AnimatePresence mode="wait">
-						{isWatched && (
+						{dbState?.isWatched && (
 							<motion.div
 								initial={{ opacity: 0, y: 10 }}
 								animate={{ opacity: 1, y: 0 }}
@@ -267,11 +292,11 @@ export default function TvSeriesDetail({ tvId }: { tvId: string }) {
 				<hr className='border-white/10 my-12' />
 
 				{/* Cast Carousel */}
-				<DetailCarousel type='cast' items={credits.cast} mediaType='tv' />
+				<DetailCarousel type='cast' items={credits.cast.slice(0, 100)} mediaType='tv' />
 
 				{/* Note Section (Between Cast and Similar) */}
 				<AnimatePresence>
-					{isWatched && (
+					{dbState?.isWatched && (
 						<motion.section
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
