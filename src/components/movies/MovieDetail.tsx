@@ -11,6 +11,8 @@ import { getMovieDetails } from '@/lib/tmdb/getMovieDetails'
 import Loader from '../ui/Loader'
 import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import DetailCarousel from '../ui/DetailCarousel'
+import { authClient } from '@/lib/auth-client'
+import { useMediaActions } from '@/hooks/useMediaStates'
 
 
 export default function MovieDetail({ movieId }: { movieId: string }) {
@@ -20,11 +22,15 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 		queryFn: () => getMovieDetails(movieId),
 	})
 
+	const { data: session } = authClient.useSession();
+	const userId = session?.user?.id;
+
+	const { dbState } = useMediaActions(Number(movieId), userId, "movie");
+
 	if (!data) return <Loader />
 
 	const { movie, credits, similarMovies } = data
 
-	const [isWatched, setIsWatched] = useState(false)
 	const [watchDate, setWatchDate] = useState(new Date().toISOString().split('T')[0])
 	const [personalRating, setPersonalRating] = useState(5)
 	const [note, setNote] = useState('')
@@ -145,21 +151,23 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 
 					{/* Action Buttons */}
 					<div className='flex flex-wrap items-center gap-6 pt-4'>
-						<button
-							onClick={() => setIsWatched(!isWatched)}
-							className={`flex items-center gap-2.5 px-6 py-2.5 rounded-lg font-black uppercase tracking-widest text-[10px] transition-all active:scale-95 cursor-pointer 
-								${isWatched ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'}`}
-						>
-							<Eye strokeWidth={3} className={`w-3.5 h-3.5 ${isWatched ? 'fill-black' : ''}`} />
-							{isWatched ? 'Watched' : 'Mark as Watched'}
-						</button>
 
-						<LibraryControlsButtons movieId={movie.id} size="md" hideWatched={true} />
+
+						<LibraryControlsButtons
+							mediaId={movie.id}
+							mediaData={{
+								title: movie.title,
+								poster: movie.poster_path,
+								rating: movie.vote_average,
+								year: movie.release_date
+							}}
+							type="movie"
+						/>
 					</div>
 
 					{/* Watched Panel (Date & Rating) */}
 					<AnimatePresence mode="wait">
-						{isWatched && (
+						{dbState?.isWatched && (
 							<motion.div
 								initial={{ opacity: 0, y: 10 }}
 								animate={{ opacity: 1, y: 0 }}
@@ -229,7 +237,7 @@ export default function MovieDetail({ movieId }: { movieId: string }) {
 
 				{/* Note Section (Between Cast and Similar) */}
 				<AnimatePresence>
-					{isWatched && (
+					{dbState?.isWatched && (
 						<motion.section
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}

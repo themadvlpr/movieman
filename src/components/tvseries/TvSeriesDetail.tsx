@@ -162,7 +162,16 @@ export default function TvSeriesDetail({ tvId }: { tvId: string }) {
 							{isWatched ? 'Watched' : 'Mark as Watched'}
 						</button>
 
-						<LibraryControlsButtons movieId={series.id} size="md" hideWatched={true} />
+						<LibraryControlsButtons
+							mediaId={series.id}
+							mediaData={{
+								title: series.name,
+								poster: series.poster_path,
+								rating: series.vote_average,
+								year: series.first_air_date
+							}}
+							type="tv"
+						/>
 					</div>
 
 					{/* Watched Panel (Date & Rating) */}

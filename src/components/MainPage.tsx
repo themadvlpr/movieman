@@ -201,7 +201,16 @@ export default function MainPage({ initialGenreId }: { initialGenreId: number })
                             <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-black" />
                             <span className="text-sm sm:text-base font-bold">Discover</span>
                         </Link>
-                        <LibraryControlsButtons />
+                        <LibraryControlsButtons
+                            mediaId={id}
+                            mediaData={{
+                                title,
+                                poster: backdrop_path,
+                                rating,
+                                year: release_date
+                            }}
+                            type="movie"
+                        />
                     </div>
                 </div>
 

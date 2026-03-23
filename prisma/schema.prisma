@@ -18,6 +18,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  userMedia     UserMedia[]
 
   @@unique([email])
   @@map("user")
@@ -70,4 +71,31 @@ model Verification {
   @@unique([identifier, value])
   @@index([identifier])
   @@map("verification")
+}
+
+
+model UserMedia {
+    id           Int      @id @default(autoincrement())
+    userId       String
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    mediaId      Int
+    type         String // movie or tv
+    title        String
+    poster       String?
+    rating       Float?
+    userRating   Float?
+    userComment  String?
+    year         DateTime?
+    description  String?
+    watchedDate  DateTime?
+
+    isWatched    Boolean   @default(false)
+    isFavorite   Boolean   @default(false)
+    isWishlist   Boolean   @default(false)
+
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    @@unique([userId, mediaId, type])
 }
