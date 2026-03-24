@@ -1,7 +1,7 @@
 'use client'
 
 import { Bookmark, Eye, Heart } from "lucide-react"
-import { useMediaActions } from "@/hooks/useMediaStates"
+import { useMediaActions } from "@/hooks/useDBMediaStates"
 
 interface LibraryControlsButtonsProps {
     mediaId: number;

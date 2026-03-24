@@ -13,6 +13,8 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
     let title = ''
     let subtitle = ''
 
+    const uniqueItems = Array.from(new Map((items || []).map(item => [item.id, item])).values());
+
     if (type === 'cast') {
         title = 'Top Cast'
         subtitle = 'The actors and their roles'
@@ -26,6 +28,7 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
 
     if (!items || items.length === 0) return null
 
+
     return (
         <section className={'mt-15 sm:mt-20'}>
             <div className='flex justify-between items-end mb-10'>
@@ -35,7 +38,7 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                 </div>
             </div>
             <div className='flex gap-8 overflow-x-auto pb-10 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0'>
-                {items.map((item) => {
+                {uniqueItems.map((item) => {
                     if (type === 'cast') {
                         const actor = item as Actor
                         const displayCharacter = actor.roles?.[0]?.character ?? actor.character ?? 'Unknown Role'

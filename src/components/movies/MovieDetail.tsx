@@ -11,7 +11,7 @@ import { getMovieDetails } from '@/lib/tmdb/getMovieDetails'
 import Loader from '../ui/Loader'
 import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import DetailCarousel from '../ui/DetailCarousel'
-import { useMediaActions } from '@/hooks/useMediaStates'
+import { useMediaActions } from '@/hooks/useDBMediaStates'
 
 
 export default function MovieDetail({ movieId, userId }: { movieId: string, userId: string }) {

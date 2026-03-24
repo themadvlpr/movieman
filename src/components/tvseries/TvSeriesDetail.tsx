@@ -11,7 +11,7 @@ import Loader from '../ui/Loader'
 import { useQuery } from '@tanstack/react-query'
 import { getTVDetails } from '@/lib/tmdb/getTvSeriesDetails'
 import DetailCarousel from '../ui/DetailCarousel'
-import { useMediaActions } from '@/hooks/useMediaStates'
+import { useMediaActions } from '@/hooks/useDBMediaStates'
 
 
 

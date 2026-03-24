@@ -1,5 +1,5 @@
 'use client'
-import { useAuthActions } from '@/hooks/use-auth-actions'
+import { useAuthActions } from '@/hooks/useAuthActions'
 import { SocialAuthButton } from './SocialAuthButton'
 
 export default function SignInButtons() {
