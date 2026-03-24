@@ -4,7 +4,7 @@ import { getTVDetails } from "@/lib/tmdb/getTvSeriesDetails";
 import TvSeriesDetail from "@/components/tvseries/TvSeriesDetail";
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { getAuthSession } from "@/lib/auth-sessions";
-import { getMediaState } from "@/lib/db/media-service";
+import { getMediaState } from "@/lib/db/getMedia";
 
 interface TvSeriesPageProps {
     params: Promise<{ id: string }>;

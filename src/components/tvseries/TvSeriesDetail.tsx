@@ -62,9 +62,6 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 	})
 	const mainTvCrew = Object.values(mainTvCrewMap)
 
-	useEffect(() => {
-		setImageLoading(true);
-	}, []);
 
 	return (
 		<div className='flex-1 relative bg-black text-white min-h-screen'>

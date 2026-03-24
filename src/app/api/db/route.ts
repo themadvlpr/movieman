@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-sessions";
 
 
-import { getMediaState } from "@/lib/db/media-service";
+import { getMediaState } from "@/lib/db/getMedia";
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
