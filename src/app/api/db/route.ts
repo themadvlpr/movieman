@@ -18,54 +18,60 @@ export async function GET(req: Request) {
 }
 
 
-export async function POST(req: Request) {
+export async function PATCH(req: Request) {
     try {
         const session = await getAuthSession();
         if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const body = await req.json();
-        const { mediaId, type, action, mediaData = {} } = body;
+        const { mediaId, type, action, mediaData } = body;
         const userId = session.user.id;
 
-        const movieYear = mediaData.year ? new Date(mediaData.year) : null;
-
-        const record = await prisma.userMedia.upsert({
+        const record = await prisma.userMedia.findUnique({
             where: {
                 userId_mediaId_type: {
                     userId,
                     mediaId: Number(mediaId),
-                    type: type
+                    type
                 }
-            },
-            update: {},
-            create: {
-                userId,
-                mediaId: Number(mediaId),
-                type: type,
-                title: mediaData.title || "Unknown",
-                poster: mediaData.poster,
-                rating: mediaData.rating ? Number(mediaData.rating) : null,
-                year: movieYear,
             }
         });
 
-        let updateData: any = {
-            [action]: !record[action as keyof typeof record]
-        };
 
-        if (action === 'isWatched') {
-            const isNowWatched = !record.isWatched;
-            updateData.watchedDate = isNowWatched ? new Date() : null;
-        }
+        const movieYear = mediaData?.year ? new Date(mediaData.year) : null;
+        const currentStatus = record ? (record[action as keyof typeof record] as boolean) : false;
+        const newStatus = !currentStatus;
 
-        const updated = await prisma.userMedia.update({
-            where: { id: record.id },
-            data: updateData
+        const updated = await prisma.userMedia.upsert({
+            where: {
+                userId_mediaId_type: {
+                    userId,
+                    mediaId: Number(mediaId),
+                    type
+                }
+            },
+            update: {
+                [action]: newStatus,
+                ...(action === 'isWatched' && {
+                    watchedDate: newStatus ? new Date() : null
+                })
+            },
+            create: {
+                userId,
+                mediaId: Number(mediaId),
+                type,
+                title: mediaData?.title || "Unknown",
+                poster: mediaData?.poster,
+                rating: mediaData?.rating ? Number(mediaData?.rating) : null,
+                year: movieYear,
+                [action]: true,
+                ...(action === 'isWatched' && { watchedDate: new Date() })
+            }
         });
 
         return NextResponse.json(updated);
     } catch (error) {
-        console.error("API_DB_POST_ERROR:", error);
+        console.error("API_DB_PATCH_ERROR:", error);
         return NextResponse.json({ error: "Server Error" }, { status: 500 });
     }
 }

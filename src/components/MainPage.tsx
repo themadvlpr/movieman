@@ -9,14 +9,13 @@ import { ChevronDown, Check, Star } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 import { genresById } from "@/lib/tmdb/types/tmdb-types"
 import Cookies from "js-cookie"
-import { useQuery } from "@tanstack/react-query"
-import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import Loader from "@/components/ui/Loader"
+import { Movie } from "@/lib/tmdb/types/tmdb-types"
 
 
 
-export default function MainPage({ initialGenreId, userId }: { initialGenreId: number, userId: string }) {
+export default function MainPage({ movies, initialGenreId, userId }: { movies: Movie[], initialGenreId: number, userId: string }) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -25,12 +24,7 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
     const urlGenre = searchParams.get('genre');
     const selectedGenreId = urlGenre ? parseInt(urlGenre, 10) : initialGenreId;
 
-    const { data } = useQuery({
-        queryKey: ['discovermovies', selectedGenreId],
-        queryFn: () => getDiscoverMovies(selectedGenreId.toString()),
-    })
 
-    const movies = data?.results || []
     const [currentPage, setCurrentPage] = useState(0)
     const [imageLoading, setImageLoading] = useState(true);
 
@@ -46,13 +40,17 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
         setImageLoading(true);
     }, [currentPage]);
 
+    const moviesWithBackdrops = movies.filter((movie): movie is Movie & { backdrop_path: string, initialDbState: { isWatched: boolean; isWishlist: boolean; isFavorite: boolean; } } =>
+        !!movie.backdrop_path
+    );
+
     useEffect(() => {
-        if (!movies || movies.length === 0) return;
+        if (!movies || moviesWithBackdrops.length === 0) return;
         const timer = setInterval(() => {
-            setCurrentPage((prev) => (prev + 1) % movies.length);
+            setCurrentPage((prev) => (prev + 1) % moviesWithBackdrops.length);
         }, 15000);
         return () => clearInterval(timer);
-    }, [movies, currentPage]);
+    }, [moviesWithBackdrops, currentPage]);
 
     const changePage = (index: number) => {
         setCurrentPage(index);
@@ -63,8 +61,9 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
         return <Loader />;
     }
 
-    const currentMovie = movies[currentPage];
-    const nextMovie = movies[(currentPage + 1) % movies.length];
+
+    const currentMovie = moviesWithBackdrops[currentPage];
+    const nextMovie = moviesWithBackdrops[(currentPage + 1) % moviesWithBackdrops.length];
 
     const {
         id,
@@ -75,8 +74,11 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
         backdrop_path,
         origin_country: country,
         logo_path,
+        initialDbState
     } = currentMovie;
 
+
+    console.log(currentMovie.initialDbState);
 
     return (
         <div className='flex-1 relative flex flex-col justify-end bg-black lg:bg-[#010101]'
@@ -120,7 +122,7 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
                                 src={`https://image.tmdb.org/t/p/original${backdrop_path}`}
                                 alt={title}
                                 fill
-                                priority={true}
+                                priority
                                 quality={90}
                                 className="object-cover select-none object-top animate-kenburns"
                                 sizes='100vw'
@@ -150,7 +152,7 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
                                     alt={title}
                                     width={600}
                                     height={240}
-                                    priority={true}
+                                    priority
                                     className="select-none w-64 sm:w-80 md:w-100 h-auto object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] pointer-events-none"
                                     draggable={false}
                                 />
@@ -211,6 +213,7 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
                             }}
                             type="movie"
                             userId={userId}
+                            initialState={initialDbState}
                         />
                     </div>
                 </div>
@@ -264,7 +267,7 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
                         <button
                             onClick={() =>
                                 changePage(
-                                    currentPage > 0 ? currentPage - 1 : movies.length - 1
+                                    currentPage > 0 ? currentPage - 1 : moviesWithBackdrops.length - 1
                                 )
                             }
                             className="p-2 md:p-3 rounded-full bg-black/40 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/10 sm:border-transparent hover:bg-white/20 transition-colors text-zinc-400 cursor-pointer order-1 shrink-0"
@@ -324,7 +327,7 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
                         <button
                             onClick={() =>
                                 changePage(
-                                    currentPage < movies.length - 1 ? currentPage + 1 : 0
+                                    currentPage < moviesWithBackdrops.length - 1 ? currentPage + 1 : 0
                                 )
                             }
                             className="p-2 md:p-3 rounded-full bg-black/40 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/10 sm:border-transparent hover:bg-white/20 transition-colors text-zinc-400 cursor-pointer order-3"
@@ -339,7 +342,7 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
                     {/* Mini preview of next movie */}
                     <div
                         className="hidden sm:block group relative sm:w-64 md:w-80 lg:w-96 aspect-video rounded-lg overflow-hidden cursor-pointer shadow-2xl ring-1 ring-white/30 hover:ring-white/40 transition-all duration-300 bg-[#1a1a1a]"
-                        onClick={() => changePage((currentPage + 1) % movies.length)}
+                        onClick={() => changePage((currentPage + 1) % moviesWithBackdrops.length)}
                     >
                         <div className="absolute top-3 left-3 z-10 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] font-bold uppercase tracking-wider text-white/90 border border-white/10">
                             Next Up
@@ -350,6 +353,7 @@ export default function MainPage({ initialGenreId, userId }: { initialGenreId: n
                                 src={`https://image.tmdb.org/t/p/original${nextMovie.backdrop_path}`}
                                 alt={nextMovie.title}
                                 fill
+                                priority
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 className="select-none object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                                 draggable={false}

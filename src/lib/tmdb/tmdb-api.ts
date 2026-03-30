@@ -17,7 +17,7 @@ export async function tmdbFetch(endpoint: string, params: TmdbParams = {}, optio
     }
 
     const url = new URL(`${TMDB_BASE_URL}${endpoint}`);
-    
+
     // Add parameters from arguments
     const finalParams = { ...params };
     if (!finalParams.language) {
@@ -78,7 +78,10 @@ type CacheOptions = {
     stale?: number;        // How long to serve stale data while new data is being fetched
 }
 
-export function createResponse(data: any, status = 200, options: CacheOptions = {}
+export function createResponse<T>(
+    data: T,
+    status = 200,
+    options: CacheOptions = {}
 ) {
     const { maxage = 3600, stale = 86400 } = options;
 

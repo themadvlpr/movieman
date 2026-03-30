@@ -4,7 +4,9 @@ import { getTVDetails } from "@/lib/tmdb/getTvSeriesDetails";
 import TvSeriesDetail from "@/components/tvseries/TvSeriesDetail";
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { getAuthSession } from "@/lib/auth-sessions";
-import { getMediaState } from "@/lib/db/getMedia";
+import { getUserMediaStatus } from "@/lib/db/getUserMediaStatus";
+import { TvSeriesDetailProps } from "@/lib/tmdb/types/tmdb-types";
+import { notFound } from "next/navigation";
 
 interface TvSeriesPageProps {
     params: Promise<{ id: string }>;
@@ -35,17 +37,30 @@ export default async function TvSeriesPage({ params }: TvSeriesPageProps) {
 
     await queryClient.prefetchQuery({
         queryKey: ['tv', id],
-        queryFn: () => getTVDetails(id),
+        queryFn: async () => {
+            const tvData = await getTVDetails(id);
+            let dbStatus = { isWatched: false, isWishlist: false, isFavorite: false };
+
+            if (userId) {
+                const statuses = await getUserMediaStatus(userId, [Number(id)], "tv");
+                if (statuses && statuses[Number(id)]) {
+                    dbStatus = statuses[Number(id)];
+                }
+            }
+
+            return {
+                ...tvData,
+                initialDbState: dbStatus
+            };
+        },
     });
 
 
-
-    if (userId) {
-        await queryClient.prefetchQuery({
-            queryKey: ["media-state", Number(id), userId],
-            queryFn: () => getMediaState(Number(id), userId, "tv"),
-        });
+    const tvData = queryClient.getQueryData<TvSeriesDetailProps>(['tv', id])
+    if (!tvData?.series) {
+        notFound()
     }
+
 
     const state = dehydrate(queryClient);
 

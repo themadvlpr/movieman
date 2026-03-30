@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { getAuthSession } from "@/lib/auth-sessions";
+import { MovieDetailProps } from "@/lib/tmdb/types/tmdb-types";
+import { getUserMediaStatus } from "@/lib/db/getUserMediaStatus";
 
 interface MoviePageProps {
     params: Promise<{ id: string }>;
@@ -35,12 +37,27 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
     await queryClient.prefetchQuery({
         queryKey: ['movie', id],
-        queryFn: () => getMovieDetails(id),
-    })
+        queryFn: async () => {
+            const movieData = await getMovieDetails(id);
+            let dbStatus = { isWatched: false, isWishlist: false, isFavorite: false };
+
+            if (userId) {
+                const statuses = await getUserMediaStatus(userId, [Number(id)], "movie");
+                if (statuses && statuses[Number(id)]) {
+                    dbStatus = statuses[Number(id)];
+                }
+            }
+
+            return {
+                ...movieData,
+                initialDbState: dbStatus
+            };
+        },
+    });
 
     const state = dehydrate(queryClient)
 
-    const movieData = queryClient.getQueryData(['movie', id]) as any
+    const movieData = queryClient.getQueryData<MovieDetailProps>(['movie', id])
     if (!movieData?.movie) {
         notFound()
     }

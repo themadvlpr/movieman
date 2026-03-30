@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X, Star, Play, User as UserIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { SearchResponse } from '@/lib/tmdb/types/tmdb-types'
+import { MultiSearchResult } from '@/lib/tmdb/types/tmdb-types'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -137,7 +137,7 @@ export default function SearchBar() {
 									) : results.length > 0 ? (
 										<div className='overflow-y-auto custom-scrollbar p-6'>
 											<div className='grid grid-cols-1 gap-2'>
-												{results.map((result: any) => {
+												{results.map((result: MultiSearchResult) => {
 													const isPerson = result.media_type === 'person'
 													const isMovie = result.media_type === 'movie'
 													const isTV = result.media_type === 'tv'
@@ -179,7 +179,7 @@ export default function SearchBar() {
 																	<span className='text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/5 text-zinc-500'>
 																		{result.media_type}
 																	</span>
-																	{result.vote_average > 0 && (
+																	{result.vote_average && result.vote_average > 0 && (
 																		<div className='flex items-center gap-1'>
 																			<Star className='w-3 h-3 fill-amber-500 text-amber-500' />
 																			<span className='text-[10px] font-black text-zinc-300'>{result.vote_average.toFixed(1)}</span>

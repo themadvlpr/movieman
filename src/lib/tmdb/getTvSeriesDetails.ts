@@ -2,7 +2,7 @@ import { tmdbFetch, CacheConfig } from "@/lib/tmdb/tmdb-api";
 
 export async function getTVDetails(id: string) {
     const [series, credits, recommendations] = await Promise.all([
-        tmdbFetch(`/tv/${id}`, {}, CacheConfig.DETAILS),
+        tmdbFetch(`/tv/${id}`, { append_to_response: 'videos' }, CacheConfig.DETAILS),
         tmdbFetch(`/tv/${id}/aggregate_credits`, {}, CacheConfig.DETAILS),
         tmdbFetch(`/tv/${id}/recommendations`, {}, CacheConfig.LISTS),
     ]);

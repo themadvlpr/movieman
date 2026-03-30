@@ -1,4 +1,5 @@
 import { tmdbFetch, CacheConfig, validateParams, createResponse, createErrorResponse } from "@/lib/tmdb/tmdb-api";
+import { Movie } from "@/lib/tmdb/types/tmdb-types";
 
 export async function GET(request: Request) {
     try {
@@ -22,7 +23,7 @@ export async function GET(request: Request) {
         // 2. Fetch taglines for each movie in parallel
         // Use Promise.all to avoid waiting for each movie sequentially
         const moviesWithTaglines = await Promise.all(
-            data.results.map(async (movie: any) => {
+            data.results.map(async (movie: Movie) => {
                 try {
                     const details = await tmdbFetch(
                         `/movie/${movie.id}`,

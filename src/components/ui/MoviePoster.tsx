@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
+import Image from "next/image"
 
-export default function MoviePoster({ src, alt, className }: { src: string | null, alt: string, className?: string }) {
+export default function MoviePoster({ src, alt, className, priority }: { src: string | null, alt: string, className?: string, priority?: boolean }) {
     const [isLoaded, setIsLoaded] = useState(false);
 
     return (
@@ -21,13 +22,14 @@ export default function MoviePoster({ src, alt, className }: { src: string | nul
             </AnimatePresence>
 
             {src ? (
-                <motion.img
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isLoaded ? 1 : 0 }}
-                    transition={{ duration: 0.4 }}
+                <Image
                     src={src}
                     alt={alt}
+                    style={priority ? { opacity: 1 } : {}}
                     onLoad={() => setIsLoaded(true)}
+                    priority={priority}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="w-full h-full object-cover"
                 />
             ) : (

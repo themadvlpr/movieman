@@ -5,7 +5,7 @@ import { User, Star, Play } from "lucide-react"
 
 interface DetailCarouselProps {
     type: 'cast' | 'similar' | 'person-credits'
-    items: (Actor | Movie | TvSeries | any)[]
+    items: (Actor | Movie | TvSeries)[]
     mediaType: 'movie' | 'tv'
 }
 
@@ -44,15 +44,15 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                         const displayCharacter = actor.roles?.[0]?.character ?? actor.character ?? 'Unknown Role'
 
                         return (
-                            <Link key={actor.id} href={`/person/${actor.id}`} className='w-44 shrink-0 group block'>
-                                <div className='relative aspect-4/5 cursor-pointer rounded-xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
+                            <Link key={actor.id} href={`/person/${actor.id}`} className='w-36 shrink-0 group block'>
+                                <div className='relative aspect-4/5 w-full cursor-pointer rounded-xl overflow-hidden mb-4 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl'>
                                     {actor.profile_path ? (
                                         <Image
                                             src={`https://image.tmdb.org/t/p/w342${actor.profile_path}`}
                                             alt={actor.name || 'Actor'}
                                             fill
                                             sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                                            className='object-cover cursor-pointer group-hover:scale-105 transition-all duration-700 ease-out'
+                                            className='object-cover object-[center_20%] cursor-pointer group-hover:scale-105 transition-all duration-700 ease-out'
                                         />
                                     ) : (
                                         <div className='w-full h-full flex items-center justify-center bg-zinc-800'>
@@ -113,11 +113,15 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                                 <h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{mediaTitle}</h4>
                                 <div className='flex flex-col gap-1 mt-1.5'>
                                     <div className='flex items-center gap-3'>
-                                        <div className='flex items-center gap-1.5'>
-                                            <Star className='w-3 h-3 fill-amber-400 text-amber-400' />
-                                            <span className='text-[10px] font-black text-zinc-100'>{voteAverage ? voteAverage.toFixed(1) : 'N/A'}</span>
-                                        </div>
-                                        <span className='text-zinc-800 font-bold'>|</span>
+                                        {voteAverage !== 0 && (
+                                            <>
+                                                <div className='flex items-center gap-1.5'>
+                                                    <Star className='w-3 h-3 fill-amber-400 text-amber-400' />
+                                                    <span className='text-[10px] font-black text-zinc-100'>{voteAverage.toFixed(1)}</span>
+                                                </div>
+                                                <span className='text-zinc-800 font-bold'>|</span>
+                                            </>
+                                        )}
                                         <span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{year}</span>
                                     </div>
                                     {type === 'person-credits' && (

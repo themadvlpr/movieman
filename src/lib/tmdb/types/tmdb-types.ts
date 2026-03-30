@@ -18,7 +18,21 @@ export interface Movie {
     production_countries?: { iso_3166_1: string; name: string }[];
     runtime: number
     genres: { id: number; name: string }[]
+    origin_country?: string[];
+    videos?: { results: Video[] };
 }
+
+export interface Video {
+    id: string;
+    iso_639_1: string;
+    iso_3166_1: string;
+    key: string;
+    name: string;
+    site: string;
+    size: number;
+    type: string;
+}
+
 
 export const genresById = {
     28: "Action",
@@ -51,6 +65,12 @@ export interface CrewMember {
     profile_path: string | null;
 }
 
+export interface MainTvCrewItem {
+    id: number;
+    name: string;
+    jobs: string[];
+}
+
 export interface MovieDetailProps {
     movie: Movie
     credits: { cast: Actor[]; crew: CrewMember[] }
@@ -79,12 +99,13 @@ export interface TvSeries {
     number_of_episodes: number;
     status: string;
     origin_country?: string[];
+    videos?: { results: Video[] };
 }
 
 export interface TvSeriesDetailProps {
     series: TvSeries
     credits: { cast: Actor[]; crew: CrewMember[] }
-    similarSeries: any[]
+    similarSeries: TvSeries[]
 }
 
 export interface Person {
@@ -129,6 +150,7 @@ export interface PersonDetailProps {
 }
 
 export type CreditMedia = (Movie | TvSeries) & {
+    id?: number;
     character?: string;
     job?: string;
 };

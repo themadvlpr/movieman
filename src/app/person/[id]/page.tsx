@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import { getPersonDetails } from "@/lib/tmdb/getPersonDetails";
 import PersonDetail from "@/components/PersonDetail";
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
+import { PersonDetailProps } from "@/lib/tmdb/types/tmdb-types";
 
 interface PersonPageProps {
     params: Promise<{ id: string }>;
@@ -36,7 +37,7 @@ export default async function PersonPage({ params }: PersonPageProps) {
 
     const state = dehydrate(queryClient)
 
-    const personData = queryClient.getQueryData(['person', id]) as any
+    const personData = queryClient.getQueryData<PersonDetailProps>(['person', id])
     if (!personData?.person) {
         notFound()
     }

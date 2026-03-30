@@ -4,12 +4,67 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, MapPin, Calendar, Play, User, ChevronRight } from 'lucide-react'
-import { PersonDetailProps } from '@/lib/tmdb/types/tmdb-types'
+import { MapPin, Calendar, Play, User, ChevronRight } from 'lucide-react'
+import {
+	PersonDetailProps,
+	Actor,
+	CrewMember
+} from '@/lib/tmdb/types/tmdb-types'
 import { getPersonDetails } from '@/lib/tmdb/getPersonDetails'
 import { useQuery } from '@tanstack/react-query'
 import Loader from '@/components/ui/Loader'
 import DetailCarousel from './ui/DetailCarousel'
+
+type RawCredit = Actor | CrewMember;
+
+type MergedCredit = RawCredit & {
+	characters?: string[];
+	jobs?: string[];
+	character?: string;
+	job?: string;
+	poster_path?: string | null;
+	vote_count?: number;
+	release_date?: string;
+	first_air_date?: string;
+	title?: string;
+	name?: string;
+};
+
+type WorkWithMetadata = MergedCredit & {
+	mediaType: 'movie' | 'tv';
+};
+
+const mergeCredits = (credits: RawCredit[]): MergedCredit[] => {
+	const merged: Record<string, MergedCredit> = {}
+
+	credits.forEach((item) => {
+		const id = item.id.toString()
+		if (!merged[id]) {
+			merged[id] = {
+				...item,
+				characters: ('character' in item && item.character) ? [item.character] : [],
+				jobs: ('job' in item && item.job) ? [item.job] : []
+			} as MergedCredit
+		} else {
+			if ('character' in item && item.character && !merged[id].characters?.includes(item.character)) {
+				merged[id].characters?.push(item.character)
+			}
+			if ('job' in item && item.job && !merged[id].jobs?.includes(item.job)) {
+				merged[id].jobs?.push(item.job)
+			}
+		}
+	})
+
+	return Object.values(merged).map((item) => ({
+		...item,
+		character: item.characters && item.characters.length > 0
+			? item.characters.join(' / ')
+			: (('character' in item ? item.character : '') || ''),
+		job: item.jobs && item.jobs.length > 0
+			? item.jobs.join(' / ')
+			: (('job' in item ? item.job : '') || '')
+	}))
+}
 
 export default function MovieDetail({ personId }: { personId: string }) {
 
@@ -18,45 +73,32 @@ export default function MovieDetail({ personId }: { personId: string }) {
 		queryFn: () => getPersonDetails(personId),
 	})
 
+	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
+	const [visibleCount, setVisibleCount] = useState(12)
+
 	if (!data) return <Loader />
 
 	const { person, movieCredits, tvCredits } = data
 
-	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
-
-	const mergeCredits = (credits: any[]) => {
-		const merged: Record<string, any> = {}
-		credits.forEach((item) => {
-			const id = item.id.toString()
-			if (!merged[id]) {
-				merged[id] = { ...item }
-				if (item.character) merged[id].characters = [item.character]
-				if (item.job) merged[id].jobs = [item.job]
-			} else {
-				if (item.character && !merged[id].characters?.includes(item.character)) {
-					merged[id].characters = [...(merged[id].characters || []), item.character]
-				}
-				if (item.job && !merged[id].jobs?.includes(item.job)) {
-					merged[id].jobs = [...(merged[id].jobs || []), item.job]
-				}
-			}
-		})
-		return Object.values(merged).map((item) => ({
-			...item,
-			character: item.characters?.join(' / ') || item.character,
-			job: item.jobs?.join(' / ') || item.job
-		}))
-	}
-
-	// Combine and sort best movies (cast or crew depending on volume)
 	const isActor = person.known_for_department === 'Acting'
-	const movieWorks = isActor ? mergeCredits(movieCredits.cast) : mergeCredits(movieCredits.crew.filter(c => c.department === person.known_for_department))
-	const bestMovies = [...movieWorks].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0)).slice(0, 15)
 
-	const tvWorks = isActor ? mergeCredits(tvCredits.cast) : mergeCredits(tvCredits.crew.filter(c => c.department === person.known_for_department))
-	const bestTv = [...tvWorks].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0)).slice(0, 15)
+	const movieWorks = isActor
+		? mergeCredits(movieCredits.cast)
+		: mergeCredits(movieCredits.crew.filter(c => c.department === person.known_for_department))
 
-	const allWorks = [
+	const tvWorks = isActor
+		? mergeCredits(tvCredits.cast)
+		: mergeCredits(tvCredits.crew.filter(c => c.department === person.known_for_department))
+
+	const bestMovies = [...movieWorks]
+		.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))
+		.slice(0, 15)
+
+	const bestTv = [...tvWorks]
+		.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))
+		.slice(0, 15)
+
+	const allWorks: WorkWithMetadata[] = [
 		...movieWorks.map(m => ({ ...m, mediaType: 'movie' as const })),
 		...tvWorks.map(t => ({ ...t, mediaType: 'tv' as const }))
 	].sort((a, b) => {
@@ -65,23 +107,19 @@ export default function MovieDetail({ personId }: { personId: string }) {
 		return dateB.localeCompare(dateA)
 	})
 
-	const [visibleCount, setVisibleCount] = useState(12)
 	const hasMore = visibleCount < allWorks.length
-
-	const loadMore = () => {
-		setVisibleCount(prev => Math.min(prev + 12, allWorks.length))
-	}
+	const loadMore = () => setVisibleCount(prev => Math.min(prev + 12, allWorks.length))
 
 	return (
 		<div className='flex-1 relative bg-black text-white min-h-screen'>
-			{/* Backdrop Section (Blurred Profile Image) */}
+			{/* Backdrop Section */}
 			{person.profile_path && (
 				<div className='absolute inset-0 h-[35vh] sm:h-[45vh] lg:h-[80vh] w-full overflow-hidden pointer-events-none'>
 					<Image
 						src={`https://image.tmdb.org/t/p/original${person.profile_path}`}
 						alt={person.name}
 						fill
-						sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+						sizes='100vw'
 						priority
 						className='object-cover opacity-20 blur-3xl scale-110 select-none'
 					/>
@@ -90,11 +128,9 @@ export default function MovieDetail({ personId }: { personId: string }) {
 				</div>
 			)}
 
-			{/* Main Content Area */}
 			<div className='relative z-10 pt-32 pb-20 px-4 sm:px-8 md:px-12 lg:px-20'>
 				<div className='flex flex-col lg:flex-row gap-10 lg:gap-16'>
-
-					{/* Profile Poster */}
+					{/* Poster */}
 					<div className='w-48 sm:w-64 lg:w-80 shrink-0 mx-auto lg:mx-0'>
 						<div className='relative aspect-2/3 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10'>
 							{person.profile_path ? (
@@ -115,7 +151,7 @@ export default function MovieDetail({ personId }: { personId: string }) {
 						</div>
 					</div>
 
-					{/* Profile Info */}
+					{/* Info */}
 					<div className='flex-1 flex flex-col gap-8 lg:pt-8'>
 						<motion.div
 							initial={{ opacity: 0, x: -20 }}
@@ -156,7 +192,6 @@ export default function MovieDetail({ personId }: { personId: string }) {
 								)}
 							</div>
 
-							{/* Biography */}
 							{person.biography && (
 								<motion.div layout className="max-w-3xl mx-auto lg:mx-0 pt-4">
 									<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-3'>Biography</h3>
@@ -183,15 +218,12 @@ export default function MovieDetail({ personId }: { personId: string }) {
 
 				<hr className='border-white/10 my-20' />
 
-				{/* Best Movies */}
 				<DetailCarousel type='person-credits' items={bestMovies} mediaType='movie' />
-
-				{/* Best TV Series */}
 				<DetailCarousel type='person-credits' items={bestTv} mediaType='tv' />
 
 				<hr className='border-white/10 my-20' />
 
-				{/* Full Filmography Grid */}
+				{/* Grid */}
 				<section className='pb-20'>
 					<div className='mb-12'>
 						<h2 className='text-4xl font-bold mb-2 text-mdnichrome'>Full Filmography</h2>
@@ -201,7 +233,7 @@ export default function MovieDetail({ personId }: { personId: string }) {
 					<div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-x-4 gap-y-8'>
 						<AnimatePresence mode='popLayout'>
 							{allWorks.slice(0, visibleCount).map((work, index) => {
-								const title = work.title || work.name
+								const title = work.title || work.name || 'Untitled'
 								const date = work.release_date || work.first_air_date
 								const year = date?.slice(0, 4) || '—'
 								const href = work.mediaType === 'movie' ? `/movies/${work.id}` : `/tvseries/${work.id}`
@@ -217,17 +249,14 @@ export default function MovieDetail({ personId }: { personId: string }) {
 											ease: [0.23, 1, 0.32, 1]
 										}}
 									>
-										<Link
-											href={href}
-											className='group flex flex-col'
-										>
+										<Link href={href} className='group flex flex-col'>
 											<div className='relative aspect-2/3 rounded-lg overflow-hidden mb-2 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-xl'>
 												{work.poster_path ? (
 													<Image
 														src={`https://image.tmdb.org/t/p/w342${work.poster_path}`}
-														alt={title || 'Poster'}
+														alt={title}
 														fill
-														sizes='(max-width: 640px) 33vw, (max-width: 768px) 25vw, (max-width: 1024px) 20vw, 15vw'
+														sizes='(max-width: 640px) 33vw, 15vw'
 														className='object-cover group-hover:scale-110 transition-transform duration-700 ease-out'
 													/>
 												) : (
@@ -247,7 +276,7 @@ export default function MovieDetail({ personId }: { personId: string }) {
 											</h4>
 											<div className='flex items-center justify-between mt-0.5'>
 												<p className='text-[9px] text-zinc-600 font-bold truncate pr-1'>
-													{work.character ? `as ${work.character}` : work.job}
+													{work.character ? `as ${work.character}` : (work.job || 'Role Unknown')}
 												</p>
 												<span className='text-[9px] text-zinc-700 font-black shrink-0'>{year}</span>
 											</div>
@@ -273,20 +302,11 @@ export default function MovieDetail({ personId }: { personId: string }) {
 						</div>
 					)}
 				</section>
-
 			</div>
 
 			<style jsx>{`
-				.text-mdnichrome {
-					font-family: var(--font-nichrome), serif;
-				}
-				@font-face {
-					font-family: 'MD Nichrome';
-					src: url('/fonts/MDNichrome-Bold.woff2') format('woff2');
-					font-weight: bold;
-					font-style: normal;
-				}
-			`}</style>
+                .text-mdnichrome { font-family: var(--font-nichrome), serif; }
+            `}</style>
 		</div>
 	)
 }

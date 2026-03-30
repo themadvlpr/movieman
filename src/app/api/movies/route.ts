@@ -1,5 +1,10 @@
 import { tmdbFetch, CacheConfig, createResponse, createErrorResponse } from "@/lib/tmdb/tmdb-api";
 
+interface TMDBQueryParams {
+    page: string;
+    [key: string]: string | number | undefined;
+}
+
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
@@ -8,8 +13,7 @@ export async function GET(request: Request) {
 
         // Map internal category keys to TMDB endpoints
         let endpoint = '/movie/popular';
-        let params: any = { page };
-
+        let params: TMDBQueryParams = { page };
         if (category === 'popular') endpoint = '/movie/popular';
         else if (category === 'topRated') endpoint = '/movie/top_rated';
         else if (category === 'upcoming') {

@@ -15,7 +15,8 @@ export default function Loader() {
             {/* Background Gradients */}
             <div style={{
                 position: 'absolute',
-                inset: 0,
+                width: '100%',
+                height: '100%',
                 backgroundColor: 'black',
                 pointerEvents: 'none'
             }} />
@@ -32,7 +33,8 @@ export default function Loader() {
                 }} />
                 <div style={{
                     position: 'absolute',
-                    inset: 0,
+                    width: '100%',
+                    height: '100%',
                     filter: 'blur(16px)',
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     borderRadius: '50%',
@@ -68,8 +70,8 @@ export default function Loader() {
                 }}>
                     <div style={{
                         position: 'absolute',
-                        inset: 0,
                         width: '100%',
+                        height: '100%',
                         background: 'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent)',
                         animation: 'loader-shimmer 1.5s infinite',
                         transform: 'translateX(-100%)'

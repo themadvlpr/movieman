@@ -4,36 +4,37 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Clock, Calendar, ChevronRight, Globe } from 'lucide-react'
+import { Star, Clock, Calendar, ChevronRight, Globe, Play } from 'lucide-react'
+import VideoModal from '../ui/VideoModal'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
 import { useQuery } from '@tanstack/react-query'
 import { getMovieDetails } from '@/lib/tmdb/getMovieDetails'
 import Loader from '../ui/Loader'
 import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import DetailCarousel from '../ui/DetailCarousel'
-import { useMediaActions } from '@/hooks/useDBMediaStates'
+import { dbMediaStatus } from '@/lib/tmdb/types/db-types'
 
 
 export default function MovieDetail({ movieId, userId }: { movieId: string, userId: string }) {
 	const [imageLoading, setImageLoading] = useState(true);
 
-	const { data } = useQuery<MovieDetailProps>({
+	const { data } = useQuery<MovieDetailProps & { initialDbState?: dbMediaStatus }>({
 		queryKey: ['movie', movieId],
-		queryFn: () => getMovieDetails(movieId),
-	})
+		queryFn: () => getMovieDetails(movieId), // На клиенте вызовется только если данных нет в кэше
+		staleTime: Infinity, // Чтобы данные не считались "старыми" сразу после загрузки
+	});
 
+	if (!data) return <Loader />;
 
-
-	const { dbState } = useMediaActions(Number(movieId), userId, "movie");
-
-	if (!data) return <Loader />
-
-	const { movie, credits, similarMovies } = data
+	const { movie, credits, similarMovies, initialDbState } = data;
 
 	const [watchDate, setWatchDate] = useState(new Date().toISOString().split('T')[0])
 	const [personalRating, setPersonalRating] = useState(5)
 	const [note, setNote] = useState('')
 	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
+	const [isVideoOpen, setIsVideoOpen] = useState(false)
+
+	const trailer = movie.videos?.results.find(v => v.type === 'Trailer') || movie.videos?.results[0]
 
 	const mainCrewMap: Record<number, { name: string, jobs: string[], id: number }> = {}
 	credits.crew.forEach(c => {
@@ -79,7 +80,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 					)}
 				</AnimatePresence>
 				<Image
-					src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+					src={movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : '/back.jpg'}
 					alt={movie.title}
 					fill
 					sizes='100vw'
@@ -93,162 +94,192 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 			</div>
 
 			{/* Main Content Area */}
-			<div className='relative z-10 pt-40 pb-20 px-4 sm:px-8 md:px-12 lg:px-20'>
-				<div className='max-w-3xl flex flex-col gap-8'>
-					{/* Basic Info */}
+			<div className='relative z-10 pt-40 pb-20 px-4 sm:px-8 md:px-12 lg:px-20 mx-auto'>
+				<div className='flex flex-col lg:flex-row gap-8 lg:gap-16'>
+					{/* Poster Layer */}
 					<motion.div
-						initial={{ opacity: 0, x: -20 }}
-						animate={{ opacity: 1, x: 0 }}
-						className='space-y-6'
+						initial={{ opacity: 0, scale: 0.95 }}
+						animate={{ opacity: 1, scale: 1 }}
+						className='hidden lg:block shrink-0 w-[300px] xl:w-[360px]'
 					>
-						<h1 className='text-5xl sm:text-7xl font-bold leading-[0.9] drop-shadow-2xl text-mdnichrome'>{movie.title}</h1>
-
-						<div className='flex flex-wrap items-center gap-4 text-sm sm:text-base font-semibold text-zinc-400'>
-							{movie.vote_average !== 0 && (
-								<>
-									<div className='flex items-center gap-1.5 text-zinc-100'>
-										<Star className='w-4 h-4 fill-amber-400 text-amber-400' />
-										<span>{movie.vote_average.toFixed(1)}</span>
-									</div>
-									<span className='text-zinc-800'>|</span>
-								</>
-							)}
-							<div className='flex items-center gap-1.5 text-zinc-300'>
-								<Calendar className='w-4 h-4' />
-								<span>{movie.release_date.split('-').reverse().join('-')}</span>
-							</div>
-							{movie.production_countries && movie.production_countries.length > 0 && (
-								<>
-									<span className='text-zinc-800'>|</span>
-									<div className='flex items-center gap-1.5 text-zinc-300'>
-										<Globe className='w-4 h-4' />
-										<span>{movie.production_countries.map(c => c.iso_3166_1).join(', ')}</span>
-									</div>
-								</>
-							)}
-							{movie.runtime !== 0 && (
-								<>
-									<span className='text-zinc-800'>|</span>
-									<div className='flex items-center gap-1.5 text-zinc-300'>
-										<Clock className='w-4 h-4' />
-										<span>{formatRuntime(movie.runtime)}</span>
-									</div>
-								</>
-							)}
+						<div className='sticky top-28 bg-zinc-900 aspect-2/3 rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-white/10'>
+							<Image
+								src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/no-poster.png'}
+								alt={movie.title || 'Poster'}
+								fill
+								sizes="(max-width: 1024px) 0vw, 360px"
+								className='object-cover'
+								priority
+							/>
 						</div>
-
-						{/* Genres */}
-						<div className='flex flex-wrap gap-2'>
-							{movie.genres.map((g) => (
-								<span key={g.id} className='px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md text-zinc-400'>
-									{g.name}
-								</span>
-							))}
-						</div>
-
-						{movie.tagline && (
-							<p className='text-xl italic text-zinc-500 font-medium'>
-								"{movie.tagline}"
-							</p>
-						)}
-
-						<motion.div layout className="max-w-2xl">
-							<motion.p
-								layout
-								className={`text-zinc-300 leading-relaxed text-lg font-medium ${!isOverviewExpanded ? 'line-clamp-4' : ''}`}
-							>
-								{movie.overview}
-							</motion.p>
-							{movie.overview && movie.overview.length > 280 && (
-								<motion.button
-									layout
-									onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
-									className='text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors text-left w-fit mt-2 cursor-pointer'
-								>
-									{isOverviewExpanded ? 'Show Less' : 'Read More'}
-								</motion.button>
-							)}
-						</motion.div>
 					</motion.div>
 
-					{/* Action Buttons */}
+					<div className='max-w-3xl flex flex-col gap-8 flex-1'>
+						{/* Basic Info */}
+						<motion.div
+							initial={{ opacity: 0, x: -20 }}
+							animate={{ opacity: 1, x: 0 }}
+							className='space-y-6'
+						>
+							<h1 className='text-5xl sm:text-7xl font-bold leading-[0.9] drop-shadow-2xl text-mdnichrome'>{movie.title}</h1>
 
+							<div className='flex flex-wrap items-center gap-4 text-sm sm:text-base font-semibold text-zinc-400'>
+								{movie.vote_average !== 0 && (
+									<>
+										<div className='flex items-center gap-1.5 text-zinc-100'>
+											<Star className='w-4 h-4 fill-amber-400 text-amber-400' />
+											<span>{movie.vote_average.toFixed(1)}</span>
+										</div>
+										<span className='text-zinc-800'>|</span>
+									</>
+								)}
+								<div className='flex items-center gap-1.5 text-zinc-300'>
+									<Calendar className='w-4 h-4' />
+									<span>{movie.release_date.split('-').reverse().join('-')}</span>
+								</div>
+								{movie.production_countries && movie.production_countries.length > 0 && (
+									<>
+										<span className='text-zinc-800'>|</span>
+										<div className='flex items-center gap-1.5 text-zinc-300'>
+											<Globe className='w-4 h-4' />
+											<span>{movie.production_countries.map(c => c.iso_3166_1).join(', ')}</span>
+										</div>
+									</>
+								)}
+								{movie.runtime !== 0 && (
+									<>
+										<span className='text-zinc-800'>|</span>
+										<div className='flex items-center gap-1.5 text-zinc-300'>
+											<Clock className='w-4 h-4' />
+											<span>{formatRuntime(movie.runtime)}</span>
+										</div>
+									</>
+								)}
+							</div>
 
-					<LibraryControlsButtons
-						mediaId={movie.id}
-						mediaData={{
-							title: movie.title,
-							poster: movie.poster_path,
-							rating: movie.vote_average,
-							year: movie.release_date
-						}}
-						type="movie"
-						userId={userId}
-					/>
+							{/* Genres */}
+							<div className='flex flex-wrap gap-2'>
+								{movie.genres.map((g) => (
+									<span key={g.id} className='px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md text-zinc-400'>
+										{g.name}
+									</span>
+								))}
+							</div>
 
-					{/* Watched Panel (Date & Rating) */}
-					<AnimatePresence mode="wait">
-						{dbState?.isWatched && (
-							<motion.div
-								initial={{ opacity: 0, y: 10 }}
-								animate={{ opacity: 1, y: 0 }}
-								exit={{ opacity: 0, y: 10 }}
-								className='bg-zinc-900/10 backdrop-blur-xl border border-white/5 rounded-xl p-3.5 shadow-2xl space-y-4 max-w-[220px]'
+							{movie.tagline && (
+								<p className='text-xl italic text-zinc-500 font-medium'>
+									"{movie.tagline}"
+								</p>
+							)}
+
+							<motion.div layout className="max-w-2xl">
+								<motion.p
+									layout
+									className={`text-zinc-300 leading-relaxed text-lg font-medium ${!isOverviewExpanded ? 'line-clamp-4' : ''}`}
+								>
+									{movie.overview}
+								</motion.p>
+								{movie.overview && movie.overview.length > 280 && (
+									<motion.button
+										layout
+										onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+										className='text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors text-left w-fit mt-2 cursor-pointer'
+									>
+										{isOverviewExpanded ? 'Show Less' : 'Read More'}
+									</motion.button>
+								)}
+							</motion.div>
+						</motion.div>
+
+						{trailer && (
+							<button
+								onClick={() => setIsVideoOpen(true)}
+								className="flex w-fit items-center gap-2 bg-white text-black px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer"
 							>
-								<div className='flex justify-between'>
-									<div className='flex flex-col gap-1'>
-										<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Watched on</label>
-										<input
-											type='date'
-											value={watchDate}
-											onChange={(e) => setWatchDate(e.target.value)}
-											className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold cursor-pointer'
-										/>
-									</div>
+								<Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
+								<span className="text-sm sm:text-base">Play Trailer</span>
+							</button>
+						)}
 
-									<div className='flex flex-col gap-1'>
-										<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Rating</label>
-										<div className='relative w-fit'>
-											<select
-												value={personalRating}
-												onChange={(e) => setPersonalRating(parseInt(e.target.value))}
-												className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold appearance-none cursor-pointer pr-8'
-											>
-												{[...Array(10)].map((_, i) => (
-													<option key={i + 1} value={i + 1} className='bg-zinc-950 text-white'>
-														{i + 1}
-													</option>
-												))}
-											</select>
-											<div className='absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600'>
-												<ChevronRight className='w-3 h-3 rotate-90' />
+						{/* Action Buttons */}
+						<div className="flex flex-wrap items-center gap-4">
+							<LibraryControlsButtons
+								mediaId={movie.id}
+								mediaData={{
+									title: movie.title,
+									poster: movie.poster_path,
+									rating: movie.vote_average,
+									year: movie.release_date
+								}}
+								type="movie"
+								userId={userId}
+								initialState={initialDbState || {}}
+							/>
+						</div>
+
+						{/* Watched Panel (Date & Rating) */}
+						<AnimatePresence mode="wait">
+							{initialDbState?.isWatched && (
+								<motion.div
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									exit={{ opacity: 0, y: 10 }}
+									className='bg-zinc-900/10 backdrop-blur-xl border border-white/5 rounded-xl p-3.5 shadow-2xl space-y-4 max-w-[220px]'
+								>
+									<div className='flex justify-between'>
+										<div className='flex flex-col gap-1'>
+											<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Watched on</label>
+											<input
+												type='date'
+												value={watchDate}
+												onChange={(e) => setWatchDate(e.target.value)}
+												className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold cursor-pointer'
+											/>
+										</div>
+
+										<div className='flex flex-col gap-1'>
+											<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Rating</label>
+											<div className='relative w-fit'>
+												<select
+													value={personalRating}
+													onChange={(e) => setPersonalRating(parseInt(e.target.value))}
+													className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold appearance-none cursor-pointer pr-8'
+												>
+													{[...Array(10)].map((_, i) => (
+														<option key={i + 1} value={i + 1} className='bg-zinc-950 text-white'>
+															{i + 1}
+														</option>
+													))}
+												</select>
+												<div className='absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600'>
+													<ChevronRight className='w-3 h-3 rotate-90' />
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-							</motion.div>
-						)}
-					</AnimatePresence>
+								</motion.div>
+							)}
+						</AnimatePresence>
 
-					{/* Credits Summary */}
-					{/* Credits Summary */}
-					{mainCrew.length > 0 && (
-						<div className='mt-4'>
-							<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6'>Main Crew</h3>
-							<div className='flex flex-wrap gap-x-12 gap-y-6'>
-								{mainCrew.map((person) => (
-									<div key={person.id} className='flex flex-col gap-1'>
-										<Link href={`/person/${person.id}`} className='text-xl sm:text-2xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
-											{person.name}
-										</Link>
-										<span className='text-[10px] font-black uppercase tracking-widest text-zinc-600'>
-											{person.jobs.join(' / ')}
-										</span>
-									</div>
-								))}
+
+						{mainCrew.length > 0 && (
+							<div className='mt-4'>
+								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6'>Main Crew</h3>
+								<div className='flex flex-wrap gap-x-12 gap-y-6'>
+									{mainCrew.map((person) => (
+										<div key={person.id} className='flex flex-col gap-1'>
+											<Link href={`/person/${person.id}`} className='text-xl sm:text-2xl font-bold hover:text-white transition-colors cursor-pointer text-left text-zinc-300'>
+												{person.name}
+											</Link>
+											<span className='text-[10px] font-black uppercase tracking-widest text-zinc-600'>
+												{person.jobs.join(' / ')}
+											</span>
+										</div>
+									))}
+								</div>
 							</div>
-						</div>
-					)}
+						)}
+					</div>
 				</div>
 
 				<hr className='border-white/10 my-12' />
@@ -258,7 +289,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 
 				{/* Note Section (Between Cast and Similar) */}
 				<AnimatePresence>
-					{dbState?.isWatched && (
+					{initialDbState?.isWatched && (
 						<motion.section
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
@@ -281,6 +312,12 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 				{/* Similar Movies */}
 				<DetailCarousel type='similar' items={similarMovies} mediaType='movie' />
 			</div>
+
+			<VideoModal
+				isOpen={isVideoOpen}
+				onClose={() => setIsVideoOpen(false)}
+				videoKey={trailer?.key || null}
+			/>
 
 			<style jsx>{`
 				.text-mdnichrome {
