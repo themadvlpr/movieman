@@ -78,8 +78,6 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
     } = currentMovie;
 
 
-    console.log(currentMovie.initialDbState);
-
     return (
         <div className='flex-1 relative flex flex-col justify-end bg-black lg:bg-[#010101]'
             onClick={() => setIsDropdownOpen(false)}>

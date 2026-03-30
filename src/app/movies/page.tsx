@@ -35,8 +35,17 @@ export default async function Movies({ searchParams }: { searchParams: Promise<{
         initialPageParam: 1,
     });
 
+    // Set dataUpdatedAt = 1 on all server-prefetched queries.
+    // This ensures HydrationBoundary NEVER overwrites an existing client cache
+    // (client data fetched at Date.now() >> 1).
+    // On the very first visit the client has dataUpdatedAt = 0, so 0 < 1 → server data IS applied.
+    const serverState = dehydrate(queryClient);
+    serverState.queries.forEach((q: any) => {
+        q.state.dataUpdatedAt = 1;
+    });
+
     return (
-        <HydrationBoundary state={dehydrate(queryClient)}>
+        <HydrationBoundary state={serverState}>
             <MoviesPage initialViewMode={viewMode as 'grid' | 'list'} userId={userId} />
         </HydrationBoundary>
     );

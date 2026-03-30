@@ -47,16 +47,12 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 
 
 	const creators = series.created_by || []
-	// Фильтруем продюсеров и создателей, сразу указывая тип CrewMember
 	const execProducers = credits.crew.filter(
 		(c): c is CrewMember => c.job === 'Executive Producer' || c.job === 'Creator'
 	);
 
-	// Если у тебя есть отдельный массив creators (например, из series.created_by)
-	// Допустим, он тоже приведен к типу с id и name
 	const mainTvCrewMap: Record<number, MainTvCrewItem> = {};
 
-	// 1. Обрабатываем создателей (если они приходят отдельно)
 	creators.forEach((c) => {
 		mainTvCrewMap[c.id] = {
 			id: c.id,
@@ -65,7 +61,6 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 		};
 	});
 
-	// 2. Добавляем исполнительных продюсеров
 	execProducers.forEach((c) => {
 		if (!mainTvCrewMap[c.id]) {
 			mainTvCrewMap[c.id] = {
@@ -121,7 +116,7 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 
 			{/* Main Content Area */}
 			<div className='relative z-10 pt-40 pb-10 sm:pb-20 px-4 sm:px-8 md:px-12 lg:px-20 mx-auto'>
-				<div className='flex flex-col max-w-7xl mx-auto lg:flex-row gap-8 lg:gap-16'>
+				<div className='flex flex-col mx-auto lg:flex-row gap-8 lg:gap-16'>
 					{/* Poster Layer */}
 					<motion.div
 						initial={{ opacity: 0, scale: 0.95 }}
@@ -236,7 +231,15 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 							</motion.div>
 						</motion.div>
 
-
+						{trailer && (
+							<button
+								onClick={() => setIsVideoOpen(true)}
+								className="flex w-fit items-center gap-2 bg-white text-black px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer"
+							>
+								<Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
+								<span className="text-sm sm:text-base">Play Trailer</span>
+							</button>
+						)}
 
 						{/* Action Buttons */}
 						<div className="flex flex-wrap items-center gap-4">
@@ -252,58 +255,50 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 								userId={userId}
 								initialState={initialDbState || {}}
 							/>
-							{/* Watched Panel (Date & Rating) */}
-							{initialDbState?.isWatched && (
-								<div
+						</div>
 
-									className='bg-zinc-900/10 backdrop-blur-xl border border-white/5 rounded-xl p-3.5 shadow-2xl space-y-4 max-w-[220px]'
-								>
-									<div className='flex justify-between'>
-										<div className='flex flex-col gap-1'>
-											<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Watched on</label>
-											<input
-												type='date'
-												value={watchDate}
-												onChange={(e) => setWatchDate(e.target.value)}
-												className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold cursor-pointer'
-											/>
-										</div>
+						{/* Watched Panel (Date & Rating) */}
+						{initialDbState?.isWatched && (
+							<div
 
-										<div className='flex flex-col gap-1'>
-											<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Rating</label>
-											<div className='relative w-fit'>
-												<select
-													value={personalRating}
-													onChange={(e) => setPersonalRating(parseInt(e.target.value))}
-													className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold appearance-none cursor-pointer pr-8'
-												>
-													{[...Array(10)].map((_, i) => (
-														<option key={i + 1} value={i + 1} className='bg-zinc-950 text-white'>
-															{i + 1}
-														</option>
-													))}
-												</select>
-												<div className='absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600'>
-													<ChevronRight className='w-3 h-3 rotate-90' />
-												</div>
+								className='bg-zinc-900/10 backdrop-blur-xl border border-white/5 rounded-xl p-3.5 shadow-2xl space-y-4 max-w-[220px]'
+							>
+								<div className='flex justify-between'>
+									<div className='flex flex-col gap-1'>
+										<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Watched on</label>
+										<input
+											type='date'
+											value={watchDate}
+											onChange={(e) => setWatchDate(e.target.value)}
+											className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold cursor-pointer'
+										/>
+									</div>
+
+									<div className='flex flex-col gap-1'>
+										<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Rating</label>
+										<div className='relative w-fit'>
+											<select
+												value={personalRating}
+												onChange={(e) => setPersonalRating(parseInt(e.target.value))}
+												className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold appearance-none cursor-pointer pr-8'
+											>
+												{[...Array(10)].map((_, i) => (
+													<option key={i + 1} value={i + 1} className='bg-zinc-950 text-white'>
+														{i + 1}
+													</option>
+												))}
+											</select>
+											<div className='absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600'>
+												<ChevronRight className='w-3 h-3 rotate-90' />
 											</div>
 										</div>
 									</div>
 								</div>
-							)}
-						</div>
-
-
-
-						{trailer && (
-							<button
-								onClick={() => setIsVideoOpen(true)}
-								className="flex w-fit items-center gap-2 bg-white text-black px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer"
-							>
-								<Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
-								<span className="text-sm sm:text-base">Play Trailer</span>
-							</button>
+							</div>
 						)}
+
+
+
 
 						{/* Credits Summary */}
 						{mainTvCrew.length > 0 && (() => {

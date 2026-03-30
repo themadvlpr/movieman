@@ -36,13 +36,11 @@ export async function getMoviesAction(category: string = "popular", userId: stri
 
         const movieIds = data.results.map((m: Movie) => m.id);
 
-        // 3. Типизируем dbStatuses как Record<string, UserMediaStatus>
         const dbStatuses: Record<string, dbMediaStatus> = userId
             ? await getUserMediaStatus(userId, movieIds, "movie")
             : {};
 
         const enhancedResults = data.results.map((movie: Movie) => {
-            // Теперь TS знает, что может вернуться из мапы
             const status = dbStatuses[movie.id];
 
             return {

@@ -14,13 +14,10 @@ export function useDebounce<T>(value: T, delay: number): T {
 	const [debouncedValue, setDebouncedValue] = useState<T>(value)
 
 	useEffect(() => {
-		// Устанавливаем таймер на обновление значения
 		const handler = setTimeout(() => {
 			setDebouncedValue(value)
 		}, delay)
 
-		// Очищаем таймер, если значение изменилось до истечения задержки
-		// Это и есть магия: каждый новый клик по клавише сбрасывает старый таймер
 		return () => {
 			clearTimeout(handler)
 		}

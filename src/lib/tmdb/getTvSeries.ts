@@ -8,14 +8,12 @@ const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
 export async function getTVSeriesAction(category: string = "popular", page: string = "1", userId?: string) {
     try {
-        // 1. Определяем эндпоинт
         const endpointMap: Record<string, string> = {
             popular: "/tv/popular",
             topRated: "/tv/top_rated"
         };
         const endpoint = endpointMap[category] || "/tv/popular";
 
-        // 2. Получаем данные из TMDB
         const data = await tmdbFetch(
             endpoint,
             { page },
@@ -28,13 +26,10 @@ export async function getTVSeriesAction(category: string = "popular", page: stri
 
         const tvIds = data.results.map((tv: TvSeries) => tv.id);
 
-        // 3. Получаем статусы из БД (одним запросом для всех ID)
-        // Важно: в getUserMediaStatus убедитесь, что фильтруете по type: "tv"
         const dbStatuses = userId
             ? await getUserMediaStatus(userId, tvIds, "tv")
             : {};
 
-        // 4. Форматируем результат
         const enhancedResults = data.results.map((tv: TvSeries) => {
             const status = dbStatuses[tv.id] || {
                 isWatched: false,
@@ -44,7 +39,6 @@ export async function getTVSeriesAction(category: string = "popular", page: stri
 
             return {
                 ...tv,
-                // Для сериалов TMDB возвращает name вместо title
                 title: tv.name,
                 poster: tv.poster_path ? `${TMDB_IMAGE_BASE}${tv.poster_path}` : null,
                 initialDbState: {

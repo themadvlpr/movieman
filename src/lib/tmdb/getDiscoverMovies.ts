@@ -2,7 +2,7 @@
 
 import { tmdbFetch, CacheConfig } from "@/lib/tmdb/tmdb-api";
 import { Movie } from "./types/tmdb-types";
-import { getUserMediaStatus } from "@/lib/db/getUserMediaStatus"; // Импортируем ваш метод работы с Prisma
+import { getUserMediaStatus } from "@/lib/db/getUserMediaStatus";
 import { dbMediaStatus } from "@/lib/tmdb/types/db-types";
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
@@ -18,9 +18,7 @@ export async function getDiscoverMovies(genre: string, userId: string, page = "1
 
         const movieIds = data.results.map((movie: Movie) => movie.id);
 
-        // 2. Параллельные запросы
         const [moviesWithDetails, dbStatuses] = await Promise.all([
-            // Ветка 1: Детали из TMDB
             Promise.all(
                 data.results.map(async (movie: Movie) => {
                     try {
@@ -45,11 +43,9 @@ export async function getDiscoverMovies(genre: string, userId: string, page = "1
                 : Promise.resolve<Record<string, dbMediaStatus>>({})
         ]);
 
-        // 3. Сборка финального массива
         const moviesWithExtras = data.results.map((movie: Movie) => {
             const details = moviesWithDetails.find(d => d.id === movie.id);
 
-            // Здесь TS теперь знает, что такое dbStatuses
             const status = dbStatuses[movie.id];
 
             return {

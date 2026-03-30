@@ -8,6 +8,8 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getMoviesAction } from "@/lib/tmdb/getMovies"
 import Link from "next/link"
+import MoviePoster from "@/components/ui/MoviePoster"
+
 
 const categories = [
     { key: 'popular', label: 'Popular' },
@@ -18,7 +20,8 @@ const categories = [
 // Image base URL for TMDB
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
-import MoviePoster from "@/components/ui/MoviePoster"
+// Survives client-side navigation — only resets on full page reload
+let _moviesScrollY = 0
 
 interface Props {
     initialViewMode: 'grid' | 'list';
@@ -78,22 +81,35 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
 
             if (!result.success) throw new Error(result.error);
 
-            // ВАЖНО: возвращаем тот же уровень вложенности, что и на сервере
             return result.data;
         },
         getNextPageParam: (lastPage) => {
-            // Теперь lastPage — это непосредственно объект с page и total_pages
             if (lastPage && lastPage.page < lastPage.total_pages) {
                 return lastPage.page + 1;
             }
             return undefined;
         },
         initialPageParam: 1,
-        staleTime: 1000 * 60 * 5, // 5 минут, чтобы не было лишних перезагрузок
+        staleTime: 1000 * 60 * 5,
+        refetchOnMount: false,
     });
 
-    // Теперь мапинг будет одинаковым для всех страниц:
     const moviesData = data?.pages.flatMap((page) => page?.results || []) || [];
+
+    // Restore scroll once the data is confirmed loaded in the DOM.
+    // setTimeout ensures we fire AFTER Next.js’s own scroll-to-top.
+    useEffect(() => {
+        if (status !== 'success') return
+        if (_moviesScrollY <= 0) return
+
+        const y = _moviesScrollY
+        _moviesScrollY = 0
+
+        setTimeout(() => {
+            window.scrollTo({ top: y, behavior: 'instant' })
+        }, 50)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status])
 
 
     // Intersection Observer for infinite scroll
@@ -222,6 +238,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                 return (
                                     <div className="relative group" key={`${movie.id}-${idx}`}>
                                         <Link href={`/movies/${movie.id}`}
+                                            onClick={() => { _moviesScrollY = window.scrollY }}
                                             className={isGrid
                                                 ? "flex flex-col gap-2 sm:gap-3 cursor-pointer"
                                                 : "flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"

@@ -20,8 +20,8 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 
 	const { data } = useQuery<MovieDetailProps & { initialDbState?: dbMediaStatus }>({
 		queryKey: ['movie', movieId],
-		queryFn: () => getMovieDetails(movieId), // На клиенте вызовется только если данных нет в кэше
-		staleTime: Infinity, // Чтобы данные не считались "старыми" сразу после загрузки
+		queryFn: () => getMovieDetails(movieId),
+		staleTime: Infinity,
 	});
 
 	if (!data) return <Loader />;
@@ -102,7 +102,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 						animate={{ opacity: 1, scale: 1 }}
 						className='hidden lg:block shrink-0 w-[300px] xl:w-[360px]'
 					>
-						<div className='sticky top-28 bg-zinc-900 aspect-2/3 rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-white/10'>
+						<div className='relative bg-zinc-900 aspect-2/3 rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-white/10'>
 							<Image
 								src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/no-poster.png'}
 								alt={movie.title || 'Poster'}
