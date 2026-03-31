@@ -19,6 +19,9 @@ const categories = [
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
+// Survives client-side navigation — only resets on full page reload
+let _tvScrollY = 0
+
 export default function TvSeriesPage({ initialViewMode, userId }: { initialViewMode: 'grid' | 'list', userId: string }) {
     const router = useRouter()
     const pathname = usePathname()
@@ -58,6 +61,8 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
             return undefined
         },
         initialPageParam: 1,
+        staleTime: 1000 * 60 * 5,
+        refetchOnMount: false,
     })
 
     const tvData = data?.pages.flatMap((page) => page.results) || []
@@ -65,6 +70,24 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
     const [selectedGenre, setSelectedGenre] = useState('All')
     const [selectedYear, setSelectedYear] = useState('All')
     const loaderRef = useRef<HTMLDivElement>(null)
+    const hasRestored = useRef(false)
+
+    // Restore scroll once the data is confirmed loaded in the DOM.
+    // setTimeout ensures we fire AFTER Next.js’s own scroll-to-top.
+    useEffect(() => {
+        if (status !== 'success') return
+        if (_tvScrollY <= 0) return
+
+        hasRestored.current = true
+        const y = _tvScrollY
+        _tvScrollY = 0
+
+        setTimeout(() => {
+            window.scrollTo({ top: y, behavior: 'instant' })
+        }, 50)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status])
+
 
     // Sync state with URL
     useEffect(() => {
@@ -188,7 +211,8 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                                                     title: show.name,
                                                     poster: show.poster_path,
                                                     rating: show.vote_average,
-                                                    year: show.first_air_date
+                                                    year: show.first_air_date,
+                                                    description: show.overview
                                                 }}
                                                 type="tv"
                                                 detailPage={false}
@@ -203,6 +227,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                                     <div className="relative group" key={`${show.id}-${idx}`}>
                                         <Link
                                             href={`/tvseries/${show.id}`}
+                                            onClick={() => { _tvScrollY = window.scrollY }}
                                             className={isGrid
                                                 ? "flex flex-col gap-2 sm:gap-3 cursor-pointer"
                                                 : "flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
@@ -216,6 +241,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                                                 <MoviePoster
                                                     src={show.poster}
                                                     alt={show.name}
+                                                    priority={idx < 4}
                                                     className={isGrid ? "group-hover:scale-110 transition-transform duration-700 ease-out" : "group-hover:scale-105 transition-transform duration-500"}
                                                 />
 

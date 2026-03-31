@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toggleMediaStatusAction } from "@/lib/actions/toggleMediaStatus";
 import { dbMediaStatus, dbState } from "@/lib/tmdb/types/db-types";
+import { toast } from "sonner"; // Импортируем toast
 
 export function useMediaActions(
     mediaId: number,
@@ -10,6 +11,12 @@ export function useMediaActions(
 ) {
     const queryClient = useQueryClient();
     const queryKey = ["media-state", mediaId, userId];
+
+    const actionLabels: Record<string, string> = {
+        isWatched: "Watched",
+        isFavorite: "Favorite",
+        isWishlist: "Wishlist"
+    };
 
     const { data: currentDbState } = useQuery({
         queryKey,
@@ -37,8 +44,28 @@ export function useMediaActions(
 
             return { previous };
         },
-        onError: (_, __, context) => {
+        onSuccess: (data, variables) => {
+            const { action, mediaData } = variables;
+            const isNowActive = queryClient.getQueryData<dbMediaStatus>(queryKey)?.[action as keyof dbMediaStatus];
+
+            const label = actionLabels[action] || "Library";
+            const title = mediaData.title;
+
+            if (isNowActive) {
+                toast.success(`Added to ${label}`, {
+                    description: title,
+                });
+            } else {
+                toast.info(`Removed from ${label}`, {
+                    description: title,
+                });
+            }
+        },
+        onError: (err, variables, context) => {
             queryClient.setQueryData(queryKey, context?.previous);
+            toast.error("Failed to update library", {
+                description: "Please try again later."
+            });
         },
     });
 

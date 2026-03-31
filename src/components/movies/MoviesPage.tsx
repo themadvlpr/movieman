@@ -108,7 +108,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         setTimeout(() => {
             window.scrollTo({ top: y, behavior: 'instant' })
         }, 50)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [status])
 
 
@@ -224,7 +224,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                                     title: movie.title,
                                                     poster: movie.poster_path,
                                                     rating: movie.vote_average,
-                                                    year: movie.release_date
+                                                    year: movie.release_date,
+                                                    description: movie.overview
                                                 }}
                                                 type="movie"
                                                 detailPage={false}

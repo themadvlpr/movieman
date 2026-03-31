@@ -12,13 +12,14 @@ import { getMovieDetails } from '@/lib/tmdb/getMovieDetails'
 import Loader from '../ui/Loader'
 import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import DetailCarousel from '../ui/DetailCarousel'
-import { dbMediaStatus } from '@/lib/tmdb/types/db-types'
-
+import { dbState } from '@/lib/tmdb/types/db-types'
+import { updateMediaDetailsAction } from '@/lib/actions/updateMediaDetailsAction'
+import { toast } from "sonner";
 
 export default function MovieDetail({ movieId, userId }: { movieId: string, userId: string }) {
 	const [imageLoading, setImageLoading] = useState(true);
 
-	const { data } = useQuery<MovieDetailProps & { initialDbState?: dbMediaStatus }>({
+	const { data } = useQuery<MovieDetailProps & { initialDbState?: dbState }>({
 		queryKey: ['movie', movieId],
 		queryFn: () => getMovieDetails(movieId),
 		staleTime: Infinity,
@@ -28,11 +29,80 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 
 	const { movie, credits, similarMovies, initialDbState } = data;
 
-	const [watchDate, setWatchDate] = useState(new Date().toISOString().split('T')[0])
-	const [personalRating, setPersonalRating] = useState(5)
-	const [note, setNote] = useState('')
+	const [watchDate, setWatchDate] = useState(
+		initialDbState?.watchedDate
+			? new Date(initialDbState.watchedDate).toISOString().split('T')[0]
+			: new Date().toISOString().split('T')[0]
+	)
+	const [personalRating, setPersonalRating] = useState(initialDbState?.userRating || 0)
+	const [note, setNote] = useState(initialDbState?.userComment || '')
 	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
 	const [isVideoOpen, setIsVideoOpen] = useState(false)
+	const [editNote, setEditNote] = useState(false)
+
+	const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const newDate = e.target.value;
+		setWatchDate(newDate);
+		const toastId = toast.loading("Saving date...");
+		const result = await updateMediaDetailsAction(movie.id, 'movie', { watchedDate: new Date(newDate) });
+		if (result.success) {
+			toast.success("Date updated", { id: toastId });
+		} else {
+			toast.error(result.error || "Something went wrong", { id: toastId });
+		}
+	}
+
+	const handleRatingChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const newRating = parseInt(e.target.value);
+		setPersonalRating(newRating);
+		const toastId = toast.loading("Saving rating...");
+		const result = await updateMediaDetailsAction(movie.id, 'movie', { userRating: newRating });
+		if (result.success) {
+			toast.success("Rating updated", { id: toastId });
+		} else {
+			toast.error(result.error || "Something went wrong", { id: toastId });
+		}
+	}
+
+	useEffect(() => {
+		// Если заметка пустая и в базе её нет — ничего не делаем
+		const currentNote = note.trim();
+		const savedNote = initialDbState?.userComment || '';
+
+		const timer = setTimeout(async () => {
+			if (initialDbState?.isWatched && currentNote !== savedNote) {
+
+				const toastId = toast.loading("Saving comment...");
+
+				const result = await updateMediaDetailsAction(movie.id, 'movie', {
+					userComment: currentNote
+				});
+
+				if (result.success) {
+					toast.success("Comment updated", { id: toastId });
+				} else {
+					toast.error(result.error || "Something went wrong", { id: toastId });
+				}
+			}
+		}, 1000);
+
+		return () => clearTimeout(timer);
+	}, [note, movie.id, initialDbState]);
+
+	const handleSaveNote = async () => {
+		setEditNote(false);
+		const toastId = toast.loading("Saving comment...");
+
+		const result = await updateMediaDetailsAction(movie.id, 'movie', {
+			userComment: note
+		});
+
+		if (result.success) {
+			toast.success("Comment updated", { id: toastId });
+		} else {
+			toast.error(result.error || "Something went wrong", { id: toastId });
+		}
+	}
 
 	const trailer = movie.videos?.results.find(v => v.type === 'Trailer') || movie.videos?.results[0]
 
@@ -209,7 +279,8 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 									title: movie.title,
 									poster: movie.poster_path,
 									rating: movie.vote_average,
-									year: movie.release_date
+									year: movie.release_date,
+									description: movie.overview
 								}}
 								type="movie"
 								userId={userId}
@@ -232,7 +303,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 											<input
 												type='date'
 												value={watchDate}
-												onChange={(e) => setWatchDate(e.target.value)}
+												onChange={handleDateChange}
 												className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold cursor-pointer'
 											/>
 										</div>
@@ -242,7 +313,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 											<div className='relative w-fit'>
 												<select
 													value={personalRating}
-													onChange={(e) => setPersonalRating(parseInt(e.target.value))}
+													onChange={handleRatingChange}
 													className='w-fit bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 outline-none focus:border-white/20 transition-colors text-white text-[11px] font-bold appearance-none cursor-pointer pr-8'
 												>
 													{[...Array(10)].map((_, i) => (
@@ -296,15 +367,30 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 							exit={{ opacity: 0, y: 20 }}
 							className='mt-20 max-w-4xl'
 						>
-							<div className='bg-white/2 border border-white/5 rounded-3xl p-8 sm:p-10 shadow-3xl'>
-								<label className='text-[10px] font-black uppercase tracking-[0.4em] text-zinc-700 mb-6 block'>Your Personal Notes</label>
-								<textarea
-									placeholder='Write your thoughts about the movie here...'
-									value={note}
-									onChange={(e) => setNote(e.target.value)}
-									className='w-full bg-transparent text-xl sm:text-2xl font-medium text-zinc-300 outline-none border-none resize-none min-h-[200px] placeholder:text-zinc-800'
-								/>
-							</div>
+							<h2 className='text-4xl font-bold mb-2'>My commentary</h2>
+							<p className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700 mb-6'>My personal notes</p>
+							{initialDbState?.userComment !== '' && initialDbState?.userComment !== null ?
+								(!editNote && <>
+									<p className='text-lg sm:text-xl font-medium text-zinc-300'>{note || initialDbState?.userComment}</p>
+									<button onClick={() => setEditNote(true)} className='text-md mt-5 bg-white px-4 py-2 rounded-md sm:text-lg font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>Edit commentary</button>
+								</>) :
+
+								!editNote && <button onClick={() => setEditNote(true)} className='text-xl bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>Add commentary</button>
+
+							}
+							{editNote &&
+								<div>
+									<div className='bg-white/2 border border-white/5 rounded-3xl p-5 sm:p-8 shadow-3xl'>
+										<textarea
+											placeholder='Write your thoughts about the movie here...'
+											value={note}
+											onChange={(e) => setNote(e.target.value)}
+											className='w-full bg-transparent text-xl sm:text-2xl font-medium text-zinc-300 outline-none border-none resize-none min-h-[200px] placeholder:text-zinc-800'
+										/>
+									</div>
+									<button onClick={handleSaveNote} className='text-xl mt-10 bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>Save commentary</button>
+								</div>
+							}
 						</motion.section>
 					)}
 				</AnimatePresence>

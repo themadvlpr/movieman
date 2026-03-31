@@ -31,12 +31,20 @@ export async function toggleMediaStatusAction(
                 [action]: true,
                 title: mediaData.title,
                 poster: mediaData.poster,
+                rating: mediaData.rating,
+                year: new Date(mediaData.year),
+                description: mediaData.description,
+                ...(action === 'isWatched' && { watchedDate: new Date() })
             }
         });
     } else {
+        const newStatus = !existing[action as keyof typeof existing];
         await prisma.userMedia.update({
             where: { id: existing.id },
-            data: { [action]: !existing[action as keyof typeof existing] }
+            data: {
+                [action]: newStatus,
+                ...(action === 'isWatched' && { watchedDate: newStatus ? new Date() : null })
+            }
         });
     }
 

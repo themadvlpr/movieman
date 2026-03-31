@@ -10,6 +10,7 @@ import Providers from '@/components/utils/Providers'
 import { Suspense } from 'react'
 import Loader from '@/components/ui/Loader'
 import { getAuthSession } from '@/lib/auth-sessions'
+import { Toaster } from 'sonner';
 
 const montserrat = Montserrat({
 	variable: '--font-montserrat',
@@ -61,6 +62,7 @@ export default async function RootLayout({
 						<Footer />
 					</div>
 				</Providers>
+				<Toaster theme="dark" closeButton position="bottom-right" richColors />
 			</body>
 		</html>
 	)

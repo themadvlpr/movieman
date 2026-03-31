@@ -8,7 +8,6 @@ interface LibraryControlsButtonsProps {
     mediaId: number;
     mediaData: dbState;
     initialState: dbMediaStatus;
-    hideWatched?: boolean;
     type: "movie" | "tv";
     detailPage?: boolean;
     userId?: string;
@@ -17,7 +16,6 @@ interface LibraryControlsButtonsProps {
 export default function LibraryControlsButtons({
     mediaId,
     mediaData,
-    hideWatched = false,
     type,
     initialState,
     detailPage = true,
@@ -27,6 +25,8 @@ export default function LibraryControlsButtons({
     if (!userId) return null;
 
     const { dbState, toggleAction } = useMediaActions(mediaId, userId, type, initialState);
+
+    const hideWatched = mediaData.year > new Date().toISOString().split('T')[0];
 
     const states = {
         watched: !!dbState?.isWatched,

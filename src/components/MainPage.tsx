@@ -71,6 +71,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
         vote_average: rating,
         release_date,
         tagline,
+        overview,
         backdrop_path,
         origin_country: country,
         logo_path,
@@ -207,7 +208,9 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                                 title,
                                 poster: backdrop_path,
                                 rating,
-                                year: release_date
+                                year: release_date,
+                                description: overview
+
                             }}
                             type="movie"
                             userId={userId}

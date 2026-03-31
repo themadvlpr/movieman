@@ -15,6 +15,9 @@ export async function getUserMediaStatus(userId: string | undefined, movieIds: n
                 isWatched: true,
                 isWishlist: true,
                 isFavorite: true,
+                watchedDate: true,
+                userRating: true,
+                userComment: true,
             }
         });
 
