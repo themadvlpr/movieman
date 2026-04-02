@@ -2,7 +2,7 @@ import TvSeriesPage from "@/components/tvseries/TvSeriesPage"
 import { cookies } from 'next/headers';
 import { getAuthSession } from "@/lib/auth-sessions";
 import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tanstack/react-query";
 
 export const metadata = {
     title: "TV Series | MovieMan",
@@ -34,9 +34,10 @@ export default async function SeriesPage({ searchParams }: { searchParams: Promi
     });
 
     // Set dataUpdatedAt = 1 to prevent client-side cache being overwritten on return visits
-    const serverState = dehydrate(queryClient);
-    serverState.queries.forEach((q: any) => {
-        q.state.dataUpdatedAt = 1;
+    const serverState: DehydratedState = dehydrate(queryClient);
+
+    serverState.queries.forEach((query) => {
+        (query.state as { dataUpdatedAt: number }).dataUpdatedAt = 1;
     });
 
     return (

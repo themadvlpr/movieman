@@ -2,7 +2,7 @@ import MoviesPage from "@/components/movies/MoviesPage";
 import { cookies } from 'next/headers';
 import { getAuthSession } from "@/lib/auth-sessions";
 import { getMoviesAction } from "@/lib/tmdb/getMovies";
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tanstack/react-query";
 
 
 export const metadata = {
@@ -39,9 +39,10 @@ export default async function Movies({ searchParams }: { searchParams: Promise<{
     // This ensures HydrationBoundary NEVER overwrites an existing client cache
     // (client data fetched at Date.now() >> 1).
     // On the very first visit the client has dataUpdatedAt = 0, so 0 < 1 → server data IS applied.
-    const serverState = dehydrate(queryClient);
-    serverState.queries.forEach((q: any) => {
-        q.state.dataUpdatedAt = 1;
+    const serverState: DehydratedState = dehydrate(queryClient);
+
+    serverState.queries.forEach((query) => {
+        (query.state as { dataUpdatedAt: number }).dataUpdatedAt = 1;
     });
 
     return (

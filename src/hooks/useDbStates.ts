@@ -45,6 +45,8 @@ export function useMediaActions(
             return { previous };
         },
         onSuccess: (data, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['library-list'] });
+            
             const { action, mediaData } = variables;
             const isNowActive = queryClient.getQueryData<dbMediaStatus>(queryKey)?.[action as keyof dbMediaStatus];
 

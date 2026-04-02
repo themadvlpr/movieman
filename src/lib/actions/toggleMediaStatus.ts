@@ -43,10 +43,16 @@ export async function toggleMediaStatusAction(
             where: { id: existing.id },
             data: {
                 [action]: newStatus,
+                description: mediaData.description,
+                poster: mediaData.poster,
+                year: new Date(mediaData.year),
+                rating: mediaData.rating,
+                title: mediaData.title,
                 ...(action === 'isWatched' && { watchedDate: newStatus ? new Date() : null })
             }
         });
     }
 
     revalidatePath("/");
+    revalidatePath("/library");
 }
