@@ -7,28 +7,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Calendar, Play, User, ChevronRight } from 'lucide-react'
 import {
 	PersonDetailProps,
-	Actor,
-	CrewMember
 } from '@/lib/tmdb/types/tmdb-types'
 import { getPersonDetails } from '@/lib/tmdb/getPersonDetails'
 import { useQuery } from '@tanstack/react-query'
 import Loader from '@/components/ui/Loader'
 import DetailCarousel from './ui/DetailCarousel'
+import { MergedCredit, RawCredit } from '@/lib/tmdb/types/tmdb-types'
 
-type RawCredit = Actor | CrewMember;
 
-type MergedCredit = RawCredit & {
-	characters?: string[];
-	jobs?: string[];
-	character?: string;
-	job?: string;
-	poster_path?: string | null;
-	vote_count?: number;
-	release_date?: string;
-	first_air_date?: string;
-	title?: string;
-	name?: string;
-};
 
 type WorkWithMetadata = MergedCredit & {
 	mediaType: 'movie' | 'tv';

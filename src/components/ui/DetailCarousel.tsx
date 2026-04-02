@@ -2,11 +2,12 @@ import { Actor, CreditMedia, Movie, TvSeries } from "@/lib/tmdb/types/tmdb-types
 import Link from "next/link"
 import Image from "next/image"
 import { User, Star, Play } from "lucide-react"
+import { MergedCredit } from "@/lib/tmdb/types/tmdb-types"
 
 interface DetailCarouselProps {
     type: 'cast' | 'similar' | 'person-credits'
-    items: (Actor | Movie | TvSeries)[]
-    mediaType: 'movie' | 'tv'
+    items: (Movie | Actor | TvSeries | MergedCredit)[];
+    mediaType: 'movie' | 'tv' | 'person';
 }
 
 export default function DetailCarousel({ type, items, mediaType }: DetailCarouselProps) {

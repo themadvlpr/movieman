@@ -174,3 +174,19 @@ export interface SearchResponse {
     total_pages: number;
     page: number;
 }
+
+export type RawCredit = Actor | CrewMember;
+
+
+export type MergedCredit = RawCredit & {
+    characters?: string[];
+    jobs?: string[];
+    character?: string;
+    job?: string;
+    poster_path?: string | null;
+    vote_count?: number;
+    release_date?: string;
+    first_air_date?: string;
+    title?: string;
+    name?: string;
+};
