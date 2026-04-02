@@ -59,8 +59,10 @@ export async function getLibraryAction(
     }
 
     try {
-        const [totalCount, userMediaList] = await Promise.all([
+        const [totalCount, watchedMoviesCount, watchedTvCount, userMediaList] = await Promise.all([
             prisma.userMedia.count({ where: whereClause }),
+            prisma.userMedia.count({ where: { userId, type: 'movie', isWatched: true } }),
+            prisma.userMedia.count({ where: { userId, type: 'tv', isWatched: true } }),
             prisma.userMedia.findMany({
                 where: whereClause,
                 orderBy: orderByClause,
@@ -93,6 +95,8 @@ export async function getLibraryAction(
                 results: mappedResults,
                 total_pages: Math.ceil(totalCount / pageSize) || 1,
                 total_results: totalCount,
+                watchedMoviesCount,
+                watchedTvCount
             }
         };
 

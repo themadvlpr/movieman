@@ -208,10 +208,20 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
     return (
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
-                <h1 className="text-3xl sm:text-5xl font-bold mb-5 flex items-center gap-4">
-                    My Library
-                </h1>
+                <h1 className="text-3xl sm:text-5xl font-bold mb-5 flex flex-wrap items-center gap-3 sm:gap-6">
+                    <span>My Library</span>
 
+                </h1>
+                <div className="flex items-center gap-2 sm:gap-3 mb-5">
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Movies</span>
+                        <span className="text-sm sm:text-base font-bold text-zinc-300">{status === 'pending' ? <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-white/30 animate-spin" /> : data?.pages[0]?.watchedMoviesCount || '-'}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">TV Series</span>
+                        <span className="text-sm sm:text-base font-bold text-zinc-300">{status === 'pending' ? <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-white/30 animate-spin" /> : data?.pages[0]?.watchedTvCount || '-'}</span>
+                    </div>
+                </div>
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 md:gap-6 mb-8">
                     {/* Categories */}
                     <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
