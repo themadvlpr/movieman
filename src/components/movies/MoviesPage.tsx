@@ -90,8 +90,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
             return undefined;
         },
         initialPageParam: 1,
-        staleTime: 1000 * 60 * 5,
-        refetchOnMount: false,
+        staleTime: 1000 * 30, // 30 seconds
+        refetchOnMount: "always",
     });
 
     const moviesData = data?.pages.flatMap((page) => page?.results || []) || [];

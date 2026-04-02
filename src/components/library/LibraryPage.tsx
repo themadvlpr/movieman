@@ -160,8 +160,8 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
             return undefined;
         },
         initialPageParam: 1,
-        staleTime: 1000 * 60 * 5,
-        refetchOnMount: false,
+        staleTime: 1000 * 30, // 30 seconds
+        refetchOnMount: "always",
     });
 
     const libraryData = data?.pages.flatMap((page) => page?.results || []) || [];
@@ -327,7 +327,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                         ? "absolute top-0 inset-0 pointer-events-none z-20 flex flex-col items-center justify-end"
                                         : "absolute bottom-6 right-6 z-30 pointer-events-none translate-x-4 group-hover:translate-x-0 transition-all duration-300"
                                     }>
-                                        <div className={`hidden sm:block pointer-events-auto ${isGrid ? 'mb-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300' : ''}`}>
+                                        <div className={`hidden sm:block pointer-events-auto ${isGrid ? 'mb-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300' : ''}`}>
                                             <LibraryControlsButtons
                                                 mediaId={item.id}
                                                 mediaData={{
@@ -425,7 +425,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                                 {!isGrid && (
                                                     <>
                                                         <div className="flex flex-col items-start gap-3 sm:gap-4 mt-1">
-                                                            <span className="text-zinc-400 text-xs sm:text-sm">{item.release_date?.slice(0, 4)}</span>
+                                                            <span className="text-zinc-400 text-xs sm:text-sm">{item.release_date}</span>
 
                                                             {item.vote_average > 0 && (
                                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/10">
