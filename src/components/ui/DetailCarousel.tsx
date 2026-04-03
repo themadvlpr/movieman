@@ -7,7 +7,7 @@ import { MergedCredit } from "@/lib/tmdb/types/tmdb-types"
 interface DetailCarouselProps {
     type: 'cast' | 'similar' | 'person-credits'
     items: (Movie | Actor | TvSeries | MergedCredit)[];
-    mediaType: 'movie' | 'tv' | 'person';
+    mediaType: 'movie' | 'tv' | 'person' | 'all';
 }
 
 export default function DetailCarousel({ type, items, mediaType }: DetailCarouselProps) {
@@ -23,8 +23,10 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
         title = 'More Like This'
         subtitle = 'Recommendations for you'
     } else if (type === 'person-credits') {
-        title = mediaType === 'movie' ? 'Known For (Movies)' : 'Known For (TV)'
-        subtitle = mediaType === 'movie' ? 'Top rated films' : 'Top rated series'
+        title = mediaType === 'movie' ? 'Known For (Movies)' : 
+               mediaType === 'tv' ? 'Known For (TV)' : 'Known For'
+        subtitle = mediaType === 'movie' ? 'Top rated films' : 
+                  mediaType === 'tv' ? 'Top rated series' : 'Top rated works'
     }
 
     if (!items || items.length === 0) return null

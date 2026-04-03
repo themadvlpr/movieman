@@ -60,7 +60,8 @@ export default function MovieDetail({ personId }: { personId: string }) {
 	})
 
 	const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
-	const [visibleCount, setVisibleCount] = useState(12)
+	const [visibleCountMovies, setVisibleCountMovies] = useState(12)
+	const [visibleCountTv, setVisibleCountTv] = useState(12)
 
 	if (!data) return <Loader />
 
@@ -84,17 +85,9 @@ export default function MovieDetail({ personId }: { personId: string }) {
 		.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))
 		.slice(0, 15)
 
-	const allWorks: WorkWithMetadata[] = [
-		...movieWorks.map(m => ({ ...m, mediaType: 'movie' as const })),
-		...tvWorks.map(t => ({ ...t, mediaType: 'tv' as const }))
-	].sort((a, b) => {
-		const dateA = a.release_date || a.first_air_date || '0000'
-		const dateB = b.release_date || b.first_air_date || '0000'
-		return dateB.localeCompare(dateA)
-	})
-
-	const hasMore = visibleCount < allWorks.length
-	const loadMore = () => setVisibleCount(prev => Math.min(prev + 12, allWorks.length))
+	const bestCombined = [...bestMovies, ...bestTv]
+		.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))
+		.slice(0, 18)
 
 	return (
 		<div className='flex-1 relative bg-black text-white min-h-screen'>
@@ -204,90 +197,162 @@ export default function MovieDetail({ personId }: { personId: string }) {
 
 				<hr className='border-white/10 my-20' />
 
-				<DetailCarousel type='person-credits' items={bestMovies} mediaType='movie' />
-				<DetailCarousel type='person-credits' items={bestTv} mediaType='tv' />
+				<DetailCarousel type='person-credits' items={bestCombined} mediaType='all' />
 
 				<hr className='border-white/10 my-20' />
 
-				{/* Grid */}
-				<section className='pb-20'>
-					<div className='mb-12'>
-						<h2 className='text-4xl font-bold mb-2 text-mdnichrome'>Full Filmography</h2>
-						<p className='text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]'>Comprehensive work history</p>
-					</div>
-
-					<div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-x-4 gap-y-8'>
-						<AnimatePresence mode='popLayout'>
-							{allWorks.slice(0, visibleCount).map((work, index) => {
-								const title = work.title || work.name || 'Untitled'
-								const date = work.release_date || work.first_air_date
-								const year = date?.slice(0, 4) || '—'
-								const href = work.mediaType === 'movie' ? `/movies/${work.id}` : `/tvseries/${work.id}`
-
-								return (
-									<motion.div
-										key={`${work.mediaType}-${work.id}`}
-										initial={{ opacity: 0, scale: 0.9, y: 20 }}
-										animate={{ opacity: 1, scale: 1, y: 0 }}
-										transition={{
-											duration: 0.4,
-											delay: (index % 12) * 0.05,
-											ease: [0.23, 1, 0.32, 1]
-										}}
-									>
-										<Link href={href} className='group flex flex-col'>
-											<div className='relative aspect-2/3 rounded-lg overflow-hidden mb-2 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-xl'>
-												{work.poster_path ? (
-													<Image
-														src={`https://image.tmdb.org/t/p/w342${work.poster_path}`}
-														alt={title}
-														fill
-														sizes='(max-width: 640px) 33vw, 15vw'
-														className='object-cover group-hover:scale-110 transition-transform duration-700 ease-out'
-													/>
-												) : (
-													<div className='w-full h-full flex items-center justify-center text-zinc-700 text-[8px] font-bold'>NO POSTER</div>
-												)}
-												<div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
-													<Play className='w-6 h-6 fill-white ml-0.5' />
-												</div>
-												<div className='absolute top-1.5 left-1.5'>
-													<span className='px-1 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[7px] font-black uppercase tracking-widest text-zinc-400 leading-none'>
-														{work.mediaType}
-													</span>
-												</div>
-											</div>
-											<h4 className='font-bold text-[11px] text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>
-												{title}
-											</h4>
-											<div className='flex items-center justify-between mt-0.5'>
-												<p className='text-[9px] text-zinc-600 font-bold truncate pr-1'>
-													{work.character ? `as ${work.character}` : (work.job || 'Role Unknown')}
-												</p>
-												<span className='text-[9px] text-zinc-700 font-black shrink-0'>{year}</span>
-											</div>
-										</Link>
-									</motion.div>
-								)
-							})}
-						</AnimatePresence>
-					</div>
-
-					{hasMore && (
-						<div className='mt-16 flex justify-center'>
-							<button
-								onClick={loadMore}
-								className='group relative px-8 py-3 bg-zinc-900 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 hover:text-white transition-all overflow-hidden'
-							>
-								<div className='absolute inset-0 bg-linear-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity' />
-								<span className='relative flex items-center gap-2'>
-									Load More Credits
-									<ChevronRight size={14} className='group-hover:translate-x-1 transition-transform' />
-								</span>
-							</button>
+				{/* Filmography Sections */}
+				<div className='space-y-40'>
+					{/* Movies Grid */}
+					<section>
+						<div className='mb-12'>
+							<h2 className='text-4xl font-bold mb-2 text-mdnichrome'>Movie Filmography</h2>
+							<p className='text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]'>Comprehensive film history</p>
 						</div>
-					)}
-				</section>
+
+						<div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-x-4 gap-y-8'>
+							<AnimatePresence mode='popLayout'>
+								{movieWorks.slice(0, visibleCountMovies).map((work, index) => {
+									const title = work.title || 'Untitled'
+									const date = work.release_date
+									const year = date?.slice(0, 4) || '—'
+									const href = `/movies/${work.id}`
+
+									return (
+										<motion.div
+											key={`movie-${work.id}`}
+											initial={{ opacity: 0, scale: 0.9, y: 20 }}
+											animate={{ opacity: 1, scale: 1, y: 0 }}
+											transition={{
+												duration: 0.4,
+												delay: (index % 12) * 0.05,
+												ease: [0.23, 1, 0.32, 1]
+											}}
+										>
+											<Link href={href} className='group flex flex-col'>
+												<div className='relative aspect-2/3 rounded-lg overflow-hidden mb-2 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-xl'>
+													{work.poster_path ? (
+														<Image
+															src={`https://image.tmdb.org/t/p/w342${work.poster_path}`}
+															alt={title}
+															fill
+															sizes='(max-width: 640px) 33vw, 15vw'
+															className='object-cover group-hover:scale-110 transition-transform duration-700 ease-out'
+														/>
+													) : (
+														<div className='w-full h-full flex items-center justify-center text-zinc-700 text-[8px] font-bold'>NO POSTER</div>
+													)}
+													<div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
+														<Play className='w-6 h-6 fill-white ml-0.5' />
+													</div>
+												</div>
+												<h4 className='font-bold text-[11px] text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>
+													{title}
+												</h4>
+												<div className='flex items-center justify-between mt-0.5'>
+													<p className='text-[9px] text-zinc-600 font-bold truncate pr-1'>
+														{work.character ? `as ${work.character}` : (work.job || 'Role Unknown')}
+													</p>
+													<span className='text-[9px] text-zinc-700 font-black shrink-0'>{year}</span>
+												</div>
+											</Link>
+										</motion.div>
+									)
+								})}
+							</AnimatePresence>
+						</div>
+
+						{visibleCountMovies < movieWorks.length && (
+							<div className='mt-16 flex justify-center'>
+								<button
+									onClick={() => setVisibleCountMovies(prev => Math.min(prev + 12, movieWorks.length))}
+									className='group relative px-8 py-3 bg-zinc-900 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 hover:text-white transition-all overflow-hidden'
+								>
+									<div className='absolute inset-0 bg-linear-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity' />
+									<span className='relative flex items-center gap-2'>
+										Load More Movies
+										<ChevronRight size={14} className='group-hover:translate-x-1 transition-transform' />
+									</span>
+								</button>
+							</div>
+						)}
+					</section>
+
+					{/* TV Series Grid */}
+					<section className='pb-20'>
+						<div className='mb-12'>
+							<h2 className='text-4xl font-bold mb-2 text-mdnichrome'>TV Series Filmography</h2>
+							<p className='text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]'>Comprehensive television history</p>
+						</div>
+
+						<div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-x-4 gap-y-8'>
+							<AnimatePresence mode='popLayout'>
+								{tvWorks.slice(0, visibleCountTv).map((work, index) => {
+									const title = work.name || 'Untitled'
+									const date = work.first_air_date
+									const year = date?.slice(0, 4) || '—'
+									const href = `/tvseries/${work.id}`
+
+									return (
+										<motion.div
+											key={`tv-${work.id}`}
+											initial={{ opacity: 0, scale: 0.9, y: 20 }}
+											animate={{ opacity: 1, scale: 1, y: 0 }}
+											transition={{
+												duration: 0.4,
+												delay: (index % 12) * 0.05,
+												ease: [0.23, 1, 0.32, 1]
+											}}
+										>
+											<Link href={href} className='group flex flex-col'>
+												<div className='relative aspect-2/3 rounded-lg overflow-hidden mb-2 bg-zinc-900 ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-xl'>
+													{work.poster_path ? (
+														<Image
+															src={`https://image.tmdb.org/t/p/w342${work.poster_path}`}
+															alt={title}
+															fill
+															sizes='(max-width: 640px) 33vw, 15vw'
+															className='object-cover group-hover:scale-110 transition-transform duration-700 ease-out'
+														/>
+													) : (
+														<div className='w-full h-full flex items-center justify-center text-zinc-700 text-[8px] font-bold'>NO POSTER</div>
+													)}
+													<div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
+														<Play className='w-6 h-6 fill-white ml-0.5' />
+													</div>
+												</div>
+												<h4 className='font-bold text-[11px] text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>
+													{title}
+												</h4>
+												<div className='flex items-center justify-between mt-0.5'>
+													<p className='text-[9px] text-zinc-600 font-bold truncate pr-1'>
+														{work.character ? `as ${work.character}` : (work.job || 'Role Unknown')}
+													</p>
+													<span className='text-[9px] text-zinc-700 font-black shrink-0'>{year}</span>
+												</div>
+											</Link>
+										</motion.div>
+									)
+								})}
+							</AnimatePresence>
+						</div>
+
+						{visibleCountTv < tvWorks.length && (
+							<div className='mt-16 flex justify-center'>
+								<button
+									onClick={() => setVisibleCountTv(prev => Math.min(prev + 12, tvWorks.length))}
+									className='group relative px-8 py-3 bg-zinc-900 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 hover:text-white transition-all overflow-hidden'
+								>
+									<div className='absolute inset-0 bg-linear-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity' />
+									<span className='relative flex items-center gap-2'>
+										Load More Series
+										<ChevronRight size={14} className='group-hover:translate-x-1 transition-transform' />
+									</span>
+								</button>
+							</div>
+						)}
+					</section>
+				</div>
 			</div>
 
 			<style jsx>{`
