@@ -281,8 +281,16 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                                                 </span>
                                                             </div>
                                                         )}
+                                                        {movie.initialDbState.userRating > 0 && (
+                                                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
+                                                                <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
+                                                                <span className="text-white text-[10px] font-bold">
+                                                                    {movie.initialDbState.userRating.toFixed(1)}
+                                                                </span>
+                                                            </div>
+                                                        )}
 
-                                                        <span className="text-zinc-400 text-[10px]">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('-') : movie.release_date?.slice(0, 4)}</span>
+                                                        <span className="text-zinc-400 text-[10px]">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}</span>
                                                     </div>
                                                 }
 
@@ -297,8 +305,17 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                                                     </span>
                                                                 </div>
                                                             )}
-                                                            <span className="text-zinc-400 text-[10px] sm:text-sm">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('-') : movie.release_date?.slice(0, 4)}</span>
+
+                                                            <span className="text-zinc-400 text-[10px] sm:text-sm">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}</span>
                                                         </div>
+                                                        {movie.initialDbState.userRating > 0 && (
+                                                            <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
+                                                                <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
+                                                                <span className="text-white text-[10px] font-bold">
+                                                                    {movie.initialDbState.userRating.toFixed(1)}
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                         <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
                                                             {movie.overview}
                                                         </p>

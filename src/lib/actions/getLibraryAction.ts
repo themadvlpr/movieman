@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "../generated/prisma/client";
 
-// Определяем интерфейс для возвращаемого элемента (маппинг)
 export interface LibraryResult {
     id: number;
     media_type: string;
@@ -34,7 +33,6 @@ export async function getLibraryAction(
     const page = parseInt(pageParam, 10) || 1;
     const pageSize = 20;
 
-    // Используем сгенерированный тип Prisma для условий поиска
     const whereClause: Prisma.UserMediaWhereInput = {
         userId: userId,
     };
@@ -47,20 +45,25 @@ export async function getLibraryAction(
         whereClause.type = mediaType;
     }
 
-    // Используем тип для сортировки
-    // Сортировка с nulls: 'last' требует специфического синтаксиса Prisma.OrderByWithRelationInput
     let orderByClause: Prisma.UserMediaOrderByWithRelationInput;
 
     if (sortBy === 'title') {
         orderByClause = { title: sortOrder };
     } else {
-        // Для полей, которые могут быть null
         orderByClause = { [sortBy]: { sort: sortOrder, nulls: 'last' } };
     }
 
+    const typeFilter = mediaType === 'all'
+        ? { in: ['movie', 'tv'] }
+        : mediaType;
+
     try {
-        const [totalCount, watchedMoviesCount, watchedTvCount, userMediaList] = await Promise.all([
+        const [totalCount, wishlListMoviesCount, wishlListTvCount, favoriteMoviesCount, favoriteTvCount, watchedMoviesCount, watchedTvCount, userMediaList] = await Promise.all([
             prisma.userMedia.count({ where: whereClause }),
+            prisma.userMedia.count({ where: { userId, type: 'movie', isWishlist: true } }),
+            prisma.userMedia.count({ where: { userId, type: 'tv', isWishlist: true } }),
+            prisma.userMedia.count({ where: { userId, type: 'movie', isFavorite: true } }),
+            prisma.userMedia.count({ where: { userId, type: 'tv', isFavorite: true } }),
             prisma.userMedia.count({ where: { userId, type: 'movie', isWatched: true } }),
             prisma.userMedia.count({ where: { userId, type: 'tv', isWatched: true } }),
             prisma.userMedia.findMany({
@@ -96,7 +99,11 @@ export async function getLibraryAction(
                 total_pages: Math.ceil(totalCount / pageSize) || 1,
                 total_results: totalCount,
                 watchedMoviesCount,
-                watchedTvCount
+                watchedTvCount,
+                wishlListMoviesCount,
+                wishlListTvCount,
+                favoriteMoviesCount,
+                favoriteTvCount,
             }
         };
 

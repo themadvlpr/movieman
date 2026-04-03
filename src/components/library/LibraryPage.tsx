@@ -166,9 +166,6 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
     const libraryData = data?.pages.flatMap((page) => page?.results || []) || [];
 
-    console.log(libraryData);
-
-
     useEffect(() => {
         if (status !== 'success') return
         if (_libraryScrollY <= 0) return
@@ -205,6 +202,18 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
     }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
 
+    const currentCategoryDataCount = (type: 'tv' | 'movie') => {
+        if (activeCategory === 'watched') {
+            return type === 'tv' ? data?.pages[0]?.watchedTvCount : data?.pages[0]?.watchedMoviesCount;
+        }
+        if (activeCategory === 'wishlist') {
+            return type === 'tv' ? data?.pages[0]?.wishlListTvCount : data?.pages[0]?.wishlListMoviesCount;
+        }
+        if (activeCategory === 'favorite') {
+            return type === 'tv' ? data?.pages[0]?.favoriteTvCount : data?.pages[0]?.favoriteMoviesCount;
+        }
+    }
+
     return (
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
@@ -215,11 +224,17 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                 <div className="flex items-center gap-2 sm:gap-3 mb-5">
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
                         <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Movies</span>
-                        <span className="text-sm sm:text-base font-bold text-zinc-300">{status === 'pending' ? <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-white/30 animate-spin" /> : data?.pages[0]?.watchedMoviesCount || '-'}</span>
+                        <span className="text-sm sm:text-base font-bold text-zinc-300">{status === 'pending' ?
+                            <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-white/30 animate-spin" /> :
+                            currentCategoryDataCount('movie') || '-'}
+                        </span>
                     </div>
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
                         <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">TV Series</span>
-                        <span className="text-sm sm:text-base font-bold text-zinc-300">{status === 'pending' ? <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-white/30 animate-spin" /> : data?.pages[0]?.watchedTvCount || '-'}</span>
+                        <span className="text-sm sm:text-base font-bold text-zinc-300">{status === 'pending' ?
+                            <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-white/30 animate-spin" /> :
+                            currentCategoryDataCount('tv') || '-'}
+                        </span>
                     </div>
                 </div>
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 md:gap-6 mb-8">
@@ -307,6 +322,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                         </button>
 
                     </div>
+
                 </div>
 
                 {/* ─── LIBRARY CONTENT ─── */}
@@ -435,7 +451,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                                 {!isGrid && (
                                                     <>
                                                         <div className="flex flex-col items-start gap-3 sm:gap-4 mt-1">
-                                                            <span className="text-zinc-400 text-xs sm:text-sm">{item.release_date}</span>
+                                                            <span className="text-zinc-400 text-xs sm:text-sm">{item.release_date.split('-').reverse().join('.')}</span>
 
                                                             {item.vote_average > 0 && (
                                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/10">

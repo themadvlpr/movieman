@@ -42,6 +42,7 @@ export async function getTVSeriesAction(category: string = "popular", page: stri
                 title: tv.name,
                 poster: tv.poster_path ? `${TMDB_IMAGE_BASE}${tv.poster_path}` : null,
                 initialDbState: {
+                    userRating: status?.userRating,
                     isWatched: !!status.isWatched,
                     isWishlist: !!status.isWishlist,
                     isFavorite: !!status.isFavorite,

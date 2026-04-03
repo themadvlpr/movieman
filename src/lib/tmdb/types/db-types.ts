@@ -16,6 +16,7 @@ export interface dbState extends dbMediaStatus {
 }
 
 export interface dbMediaStatus {
+    userRating?: number | null;
     isWatched?: boolean;
     isFavorite?: boolean;
     isWishlist?: boolean;

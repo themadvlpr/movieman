@@ -47,6 +47,7 @@ export async function getMoviesAction(category: string = "popular", userId: stri
                 ...movie,
                 poster: movie.poster_path ? `${TMDB_IMAGE_BASE}${movie.poster_path}` : null,
                 initialDbState: {
+                    userRating: status?.userRating,
                     isWatched: !!status?.isWatched,
                     isWishlist: !!status?.isWishlist,
                     isFavorite: !!status?.isFavorite,

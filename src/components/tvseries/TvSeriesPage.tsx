@@ -269,7 +269,14 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                                                                 </span>
                                                             </div>
                                                         )}
-
+                                                        {show.initialDbState.userRating > 0 && (
+                                                            <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
+                                                                <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
+                                                                <span className="text-white text-[10px] font-bold">
+                                                                    {show.initialDbState.userRating.toFixed(1)}
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                         <span className="text-zinc-400 text-[10px]">{show.first_air_date?.slice(0, 4)}</span>
                                                     </div>
                                                 }
@@ -285,6 +292,14 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                                                             </div>
                                                             <span className="text-zinc-400 text-[10px] sm:text-sm">{show.first_air_date?.slice(0, 4)}</span>
                                                         </div>
+                                                        {show.initialDbState.userRating > 0 && (
+                                                            <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
+                                                                <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
+                                                                <span className="text-white text-[10px] font-bold">
+                                                                    {show.initialDbState.userRating.toFixed(1)}
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                         <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
                                                             {show.overview}
                                                         </p>
