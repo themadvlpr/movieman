@@ -4,6 +4,20 @@ import { Movie } from "@/lib/tmdb/types/tmdb-types";
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
+        const authHeader = request.headers.get("x-api-key");
+        const referer = request.headers.get("referer");
+
+        const isFromMySite = referer && (referer.startsWith("https://movieman.vercel.app") || referer.startsWith("http://localhost:3000"));
+        const isBotWithKey = authHeader === process.env.INTERNAL_API_KEY;
+
+        if (!isFromMySite && !isBotWithKey) {
+            return new Response(JSON.stringify({ error: "Unauthorized" }), {
+                status: 401,
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+
+
         const genre = searchParams.get("genre");
         const page = searchParams.get("page") || "1";
 
