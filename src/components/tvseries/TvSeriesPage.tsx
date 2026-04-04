@@ -9,12 +9,8 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import MoviePoster from "@/components/ui/MoviePoster"
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
-
-const categories = [
-    { key: 'popular', label: 'Popular' },
-    { key: 'topRated', label: 'Top Rated' },
-]
-
+import { useTranslation } from "@/providers/LocaleProvider"
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
@@ -23,6 +19,8 @@ const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 let _tvScrollY = 0
 
 export default function TvSeriesPage({ initialViewMode, userId }: { initialViewMode: 'grid' | 'list', userId: string }) {
+    const { t, locale } = useTranslation();
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -48,9 +46,9 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
         isFetchingNextPage,
         status,
     } = useInfiniteQuery({
-        queryKey: ['series-list', activeCategory],
+        queryKey: ['series-list', activeCategory, tmdbLang],
         queryFn: async ({ pageParam = 1 }) => {
-            const result = await getTVSeriesAction(activeCategory, pageParam.toString(), userId);
+            const result = await getTVSeriesAction(activeCategory, pageParam.toString(), userId, tmdbLang);
             if (!result.success) throw new Error(result.error);
             return result.data;
         },
@@ -136,11 +134,16 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
         }
     }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
+    const categories = [
+        { key: 'popular', label: t('categories', 'popular') },
+        { key: 'topRated', label: t('categories', 'topRated') },
+    ]
+
 
     return (
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
-                <h1 className="text-3xl sm:text-5xl font-bold mb-5">TV Series: {categories.find((cat: { key: string; label: string; }) => cat.key === activeCategory)?.label}</h1>
+                <h1 className="text-3xl sm:text-5xl font-bold mb-5">{t('nav', 'tvseries')}: {categories.find((cat: { key: string; label: string; }) => cat.key === activeCategory)?.label}</h1>
 
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 mb-8">
                     <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">

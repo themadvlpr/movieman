@@ -178,14 +178,14 @@ export default function SearchBar() {
 															<div className='flex-1 flex flex-col gap-1 min-w-0'>
 																<div className='flex items-center gap-2'>
 																	<span className='text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/5 text-zinc-500'>
-																		{result.media_type}
+																		{t('common', result.media_type)}
 																	</span>
-																	{result.vote_average && result.vote_average > 0 && (
+																	{result.vote_average ? result.vote_average > 0 && (
 																		<div className='flex items-center gap-1'>
 																			<Star className='w-3 h-3 fill-amber-500 text-amber-500' />
 																			<span className='text-[10px] font-black text-zinc-300'>{result.vote_average.toFixed(1)}</span>
 																		</div>
-																	)}
+																	) : null}
 																</div>
 																<h4 className='text-lg font-bold text-zinc-200 group-hover:text-white transition-colors truncate'>
 																	{title}
@@ -217,8 +217,8 @@ export default function SearchBar() {
 									) : (
 										<div className='p-5 sm:p-20 flex flex-col items-center justify-center gap-4 text-zinc-700'>
 											<Search size={30} className='opacity-20' />
-											<p className='text-sm font-medium'>Search the entire database</p>
-											<span className='text-[10px] font-black uppercase tracking-widest opacity-30'>Movies • Series • Actors</span>
+											<p className='text-sm font-medium'>{t('common', 'searchText')}</p>
+											<span className='text-[10px] font-black uppercase tracking-widest opacity-30'>{t('common', 'movies')} • {t('common', 'series')} • {t('common', 'actors')}</span>
 										</div>
 									)}
 								</div>

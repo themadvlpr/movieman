@@ -9,7 +9,6 @@ interface TmdbOptions extends RequestInit {
 type TmdbParams = Record<string, string | number | boolean | undefined | null>;
 
 
-
 export async function tmdbFetch(endpoint: string, params: TmdbParams = {}, options: TmdbOptions = {}) {
     if (!TMDB_API_KEY) {
         console.error("Critical Error: TMDB_API_KEY not found in .env");

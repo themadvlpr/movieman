@@ -9,16 +9,8 @@ import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getMoviesAction } from "@/lib/tmdb/getMovies"
 import Link from "next/link"
 import MoviePoster from "@/components/ui/MoviePoster"
-
-
-const categories = [
-    { key: 'popular', label: 'Popular' },
-    { key: 'topRated', label: 'Top Rated' },
-    { key: 'upcoming', label: 'Upcoming' },
-]
-
-// Image base URL for TMDB
-const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
+import { useTranslation } from "@/providers/LocaleProvider"
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 
 // Survives client-side navigation — only resets on full page reload
 let _moviesScrollY = 0
@@ -29,6 +21,8 @@ interface Props {
 }
 
 export default function MoviesPage({ initialViewMode, userId }: Props) {
+    const { t, locale } = useTranslation();
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -75,9 +69,9 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         isFetchingNextPage,
         status,
     } = useInfiniteQuery({
-        queryKey: ['movies-list', activeCategory],
+        queryKey: ['movies-list', activeCategory, tmdbLang],
         queryFn: async ({ pageParam = 1 }) => {
-            const result = await getMoviesAction(activeCategory, userId, pageParam.toString());
+            const result = await getMoviesAction(activeCategory, userId, pageParam.toString(), tmdbLang);
 
             if (!result.success) throw new Error(result.error);
 
@@ -144,16 +138,22 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         localStorage.setItem('moviesViewMode', viewMode)
     }, [viewMode]);
 
+    const categories = [
+        { key: 'popular', label: t('categories', 'popular') },
+        { key: 'topRated', label: t('categories', 'topRated') },
+        { key: 'upcoming', label: t('categories', 'upcoming') },
+    ]
+
 
     return (
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
-                <h1 className="text-3xl sm:text-5xl font-bold mb-5">Movies: {categories.find((cat: { key: string; label: string; }) => cat.key === activeCategory)?.label}</h1>
+                <h1 className="text-3xl sm:text-5xl font-bold mb-5">{t('nav', 'movies')}: {t('categories', activeCategory)}</h1>
 
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 mb-8">
                     {/* Categories */}
                     <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
-                        {categories.map(({ key, label }) => (
+                        {categories.map(({ key }) => (
                             <button
                                 key={key}
                                 onClick={() => handleCategoryChange(key as 'popular' | 'topRated' | 'upcoming')}
@@ -163,7 +163,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                         : 'text-zinc-400 hover:text-white hover:bg-white/10'
                                     }`}
                             >
-                                <span className="relative z-10">{label}</span>
+                                <span className="relative z-10">{t('categories', key)}</span>
                             </button>
                         ))}
                     </div>
@@ -321,7 +321,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                                         </p>
                                                         <div className="flex items-center gap-4 mt-2 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
                                                             <div className="flex items-center gap-2 text-[#414141] text-[10px] sm:text-xs font-bold uppercase tracking-widest">
-                                                                Discover
+                                                                {t('common', 'discover')}
                                                                 <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[#292929]" />
                                                             </div>
                                                         </div>
@@ -342,12 +342,12 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                             {hasNextPage ? (
                                 <div className="flex flex-col items-center gap-3">
                                     <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
-                                    <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">Loading...</span>
+                                    <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
                                 </div>
                             ) : moviesData.length > 0 ? (
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="h-px w-20 bg-white/10" />
-                                    <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">End of list</span>
+                                    <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">{t('common', 'endOfList')}</span>
                                 </div>
                             ) : null}
                         </div>
@@ -357,13 +357,13 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                         <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
                             <Filter className="w-8 h-8 text-zinc-600" />
                         </div>
-                        <h3 className="text-white text-xl font-bold mb-2">No movies found</h3>
-                        <p className="text-zinc-500 text-sm max-w-xs">Try adjusting your filters to find what you're looking for.</p>
+                        <h3 className="text-white text-xl font-bold mb-2">{t('common', 'noResults')}</h3>
+                        <p className="text-zinc-500 text-sm max-w-xs">{t('common', 'tryAdjustingFilters')}</p>
                         <button
                             onClick={() => { setSelectedGenre('All'); setSelectedYear('All'); }}
                             className="mt-6 text-white text-sm font-semibold underline underline-offset-4 hover:text-zinc-300 cursor-pointer"
                         >
-                            Reset filters
+                            {t('common', 'resetFilters')}
                         </button>
                     </div>
                 )}

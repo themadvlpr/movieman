@@ -25,6 +25,7 @@ export async function getMoviesAction(category: string = "popular", userId: stri
             const today = new Date().toISOString().split('T')[0];
             params = {
                 page,
+                language,
                 'primary_release_date.gte': today,
                 'sort_by': 'popularity.desc',
                 'with_release_type': '2|3'

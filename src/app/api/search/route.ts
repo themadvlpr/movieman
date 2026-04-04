@@ -4,6 +4,7 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const query = searchParams.get("q");
+        const lang = searchParams.get("lang") || "en-US";
 
         if (!query) {
             return createResponse({ results: [] });
@@ -11,7 +12,11 @@ export async function GET(request: Request) {
 
         const data = await tmdbFetch(
             "/search/multi",
-            { query, include_adult: 'false' },
+            {
+                query,
+                include_adult: 'false',
+                language: lang
+            },
             CacheConfig.SEARCH
         );
 
