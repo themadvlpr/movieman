@@ -7,14 +7,17 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { getAuthSession } from "@/lib/auth-sessions";
 import { MovieDetailProps } from "@/lib/tmdb/types/tmdb-types";
 import { getUserMediaStatus } from "@/lib/db/getUserMediaStatus";
+import { getLocale } from "@/lib/i18n/get-locale";
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 
 interface MoviePageProps {
     params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: MoviePageProps): Promise<Metadata> {
-    const { id } = await params;
-    const movie = await tmdbFetch(`/movie/${id}`, {}, CacheConfig.DETAILS);
+    const [{ id }, locale] = await Promise.all([params, getLocale()]);
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
+    const movie = await tmdbFetch(`/movie/${id}`, { language: tmdbLang }, CacheConfig.DETAILS);
 
     if (!movie) {
         return {
@@ -32,13 +35,15 @@ export default async function MoviePage({ params }: MoviePageProps) {
     const { id } = await params
     const session = await getAuthSession();
     const userId = session?.user?.id;
+    const locale = await getLocale();
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
 
     const queryClient = new QueryClient()
 
     await queryClient.prefetchQuery({
         queryKey: ['movie', id],
         queryFn: async () => {
-            const movieData = await getMovieDetails(id);
+            const movieData = await getMovieDetails(id, tmdbLang);
             let dbStatus = { isWatched: false, isWishlist: false, isFavorite: false };
 
             if (userId) {

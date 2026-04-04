@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState, useEffect } from 'react'
+import { LocaleProvider } from '@/providers/LocaleProvider'
 import { broadcastQueryClient } from '@tanstack/query-broadcast-client-experimental'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -28,7 +29,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
     return (
         <QueryClientProvider client={queryClient}>
-            {children}
+            <LocaleProvider>
+                {children}
+            </LocaleProvider>
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
     )

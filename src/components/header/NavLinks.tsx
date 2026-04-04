@@ -3,13 +3,16 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import { useTranslation } from '@/providers/LocaleProvider'
+
 const NavLinks = () => {
 	const pathname = usePathname()
+	const { t } = useTranslation()
 
 	const navItems = [
-		{ name: 'Movies', href: '/movies' },
-		{ name: 'TV Series', href: '/tvseries' },
-		{ name: 'About', href: '/about' },
+		{ name: t('nav', 'movies'), href: '/movies' },
+		{ name: t('nav', 'tvseries'), href: '/tvseries' },
+		{ name: t('nav', 'about'), href: '/about' },
 	]
 
 	return (

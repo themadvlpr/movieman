@@ -6,18 +6,20 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { useTranslation } from '@/providers/LocaleProvider'
+import LanguageSwitcher from './LanguageSwitcher'
 
 const navLinks = [
-	{ title: 'Movies', href: '/movies' },
-	{ title: 'TV Series', href: '/tvseries' },
-	{ title: 'About', href: '/about' },
+	{ title: 'movies', href: '/movies' },
+	{ title: 'tvseries', href: '/tvseries' },
+	{ title: 'about', href: '/about' },
 
 ]
 
 export default function MobileMenu() {
 	const [isOpen, setIsOpen] = useState(false)
 	const [isMounted, setIsMounted] = useState(false)
-
+	const { t } = useTranslation()
 	const pathname = usePathname()
 
 	// Handle mounting state for portals
@@ -59,10 +61,10 @@ export default function MobileMenu() {
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 							transition={{ duration: 0.3 }}
-							className='fixed top-0 left-0 w-screen h-dvh z-[9999] bg-black/80 backdrop-blur-sm overflow-y-auto'
+							className='fixed top-0 left-0 w-screen h-dvh z-9999 bg-black/80 backdrop-blur-sm overflow-y-auto'
 							onClick={() => setIsOpen(false)}
 						>
-							<div className='min-h-full flex flex-col items-center justify-center py-24 px-4'>
+							<div className='min-h-full flex flex-col items-center justify-center py-24 px-4 gap-12'>
 								{/* Close Button */}
 								<button
 									onClick={() => setIsOpen(false)}
@@ -90,15 +92,22 @@ export default function MobileMenu() {
 													onClick={() => setIsOpen(false)}
 													className={`text-3xl font-semibold text-zinc-400 hover:text-zinc-100 transition-colors ${isActiveLink ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''}`}
 												>
-													{link.title}
+													{t('nav', link.title as any)}
 												</Link>
 											</motion.li>
 										)
-									}
-
-
-									)}
+									})}
 								</ul>
+
+								<motion.div
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: 0.4 }}
+									className="flex justify-center w-full"
+									onClick={(e) => e.stopPropagation()}
+								>
+									<LanguageSwitcher />
+								</motion.div>
 							</div>
 						</motion.div>
 					)}

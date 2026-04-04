@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { getAuthSession } from "@/lib/auth-sessions";
 import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
 import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tanstack/react-query";
+import { getLocale } from "@/lib/i18n/get-locale";
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 
 export const metadata = {
     title: "TV Series | MovieMan",
@@ -22,12 +24,15 @@ export default async function SeriesPage({ searchParams }: { searchParams: Promi
     const session = await getAuthSession();
     const userId = session?.user?.id || "";
 
+    const locale = await getLocale();
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
+
     const queryClient = new QueryClient();
 
     await queryClient.prefetchInfiniteQuery({
         queryKey: ['series-list', category],
         queryFn: async () => {
-            const res = await getTVSeriesAction(category as any, "1", userId);
+            const res = await getTVSeriesAction(category as any, "1", userId, tmdbLang);
             return res.success ? res.data : null;
         },
         initialPageParam: 1,

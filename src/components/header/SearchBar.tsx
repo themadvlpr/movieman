@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X, Star, Play, User as UserIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { MultiSearchResult } from '@/lib/tmdb/types/tmdb-types'
+import { useTranslation } from '@/providers/LocaleProvider'
+import { TMDB_LANGUAGES, Locale } from '@/lib/i18n/languageconfig'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -27,6 +29,8 @@ export function useDebounce<T>(value: T, delay: number): T {
 }
 
 export default function SearchBar() {
+	const { t, locale } = useTranslation()
+	const tmdbLang = TMDB_LANGUAGES[locale as Locale]
 	const [isExpanded, setIsExpanded] = useState(false)
 	const [searchText, setSearchText] = useState('')
 	const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -62,7 +66,7 @@ export default function SearchBar() {
 		queryKey: ['search-movies', debouncedQuery],
 		queryFn: async () => {
 			if (!debouncedQuery) return { results: [] };
-			const res = await fetch(`/api/search?q=${debouncedQuery}`);
+			const res = await fetch(`/api/search?q=${debouncedQuery}&lang=${tmdbLang}`);
 			if (!res.ok) throw new Error('Search failed');
 			return res.json();
 		},
@@ -79,7 +83,7 @@ export default function SearchBar() {
 			>
 				<Search size={18} />
 				<span className='text-[16px] hidden sm:inline-block sm:max-w-[150px] md:max-w-xs hover:cursor-text truncate whitespace-nowrap font-medium'>
-					Search movies, actors, series...
+					{t('common', 'search').slice(0, 30)}...
 				</span>
 			</button>
 
@@ -109,7 +113,7 @@ export default function SearchBar() {
 									<input
 										autoFocus
 										type='text'
-										placeholder='Search movies, tv series or person...'
+										placeholder={t('common', 'search')}
 										value={searchText}
 										className='w-full bg-zinc-900/80 border border-white/10 rounded-xl py-4 pl-12 pr-12 text-xl text-white outline-none focus:border-white/20 shadow-2xl transition-all font-medium placeholder:text-zinc-600'
 										onChange={e => setSearchText(e.target.value)}
@@ -129,7 +133,7 @@ export default function SearchBar() {
 									{isLoading && debouncedSearch !== '' ? (
 										<div className='p-20 flex flex-col items-center justify-center gap-4 text-zinc-500'>
 											<div className='w-10 h-10 border-2 border-white/10 border-t-white rounded-full animate-spin' />
-											<span className='font-black uppercase tracking-widest text-[10px]'>Searching database...</span>
+											<span className='font-black uppercase tracking-widest text-[10px]'>{t('common', 'loading')}</span>
 										</div>
 									) : results.length > 0 ? (
 										<div className='overflow-y-auto custom-scrollbar p-6'>
@@ -208,7 +212,7 @@ export default function SearchBar() {
 									) : debouncedSearch !== '' ? (
 										<div className='p-20 flex flex-col items-center justify-center gap-4 text-zinc-600'>
 											<Search size={40} className='opacity-20' />
-											<span className='font-black uppercase tracking-widest text-[10px]'>No results found for "{debouncedSearch}"</span>
+											<span className='font-black uppercase tracking-widest text-[10px]'>{t('common', 'noResults')} "{debouncedSearch}"</span>
 										</div>
 									) : (
 										<div className='p-5 sm:p-20 flex flex-col items-center justify-center gap-4 text-zinc-700'>

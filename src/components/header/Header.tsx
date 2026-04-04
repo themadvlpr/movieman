@@ -5,6 +5,7 @@ import MobileMenu from './MobileMenu'
 import UserDropdownMenu from './UserDropdownMenu'
 import HeaderClient from './HeaderClient'
 import NavLinks from './NavLinks'
+import LanguageSwitcher from './LanguageSwitcher'
 
 type UserSession = {
 	session: {
@@ -39,9 +40,12 @@ export default async function Header({ userSession }: { userSession: UserSession
 					MovieMan
 				</h1>
 			</Link>
-			<div className='flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-10'>
+			<div className='flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8'>
 				<SearchBar />
 				<NavLinks />
+				<div className='hidden sm:block'>
+					<LanguageSwitcher />
+				</div>
 				<div className='block lg:hidden'>
 					<MobileMenu />
 				</div>

@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { getAuthSession } from "@/lib/auth-sessions";
 import { getMoviesAction } from "@/lib/tmdb/getMovies";
 import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tanstack/react-query";
+import { getLocale } from "@/lib/i18n/get-locale";
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 
 
 export const metadata = {
@@ -24,12 +26,15 @@ export default async function Movies({ searchParams }: { searchParams: Promise<{
     const session = await getAuthSession();
     const userId = session?.user?.id || "";
 
+    const locale = await getLocale();
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
+
     const queryClient = new QueryClient();
 
     await queryClient.prefetchInfiniteQuery({
         queryKey: ['movies-list', category],
         queryFn: async () => {
-            const res = await getMoviesAction(category, userId, "1");
+            const res = await getMoviesAction(category, userId, "1", tmdbLang);
             return res.success ? res.data : null;
         },
         initialPageParam: 1,

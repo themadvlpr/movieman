@@ -13,10 +13,10 @@ interface TMDBParams {
     [key: string]: string | number | undefined;
 }
 
-export async function getMoviesAction(category: string = "popular", userId: string | null, page: string = "1") {
+export async function getMoviesAction(category: string = "popular", userId: string | null, page: string = "1", language = "en-US") {
     try {
         let endpoint = '/movie/popular';
-        let params: TMDBParams = { page };
+        let params: TMDBParams = { page, language };
 
         if (category === 'topRated') {
             endpoint = '/movie/top_rated';

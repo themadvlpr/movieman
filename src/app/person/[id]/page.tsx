@@ -5,14 +5,17 @@ import { getPersonDetails } from "@/lib/tmdb/getPersonDetails";
 import PersonDetail from "@/components/PersonDetail";
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { PersonDetailProps } from "@/lib/tmdb/types/tmdb-types";
+import { getLocale } from "@/lib/i18n/get-locale";
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 
 interface PersonPageProps {
     params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: PersonPageProps): Promise<Metadata> {
-    const { id } = await params;
-    const person = await tmdbFetch(`/person/${id}`, {}, CacheConfig.DETAILS);
+    const [{ id }, locale] = await Promise.all([params, getLocale()]);
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
+    const person = await tmdbFetch(`/person/${id}`, { language: tmdbLang }, CacheConfig.DETAILS);
 
     if (!person) {
         return {
@@ -28,11 +31,13 @@ export async function generateMetadata({ params }: PersonPageProps): Promise<Met
 
 export default async function PersonPage({ params }: PersonPageProps) {
     const { id } = await params
+    const locale = await getLocale();
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
     const queryClient = new QueryClient()
 
     await queryClient.prefetchQuery({
         queryKey: ['person', id],
-        queryFn: () => getPersonDetails(id),
+        queryFn: () => getPersonDetails(id, tmdbLang),
     })
 
     const state = dehydrate(queryClient)

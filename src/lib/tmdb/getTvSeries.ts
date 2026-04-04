@@ -6,7 +6,7 @@ import { TvSeries } from "./types/tmdb-types";
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
-export async function getTVSeriesAction(category: string = "popular", page: string = "1", userId?: string) {
+export async function getTVSeriesAction(category: string = "popular", page: string = "1", userId?: string, language = "en-US") {
     try {
         const endpointMap: Record<string, string> = {
             popular: "/tv/popular",
@@ -16,7 +16,7 @@ export async function getTVSeriesAction(category: string = "popular", page: stri
 
         const data = await tmdbFetch(
             endpoint,
-            { page },
+            { page, language },
             CacheConfig.LISTS
         );
 

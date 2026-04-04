@@ -7,14 +7,17 @@ import { getAuthSession } from "@/lib/auth-sessions";
 import { getUserMediaStatus } from "@/lib/db/getUserMediaStatus";
 import { TvSeriesDetailProps } from "@/lib/tmdb/types/tmdb-types";
 import { notFound } from "next/navigation";
+import { getLocale } from "@/lib/i18n/get-locale";
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 
 interface TvSeriesPageProps {
     params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: TvSeriesPageProps): Promise<Metadata> {
-    const { id } = await params;
-    const series = await tmdbFetch(`/tv/${id}`, {}, CacheConfig.DETAILS);
+    const [{ id }, locale] = await Promise.all([params, getLocale()]);
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
+    const series = await tmdbFetch(`/tv/${id}`, { language: tmdbLang }, CacheConfig.DETAILS);
 
     if (!series) {
         return {
@@ -33,12 +36,14 @@ export default async function TvSeriesPage({ params }: TvSeriesPageProps) {
     const { id } = await params;
     const session = await getAuthSession();
     const userId = session?.user?.id;
+    const locale = await getLocale();
+    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
     const queryClient = new QueryClient();
 
     await queryClient.prefetchQuery({
         queryKey: ['tv', id],
         queryFn: async () => {
-            const tvData = await getTVDetails(id);
+            const tvData = await getTVDetails(id, tmdbLang);
             let dbStatus = { isWatched: false, isWishlist: false, isFavorite: false };
 
             if (userId) {

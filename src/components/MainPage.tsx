@@ -12,6 +12,7 @@ import Cookies from "js-cookie"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import Loader from "@/components/ui/Loader"
 import { Movie } from "@/lib/tmdb/types/tmdb-types"
+import { useTranslation } from "@/providers/LocaleProvider"
 
 
 
@@ -19,6 +20,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const { t } = useTranslation()
 
     // Derive selectedGenreId from URL if present, otherwise use initialGenreId
     const urlGenre = searchParams.get('genre');
@@ -101,7 +103,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                                         <div className="absolute inset-0 blur-lg bg-white/5 rounded-full" />
                                     </div>
                                     <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 animate-pulse">
-                                        Loading Poster
+                                        {t('common', 'loadingPoster')}
                                     </span>
                                 </div>
                             </motion.div>
@@ -200,7 +202,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                             className="group max-w-fit flex flex-1 sm:flex-none justify-center gap-2 sm:gap-2.5 items-center px-5 sm:px-7 py-2.5 sm:py-3 bg-white text-black rounded hover:bg-white/90 transition-all active:scale-95"
                         >
                             <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-black" />
-                            <span className="text-sm sm:text-base font-bold">Discover</span>
+                            <span className="text-sm sm:text-base font-bold">{t('common', 'discover')}</span>
                         </Link>
                         <LibraryControlsButtons
                             mediaId={id}
@@ -226,8 +228,8 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                             onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen) }}
                             className="group cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition-all duration-300 text-sm font-semibold text-white/90"
                         >
-                            <span className="opacity-60 font-medium">Genre:</span>
-                            <span>{genresById[selectedGenreId as keyof typeof genresById]}</span>
+                            <span className="opacity-60 font-medium">{t('common', 'genre')}:</span>
+                            <span>{t('genres', selectedGenreId.toString())}</span>
                             <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                         </button>
 
@@ -254,7 +256,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                                             }}
                                             className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
                                         >
-                                            {name}
+                                            {t('genres', id)}
                                             {selectedGenreId === Number(id) && <Check className="w-3.5 h-3.5 text-white" />}
                                         </button>
                                     ))}
@@ -288,7 +290,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                                 onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen) }}
                                 className="group cursor-pointer mx-auto flex items-center justify-between w-full max-w-[160px] gap-1 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/10 transition-all duration-300 text-xs font-semibold text-white/90"
                             >
-                                <span className="truncate">{genresById[selectedGenreId as keyof typeof genresById]}</span>
+                                <span className="truncate">{t('genres', selectedGenreId.toString())}</span>
                                 <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
 
@@ -315,7 +317,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                                                 }}
                                                 className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
                                             >
-                                                {name}
+                                                {t('genres', id)}
                                                 {selectedGenreId === Number(id) && <Check className="w-3.5 h-3.5 text-white" />}
                                             </button>
                                         ))}
@@ -346,7 +348,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                         onClick={() => changePage((currentPage + 1) % moviesWithBackdrops.length)}
                     >
                         <div className="absolute top-3 left-3 z-10 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] font-bold uppercase tracking-wider text-white/90 border border-white/10">
-                            Next Up
+                            {t('common', 'nextUp')}
                         </div>
                         <div className="relative w-full h-full overflow-hidden">
                             <Image
