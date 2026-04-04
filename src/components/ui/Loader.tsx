@@ -1,4 +1,9 @@
+'use client'
+
+import { useTranslation } from "@/providers/LocaleProvider"
+
 export default function Loader() {
+    const { t } = useTranslation();
     return (
         <div style={{
             position: 'fixed',
@@ -58,7 +63,7 @@ export default function Loader() {
                     margin: 0,
                     animation: 'loader-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
                 }}>
-                    Loading...
+                    {t('common', 'loading')}
                 </h2>
                 <div style={{
                     width: '192px',
