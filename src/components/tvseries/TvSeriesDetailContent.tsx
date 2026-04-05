@@ -224,7 +224,7 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                             </div>
                             <div className='flex items-center gap-1.5 text-sm sm:text-base font-semibold text-zinc-300'>
                                 <List className='w-4 h-4' />
-                                <span>{series.number_of_seasons} Season{series.number_of_seasons !== 1 ? 's' : ''} • {series.number_of_episodes} Episode{series.number_of_episodes !== 1 ? 's' : ''}</span>
+                                <span>{series.number_of_seasons} {series.number_of_seasons !== 1 ? t('common', 'seasons') : t('common', 'season')} • {series.number_of_episodes} {series.number_of_episodes !== 1 ? t('common', 'episodes') : t('common', 'episode')}</span>
                             </div>
                             <div className='flex flex-wrap items-center gap-4 text-sm sm:text-base font-semibold text-zinc-400'>
                                 <div className='flex items-center gap-1.5 text-zinc-300'>
@@ -385,7 +385,7 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                                                             </motion.span>
                                                         </Link>
                                                         <span className='text-[10px] font-black uppercase tracking-widest text-zinc-600'>
-                                                            {person.jobs.join(' / ')}
+                                                            {person.jobs.map((job) => t('common', job.toLocaleLowerCase())).join(' / ')}
                                                         </span>
                                                     </div>
                                                 ))}

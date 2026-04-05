@@ -412,7 +412,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                             </div>
 
                                             {/* Info Section */}
-                                            <div className={isGrid ? "px-0.5 sm:px-1" : "flex flex-col justify-center gap-2 sm:gap-3 min-w-0 pr-10 sm:pr-20"}>
+                                            <div className={isGrid ? "px-0.5 sm:px-1" : "flex flex-col justify-center gap-2 sm:gap-3 min-w-0 pr-0 sm:pr-20"}>
                                                 <div className="flex flex-col gap-0.5">
                                                     {!isGrid && (
                                                         <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">
@@ -456,7 +456,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                                             {item.vote_average > 0 && (
                                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/10">
                                                                     <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
-                                                                    <span className="text-white text-[7px] sm:text-xs font-bold">
+                                                                    <span className="text-white text-xs sm:text-sm font-bold">
                                                                         TMDB rating: {item.vote_average.toFixed(1)}
                                                                     </span>
                                                                 </div>
@@ -464,7 +464,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                                             {item.user_rating != null && item.user_rating > 0 && (
                                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
                                                                     <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
-                                                                    <span className="text-[7px] sm:text-xs font-bold">
+                                                                    <span className="text-xs sm:text-sm font-bold">
                                                                         My rating: {item.user_rating.toFixed(1)}
                                                                     </span>
                                                                 </div>
@@ -473,7 +473,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
                                                             {item.watched_date && (
                                                                 <div className="flex items-center gap-1.5 text-zinc-400">
-                                                                    <span className="text-[7px] sm:text-xs font-medium">Watched: {item.watched_date.slice(0, 10)}</span>
+                                                                    <span className="text-xs sm:text-sm font-medium">Watched: {item.watched_date.slice(0, 10)}</span>
                                                                 </div>
                                                             )}
                                                         </div>
