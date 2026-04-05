@@ -217,7 +217,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                         ? "absolute top-0 inset-0 pointer-events-none z-20 flex flex-col items-center justify-end"
                                         : "absolute bottom-6 right-6 z-30 pointer-events-none translate-x-4 group-hover:translate-x-0 transition-all duration-300"
                                     }>
-                                        <div className={`hidden sm:block pointer-events-auto ${isGrid ? 'mb-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300' : ''}`}>
+                                        <div className={`hidden sm:block pointer-events-auto ${isGrid ? 'mb-25 opacity-0 group-hover:opacity-100 transition-opacity duration-300' : ''}`}>
                                             <LibraryControlsButtons
                                                 mediaId={movie.id}
                                                 mediaData={{

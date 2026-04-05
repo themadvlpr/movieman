@@ -12,19 +12,20 @@ import Link from "next/link"
 import MoviePoster from "@/components/ui/MoviePoster"
 import * as XLSX from "xlsx"
 import { toast } from "sonner"
+import { useTranslation } from "@/providers/LocaleProvider"
 
 const libraries = [
-    { key: 'watched', label: 'Watched' },
-    { key: 'wishlist', label: 'Wishlist' },
-    { key: 'favorite', label: 'Favorite' },
+    { key: 'watched' },
+    { key: 'wishlist' },
+    { key: 'favorite' },
 ]
 
 const sortOptions = [
-    { key: 'title', label: 'Name' },
-    { key: 'watchedDate', label: 'Watch Date' },
-    { key: 'year', label: 'Release Date' },
-    { key: 'userRating', label: 'User Rating' },
-    { key: 'rating', label: 'TMDB Rating' },
+    { key: 'title', label: 'name' },
+    { key: 'watchedDate', label: 'watchDate' },
+    { key: 'year', label: 'releaseDate' },
+    { key: 'userRating', label: 'userRating' },
+    { key: 'rating', label: 'tmdbRating' },
 ]
 
 // Survives client-side navigation
@@ -44,6 +45,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const { t } = useTranslation()
 
     const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
     const [isExporting, setIsExporting] = useState(false);
@@ -218,19 +220,19 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
                 <h1 className="text-3xl sm:text-5xl font-bold mb-5 flex flex-wrap items-center gap-3 sm:gap-6">
-                    <span>My Library</span>
+                    <span>{t('nav', 'library')}</span>
 
                 </h1>
                 <div className="flex items-center gap-2 sm:gap-3 mb-5">
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
-                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Movies</span>
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">{t('common', 'movies')}</span>
                         <span className="text-sm sm:text-base font-bold text-zinc-300">{status === 'pending' ?
                             <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-white/30 animate-spin" /> :
                             currentCategoryDataCount('movie') || '-'}
                         </span>
                     </div>
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
-                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">TV Series</span>
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">{t('common', 'series')}</span>
                         <span className="text-sm sm:text-base font-bold text-zinc-300">{status === 'pending' ?
                             <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-white/30 animate-spin" /> :
                             currentCategoryDataCount('tv') || '-'}
@@ -240,7 +242,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 md:gap-6 mb-8">
                     {/* Categories */}
                     <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
-                        {libraries.map(({ key, label }) => (
+                        {libraries.map(({ key }) => (
                             <button
                                 key={key}
                                 onClick={() => setActiveCategory(key as CategoryType)}
@@ -250,76 +252,84 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                         : 'text-zinc-400 hover:text-white hover:bg-white/10'
                                     }`}
                             >
-                                <span className="relative z-10">{label}</span>
+                                <span className="relative z-10">{t('common', key)}</span>
                             </button>
                         ))}
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
-                        {/* Media Type Filter */}
-                        <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
-                            {['all', 'movie', 'tv'].map((type) => (
-                                <button
-                                    key={type}
-                                    onClick={() => setMediaType(type as MediaType)}
-                                    className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-300 cursor-pointer capitalize
+
+                        <div className="flex flex-wrap gap-2">
+                            {/* Media Type Filter */}
+                            <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
+                                {['all', 'movie', 'tv'].map((type) => (
+                                    <button
+                                        key={type}
+                                        onClick={() => setMediaType(type as MediaType)}
+                                        className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-300 cursor-pointer capitalize
                                         ${mediaType === type ? 'bg-white/10 text-white' : 'text-zinc-400 hover:text-white'}`}
-                                >
-                                    {type === 'tv' ? 'TV Series' : type}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Sort Options */}
-                        <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value as SortField)}
-                                className="bg-transparent text-white text-xs font-semibold py-2 px-3 outline-none cursor-pointer appearance-none"
-                            >
-                                {sortOptions.map((opt) => (
-                                    <option key={opt.key} value={opt.key} className="bg-zinc-900 text-white">
-                                        {opt.label}
-                                    </option>
+                                    >
+                                        {t('common', type)}
+                                    </button>
                                 ))}
-                            </select>
+                            </div>
 
-                            <button
-                                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                                className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
-                                aria-label="Toggle Sort Order"
-                            >
-                                {sortOrder === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
-                            </button>
+                            {/* Sort Options */}
+                            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value as SortField)}
+                                    className="bg-transparent text-white text-xs font-semibold py-2 px-3 outline-none cursor-pointer appearance-none"
+                                >
+                                    {sortOptions.map((opt) => (
+                                        <option key={opt.key} value={opt.key} className="bg-zinc-900 text-white">
+                                            {t('common', opt.label)}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <button
+                                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                                    className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                                    aria-label="Toggle Sort Order"
+                                >
+                                    {sortOrder === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
+                                </button>
+                            </div>
                         </div>
 
-                        {/* View Toggles */}
-                        <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
-                            <button
-                                onClick={() => toggleView('grid')}
-                                className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
-                            >
-                                <Grid className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => toggleView('list')}
-                                className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
-                            >
-                                <List className="w-4 h-4" />
-                            </button>
-                        </div>
+                        <div className="flex w-full sm:w-fit justify-between gap-2">
 
-                        {/* Export All Data Button */}
-                        <button
-                            onClick={handleExport}
-                            disabled={isExporting}
-                            className="flex items-center justify-center gap-2 px-3 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                            aria-label="Export all to Excel"
-                            title="Export all to Excel"
-                        >
-                            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                            <span className="text-xs font-semibold hidden sm:block">Export All</span>
-                        </button>
+                            {/* Export All Data Button */}
+                            <button
+                                onClick={handleExport}
+                                disabled={isExporting}
+                                className="flex items-center justify-center gap-2 px-3 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                aria-label="Export all to Excel"
+                                title="Export all to Excel"
+                            >
+                                {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                                <span className="text-xs font-semibold">{t('common', 'exportAll')}</span>
+                            </button>
+                            {/* View Toggles */}
+                            <div className="flex w-fit items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
+                                <button
+                                    onClick={() => toggleView('grid')}
+                                    className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
+                                >
+                                    <Grid className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => toggleView('list')}
+                                    className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
+                                >
+                                    <List className="w-4 h-4" />
+                                </button>
+                            </div>
+
+
+
+                        </div>
 
                     </div>
 
@@ -398,7 +408,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                                 {/* Media Type Badge on Grid View */}
                                                 {isGrid && (
                                                     <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-white text-[9px] font-bold tracking-wider z-30 uppercase pointer-events-none border border-white/10">
-                                                        {item.media_type === 'tv' ? 'TV' : 'Movie'}
+                                                        {item.media_type === 'tv' ? t('common', 'tv') : t('common', 'movie')}
                                                     </div>
                                                 )}
 
@@ -416,7 +426,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                                 <div className="flex flex-col gap-0.5">
                                                     {!isGrid && (
                                                         <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">
-                                                            {item.media_type === 'tv' ? 'TV Series' : 'Movie'}
+                                                            {item.media_type === 'tv' ? t('common', 'tv') : t('common', 'movie')}
                                                         </span>
                                                     )}
                                                     <h3 className={`text-white font-bold transition-colors truncate ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
@@ -436,9 +446,21 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                                                     </span>
                                                                 </div>
                                                             )}
-                                                            <span className="text-zinc-400 text-[10px]">{item.release_date?.slice(0, 4)}</span>
+                                                            <span className="text-zinc-400 text-[10px] flex items-center gap-1">
+                                                                <Calendar className="w-2.5 h-2.5 text-zinc-400" />
+                                                                {item.release_date?.slice(0, 4)}
+                                                            </span>
+                                                            {item.user_rating != null && item.user_rating > 0 && (
+                                                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
+                                                                    <Star className="w-3 h-3 fill-blue-400 text-blue-400" />
+                                                                    <span className="text-[10px] font-bold">
+                                                                        {item.user_rating.toFixed(1)}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+
                                                         </div>
-                                                        {(activeCategory === 'watched' && item.watched_date) && (
+                                                        {(activeCategory === 'watched' || activeCategory === 'favorite') && item.watched_date && (
                                                             <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 w-fit">
                                                                 <Calendar className="w-2.5 h-2.5 text-zinc-400" />
                                                                 <span className="text-zinc-300 text-[9px] font-medium">{item.watched_date.slice(0, 10)}</span>
@@ -451,13 +473,16 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                                 {!isGrid && (
                                                     <>
                                                         <div className="flex flex-col items-start gap-3 sm:gap-4 mt-1">
-                                                            <span className="text-zinc-400 text-xs sm:text-sm">{item.release_date.split('-').reverse().join('.')}</span>
+                                                            <span className="text-zinc-400 text-xs sm:text-sm flex gap-1 items-center">
+                                                                <Calendar className="w-2.5 h-2.5 text-zinc-400" />
+                                                                {item.release_date.split('-').reverse().join('.')}
+                                                            </span>
 
                                                             {item.vote_average > 0 && (
                                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/10">
                                                                     <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
                                                                     <span className="text-white text-xs sm:text-sm font-bold">
-                                                                        TMDB rating: {item.vote_average.toFixed(1)}
+                                                                        TMDB: {item.vote_average.toFixed(1)}
                                                                     </span>
                                                                 </div>
                                                             )}
@@ -465,7 +490,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
                                                                     <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
                                                                     <span className="text-xs sm:text-sm font-bold">
-                                                                        My rating: {item.user_rating.toFixed(1)}
+                                                                        {t('common', 'myRating')}: {item.user_rating.toFixed(1)}
                                                                     </span>
                                                                 </div>
                                                             )}
@@ -473,7 +498,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
                                                             {item.watched_date && (
                                                                 <div className="flex items-center gap-1.5 text-zinc-400">
-                                                                    <span className="text-xs sm:text-sm font-medium">Watched: {item.watched_date.slice(0, 10)}</span>
+                                                                    <span className="text-xs sm:text-sm font-medium">{t('common', 'watched')}: {item.watched_date.slice(0, 10).split('-').reverse().join('.')}</span>
                                                                 </div>
                                                             )}
                                                         </div>
@@ -506,7 +531,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                             ) : libraryData.length > 0 ? (
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="h-px w-20 bg-white/10" />
-                                    <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">End of list</span>
+                                    <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">{t('common', 'endOfList')}</span>
                                 </div>
                             ) : null}
                         </div>
