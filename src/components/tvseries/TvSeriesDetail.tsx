@@ -15,6 +15,8 @@ import DetailCarousel from '@/components/ui/DetailCarousel'
 import { dbState } from '@/lib/tmdb/types/db-types'
 import { updateMediaDetailsAction } from '@/lib/actions/updateMediaDetailsAction'
 import { toast } from "sonner";
+import { useTranslation } from "@/providers/LocaleProvider";
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 
 
 
@@ -22,11 +24,13 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 
 	const [imageLoading, setImageLoading] = useState(true);
 	const [showFullDate, setShowFullDate] = useState(false);
+	const { t, locale } = useTranslation();
+	const tmdbLang = TMDB_LANGUAGES[locale as Locale];
 
 
 	const { data } = useQuery<TvSeriesDetailProps & { initialDbState?: dbState }>({
 		queryKey: ['tv', tvId],
-		queryFn: () => getTVDetails(tvId),
+		queryFn: () => getTVDetails(tvId, tmdbLang),
 		staleTime: Infinity,
 	});
 
@@ -296,7 +300,7 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 										onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
 										className='text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors text-left w-fit mt-2 cursor-pointer'
 									>
-										{isOverviewExpanded ? 'Show Less' : 'Read More'}
+										{isOverviewExpanded ? t('common', 'showLess') : t('common', 'readMore')}
 									</motion.button>
 								)}
 							</motion.div>
@@ -337,7 +341,7 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 							>
 								<div className='flex justify-between'>
 									<div className='flex flex-col gap-1'>
-										<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Watched on</label>
+										<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>{t('common', 'watchedOn')}</label>
 										<input
 											type='date'
 											value={watchDate}
@@ -347,7 +351,7 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 									</div>
 
 									<div className='flex flex-col gap-1'>
-										<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Rating</label>
+										<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>{t('common', 'rating')}</label>
 										<div className='relative w-fit'>
 											<select
 												value={personalRating}
@@ -378,7 +382,7 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 
 							return (
 								<div className='mt-4'>
-									<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6'>Main Crew</h3>
+									<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6'>{t('common', 'creators')}</h3>
 									<motion.div layout className='flex flex-col gap-3'>
 										<motion.div layout className='flex flex-wrap gap-x-12 gap-y-6'>
 											<AnimatePresence mode='popLayout'>
@@ -433,28 +437,28 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 							exit={{ opacity: 0, y: 20 }}
 							className='mt-20 max-w-4xl'
 						>
-							<h2 className='text-4xl font-bold mb-2'>My commentary</h2>
-							<p className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700 mb-6'>My personal notes</p>
+							<h2 className='text-4xl font-bold mb-2'>{t('common', 'myCommentary')}</h2>
+							<p className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700 mb-6'>{t('common', 'personalNotes')}</p>
 							{initialDbState?.userComment !== '' && initialDbState?.userComment !== null ?
 								(!editNote && <>
 									<p className='text-lg sm:text-xl font-medium text-zinc-300'>{note || initialDbState?.userComment}</p>
-									<button onClick={() => setEditNote(true)} className='text-md mt-5 bg-white px-4 py-2 rounded-md sm:text-lg font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>Edit commentary</button>
+									<button onClick={() => setEditNote(true)} className='text-md mt-5 bg-white px-4 py-2 rounded-md sm:text-lg font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>{t('common', 'editCommentary')}</button>
 								</>) :
 
-								!editNote && <button onClick={() => setEditNote(true)} className='text-xl bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>Add commentary</button>
+								!editNote && <button onClick={() => setEditNote(true)} className='text-xl bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>{t('common', 'addCommentary')}</button>
 
 							}
 							{editNote &&
 								<div>
 									<div className='bg-white/2 border border-white/5 rounded-3xl p-5 sm:p-8 shadow-3xl'>
 										<textarea
-											placeholder='Write your thoughts about the tv show here...'
+											placeholder={t('common', 'commentaryPlaceholder')}
 											value={note}
 											onChange={(e) => setNote(e.target.value)}
 											className='w-full bg-transparent text-xl sm:text-2xl font-medium text-zinc-300 outline-none border-none resize-none min-h-[200px] placeholder:text-zinc-800'
 										/>
 									</div>
-									<button onClick={handleSaveNote} className='text-xl mt-10 bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>Save commentary</button>
+									<button onClick={handleSaveNote} className='text-xl mt-10 bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>{t('common', 'saveCommentary')}</button>
 								</div>
 							}
 						</motion.section>

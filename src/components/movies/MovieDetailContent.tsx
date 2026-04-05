@@ -23,7 +23,6 @@ export default function MovieDetailContent({ data, userId }: Props) {
     const { movie, credits, similarMovies, initialDbState } = data;
     const { t } = useTranslation();
 
-    // Все стейты теперь вызываются ВСЕГДА по порядку
     const [imageLoading, setImageLoading] = useState(true);
     const [watchDate, setWatchDate] = useState(
         initialDbState?.watchedDate

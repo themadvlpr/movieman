@@ -3,6 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { User, Star, Play } from "lucide-react"
 import { MergedCredit } from "@/lib/tmdb/types/tmdb-types"
+import { useTranslation } from "@/providers/LocaleProvider";
 
 interface DetailCarouselProps {
     type: 'cast' | 'similar' | 'person-credits'
@@ -14,19 +15,21 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
     let title = ''
     let subtitle = ''
 
+    const { t } = useTranslation();
+
     const uniqueItems = Array.from(new Map((items || []).map(item => [item.id, item])).values());
 
     if (type === 'cast') {
-        title = 'Top Cast'
-        subtitle = 'The actors and their roles'
+        title = t('common', 'topCast')
+        subtitle = t('common', 'theActorsAndTheirRoles')
     } else if (type === 'similar') {
-        title = 'More Like This'
-        subtitle = 'Recommendations for you'
+        title = t('common', 'moreLikeThis')
+        subtitle = t('common', 'recommendationsForYou')
     } else if (type === 'person-credits') {
-        title = mediaType === 'movie' ? 'Known For (Movies)' : 
-               mediaType === 'tv' ? 'Known For (TV)' : 'Known For'
-        subtitle = mediaType === 'movie' ? 'Top rated films' : 
-                  mediaType === 'tv' ? 'Top rated series' : 'Top rated works'
+        title = mediaType === 'movie' ? 'Known For (Movies)' :
+            mediaType === 'tv' ? 'Known For (TV)' : 'Known For'
+        subtitle = mediaType === 'movie' ? 'Top rated films' :
+            mediaType === 'tv' ? 'Top rated series' : 'Top rated works'
     }
 
     if (!items || items.length === 0) return null

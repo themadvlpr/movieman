@@ -15,13 +15,17 @@ import DetailCarousel from '../ui/DetailCarousel'
 import { dbState } from '@/lib/tmdb/types/db-types'
 import { updateMediaDetailsAction } from '@/lib/actions/updateMediaDetailsAction'
 import { toast } from "sonner";
+import { useTranslation } from "@/providers/LocaleProvider";
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 
 export default function MovieDetail({ movieId, userId }: { movieId: string, userId: string }) {
 	const [imageLoading, setImageLoading] = useState(true);
+	const { t, locale } = useTranslation();
+	const tmdbLang = TMDB_LANGUAGES[locale as Locale];
 
 	const { data } = useQuery<MovieDetailProps & { initialDbState?: dbState }>({
 		queryKey: ['movie', movieId],
-		queryFn: () => getMovieDetails(movieId),
+		queryFn: () => getMovieDetails(movieId, tmdbLang),
 		staleTime: Infinity,
 	});
 
@@ -249,13 +253,13 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 								>
 									{movie.overview}
 								</motion.p>
-								{movie.overview && movie.overview.length > 280 && (
+								{movie.overview && movie.overview.length > 250 && (
 									<motion.button
 										layout
 										onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
 										className='text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors text-left w-fit mt-2 cursor-pointer'
 									>
-										{isOverviewExpanded ? 'Show Less' : 'Read More'}
+										{isOverviewExpanded ? t('common', 'showLess') : t('common', 'readMore')}
 									</motion.button>
 								)}
 							</motion.div>
@@ -267,7 +271,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 								className="flex w-fit items-center gap-2 bg-white text-black px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer"
 							>
 								<Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
-								<span className="text-sm sm:text-base">Play Trailer</span>
+								<span className="text-sm sm:text-base">{t('common', 'playTrailer')}</span>
 							</button>
 						)}
 
@@ -299,7 +303,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 								>
 									<div className='flex justify-between'>
 										<div className='flex flex-col gap-1'>
-											<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Watched on</label>
+											<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>{t('common', 'watchedOn')}</label>
 											<input
 												type='date'
 												value={watchDate}
@@ -309,7 +313,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 										</div>
 
 										<div className='flex flex-col gap-1'>
-											<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>Rating</label>
+											<label className='text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700'>{t('common', 'rating')}</label>
 											<div className='relative w-fit'>
 												<select
 													value={personalRating}
@@ -335,7 +339,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 
 						{mainCrew.length > 0 && (
 							<div className='mt-4'>
-								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6'>Main Crew</h3>
+								<h3 className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6'>{t('common', 'creators')}</h3>
 								<div className='flex flex-wrap gap-x-12 gap-y-6'>
 									{mainCrew.map((person) => (
 										<div key={person.id} className='flex flex-col gap-1'>
@@ -343,7 +347,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 												{person.name}
 											</Link>
 											<span className='text-[10px] font-black uppercase tracking-widest text-zinc-600'>
-												{person.jobs.join(' / ')}
+												{person.jobs.map((job) => t('common', job)).join(' / ')}
 											</span>
 										</div>
 									))}
@@ -367,15 +371,15 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 							exit={{ opacity: 0, y: 20 }}
 							className='mt-20 max-w-4xl'
 						>
-							<h2 className='text-4xl font-bold mb-2'>My commentary</h2>
-							<p className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700 mb-6'>My personal notes</p>
+							<h2 className='text-4xl font-bold mb-2'>{t('common', 'myCommentary')}</h2>
+							<p className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700 mb-6'>{t('common', 'personalNotes')}</p>
 							{initialDbState?.userComment !== '' && initialDbState?.userComment !== null ?
 								(!editNote && <>
 									<p className='text-lg sm:text-xl font-medium text-zinc-300'>{note || initialDbState?.userComment}</p>
-									<button onClick={() => setEditNote(true)} className='text-md mt-5 bg-white px-4 py-2 rounded-md sm:text-lg font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>Edit commentary</button>
+									<button onClick={() => setEditNote(true)} className='text-md mt-5 bg-white px-4 py-2 rounded-md sm:text-lg font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>{t('common', 'editCommentary')}</button>
 								</>) :
 
-								!editNote && <button onClick={() => setEditNote(true)} className='text-xl bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>Add commentary</button>
+								!editNote && <button onClick={() => setEditNote(true)} className='text-xl bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>{t('common', 'addCommentary')}</button>
 
 							}
 							{editNote &&
@@ -388,7 +392,7 @@ export default function MovieDetail({ movieId, userId }: { movieId: string, user
 											className='w-full bg-transparent text-xl sm:text-2xl font-medium text-zinc-300 outline-none border-none resize-none min-h-[200px] placeholder:text-zinc-800'
 										/>
 									</div>
-									<button onClick={handleSaveNote} className='text-xl mt-10 bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>Save commentary</button>
+									<button onClick={handleSaveNote} className='text-xl mt-10 bg-white px-4 py-2 rounded-md sm:text-xl font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>{t('common', 'saveCommentary')}</button>
 								</div>
 							}
 						</motion.section>
