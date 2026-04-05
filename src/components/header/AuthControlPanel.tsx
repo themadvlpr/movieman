@@ -1,11 +1,13 @@
 import SignInButtons from '@/components/ui/SignInButtons/SignInButtons'
 import { X } from 'lucide-react'
+import { useTranslation } from '@/providers/LocaleProvider'
 
 export default function AuthControlPanel({
 	handleClose,
 }: {
 	handleClose: () => void
 }) {
+	const { t } = useTranslation()
 	return (
 		<div
 			className='fixed top-0 left-0 w-screen h-dvh z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm'
@@ -31,7 +33,7 @@ export default function AuthControlPanel({
 						id='header-signin-title'
 						className='text-center text-lg font-semibold text-zinc-50'
 					>
-						Sign in with:
+						{t('auth', 'signInWith')}
 					</h2>
 					<SignInButtons />
 				</div>

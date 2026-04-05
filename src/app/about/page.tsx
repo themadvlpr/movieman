@@ -5,47 +5,50 @@ import {
   Search,
   Library,
   Star,
-  Calendar,
   RefreshCcw,
   Download,
   ShieldCheck,
   Zap
 } from 'lucide-react'
+import { useTranslation } from "@/providers/LocaleProvider"
 
 const features = [
   {
     icon: <Search className="w-6 h-6 text-blue-400" />,
-    title: "Global Search",
-    description: "Access millions of movies and TV shows powered by the TMDB database. Find detailed info, trailers, and more."
+    title: "globalSearch",
+    description: "globalSearchDescription"
   },
   {
     icon: <Library className="w-6 h-6 text-purple-400" />,
-    title: "Personal Library",
-    description: "Organize your collection into Watched, Wishlist, or Favorite categories with a sleek, interactive interface."
+    title: "personalLibrary",
+    description: "personalLibraryDescription"
   },
   {
     icon: <Star className="w-6 h-6 text-yellow-400" />,
-    title: "Deep Tracking",
-    description: "Give your own ratings, log watch dates, and write personalized comments for every title in your collection."
+    title: "deepTracking",
+    description: "deepTrackingDescription"
   },
   {
     icon: <RefreshCcw className="w-6 h-6 text-emerald-400" />,
-    title: "Instant Sync",
-    description: "Metadata like release dates, posters, and TMDB ratings automatically sync every time you interact with your library."
+    title: "instantSync",
+    description: "instantSyncDescription"
   },
   {
     icon: <Download className="w-6 h-6 text-pink-400" />,
-    title: "Data Freedom",
-    description: "Export your entire collection to Excel with one click. Your data belongs to you, anywhere you go."
+    title: "dataFreedom",
+    description: "dataFreedomDescription"
   },
   {
     icon: <Zap className="w-6 h-6 text-orange-400" />,
-    title: "Sleek Experience",
-    description: "Built with Next.js and Prisma for a fast, responsive, and secure experience across all your devices."
+    title: "sleekExperience",
+    description: "sleekExperienceDescription"
   }
 ]
 
 export default function AboutPage() {
+
+  const { t } = useTranslation()
+
   const containerVars = {
     hidden: { opacity: 0 },
     visible: {
@@ -74,7 +77,8 @@ export default function AboutPage() {
             animate={{ opacity: 1, x: 0 }}
             className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] mb-8 bg-linear-to-r from-zinc-100 via-zinc-400 to-zinc-600 bg-clip-text text-transparent animate-shimmer uppercase w-fit"
           >
-            About <br /> MovieMan
+            {t("about", "title")}
+            <br /> MovieMan
           </motion.h1>
 
           <motion.p
@@ -83,9 +87,7 @@ export default function AboutPage() {
             transition={{ delay: 0.2 }}
             className="text-lg sm:text-2xl text-zinc-400 font-medium max-w-2xl leading-relaxed"
           >
-            MovieMan is your premium personal multimedia command center.
-            Track, collect, and share your favorite movies and TV series
-            with a sleek, modern interface designed for the ultimate cinephile.
+            {t("about", "description")}
           </motion.p>
         </div>
       </section>
@@ -98,7 +100,7 @@ export default function AboutPage() {
           viewport={{ once: true }}
           className="mb-16"
         >
-          <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-2">Core Features</h2>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-2">{t("about", "coreFeatures")}</h2>
           <div className="h-px w-20 bg-linear-to-r from-zinc-500 to-transparent" />
         </motion.div>
 
@@ -120,10 +122,10 @@ export default function AboutPage() {
                 {feature.icon}
               </div>
               <h3 className="text-xl font-bold mb-3 text-zinc-100 tracking-tight">
-                {feature.title}
+                {t("about", feature.title)}
               </h3>
               <p className="text-zinc-400 text-sm leading-relaxed font-medium">
-                {feature.description}
+                {t("about", feature.description)}
               </p>
             </motion.div>
           ))}
@@ -141,9 +143,9 @@ export default function AboutPage() {
           <div className="flex justify-center mb-8">
             <ShieldCheck className="w-12 h-12 text-zinc-500" />
           </div>
-          <h2 className="text-2xl sm:text-4xl font-bold mb-6 tracking-tight">The MovieMan Philosophy</h2>
+          <h2 className="text-2xl sm:text-4xl font-bold mb-6 tracking-tight">{t("about", "theMovieManPhilosophy")}</h2>
           <p className="text-zinc-500 font-medium leading-relaxed italic">
-            "We believe that a movie collection is more than just data. It's a journey through stories that shape us. MovieMan was built to make that journey more organized, beautiful, and accessible."
+            {t("about", "theMovieManPhilosophyDescription")}
           </p>
         </motion.div>
       </section>

@@ -11,6 +11,7 @@ import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
+import { genresById } from "@/lib/tmdb/types/tmdb-types"
 
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
@@ -239,7 +240,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                                             {/* Poster Section */}
                                             <div className={isGrid
                                                 ? "relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500"
-                                                : "relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0"
+                                                : "relative w-[40%] sm:w-32 aspect-2/3 h-fit sm:h-auto rounded-lg sm:rounded-xl overflow-hidden shrink-0"
                                             }>
                                                 <MoviePoster
                                                     src={show.poster}
@@ -258,8 +259,9 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                                             </div>
 
                                             {/* Info Section */}
-                                            <div className={isGrid ? "px-0.5 sm:px-1" : "flex flex-col justify-center gap-2 sm:gap-3 min-w-0 pr-20"}>
-                                                <h3 className={`text-white font-bold transition-colors truncate ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
+                                            <div className={isGrid ? "px-0.5 sm:px-1" : "flex flex-col justify-center gap-2 sm:gap-3 min-w-0 p-0 sm:pr-20"}>
+                                                <h3 className={`text-white font-bold truncate transition-colors ${isGrid ? 'text-xs sm:text-sm line-clamp-2' : 'text-xl sm:text-2xl text-wrap'
+                                                    }`}>
                                                     {show.name}
                                                 </h3>
                                                 {isGrid &&
@@ -286,14 +288,21 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
 
                                                 {!isGrid && (
                                                     <>
-                                                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5">
+                                                        <span className="text-zinc-400 text-[10px] sm:text-sm">{show.first_air_date?.slice(0, 4)}</span>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {show.genre_ids.slice(0, 3).map((genreId: number) => (
+                                                                <span key={genreId} className='px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-[8px] sm:text-xs font-black uppercase tracking-[0.2em] backdrop-blur-md text-zinc-400'>
+                                                                    {t('genres', genreId.toString())}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                                             <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
                                                                 <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
                                                                 <span className="text-white text-[10px] sm:text-xs font-bold">
                                                                     {show.vote_average.toFixed(1)}
                                                                 </span>
                                                             </div>
-                                                            <span className="text-zinc-400 text-[10px] sm:text-sm">{show.first_air_date?.slice(0, 4)}</span>
                                                         </div>
                                                         {show.initialDbState.userRating > 0 && (
                                                             <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
@@ -303,7 +312,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                                                                 </span>
                                                             </div>
                                                         )}
-                                                        <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
+                                                        <p className="hidden text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
                                                             {show.overview}
                                                         </p>
                                                         <div className="flex items-center gap-4 mt-2 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">

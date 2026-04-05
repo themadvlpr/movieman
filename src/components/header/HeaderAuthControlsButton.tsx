@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import AuthControlPanel from './AuthControlPanel'
+import { useTranslation } from '@/providers/LocaleProvider'
 
 export default function HeaderAuthControlsButton() {
+	const { t } = useTranslation()
 	const [isOpen, setIsOpen] = useState(false)
 
 	useEffect(() => {
@@ -53,7 +55,7 @@ export default function HeaderAuthControlsButton() {
 				<div className='absolute inset-0 bg-linear-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity' />
 
 				<span className='relative z-10 flex items-center gap-2'>
-					Sign in
+					{t('auth', 'signIn')}
 					<span className='hidden sm:inline-block opacity-50 group-hover:translate-x-1 transition-transform'>
 						→
 					</span>

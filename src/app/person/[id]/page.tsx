@@ -2,7 +2,7 @@ import { tmdbFetch, CacheConfig } from "@/lib/tmdb/tmdb-api";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getPersonDetails } from "@/lib/tmdb/getPersonDetails";
-import PersonDetail from "@/components/PersonDetail";
+import PersonDetail from "@/components/person/PersonDetail";
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { PersonDetailProps } from "@/lib/tmdb/types/tmdb-types";
 import { getLocale } from "@/lib/i18n/get-locale";

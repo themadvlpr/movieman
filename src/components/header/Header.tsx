@@ -40,7 +40,7 @@ export default async function Header({ userSession }: { userSession: UserSession
 					MovieMan
 				</h1>
 			</Link>
-			<div className='flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8'>
+			<div className='flex items-center gap-2 sm:gap-4 md:gap-4 lg:gap-6'>
 				<SearchBar />
 				<NavLinks />
 				<div className='hidden sm:block'>

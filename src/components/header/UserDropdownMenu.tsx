@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LogOut, Library } from 'lucide-react'
 import { useAuthActions } from '@/hooks/useAuthActions'
+import { useTranslation } from '@/providers/LocaleProvider'
 
 interface UserDropdownMenuProps {
 	user: {
@@ -15,6 +16,7 @@ interface UserDropdownMenuProps {
 }
 
 export default function UserDropdownMenu({ user }: UserDropdownMenuProps) {
+	const { t } = useTranslation()
 	const [isOpen, setIsOpen] = useState(false)
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const { signOut, loadingType } = useAuthActions()
@@ -55,7 +57,7 @@ export default function UserDropdownMenu({ user }: UserDropdownMenuProps) {
 
 
 	return (
-		<div className='relative ml-2 sm:ml-4' ref={dropdownRef}>
+		<div className='relative' ref={dropdownRef}>
 			{/* Avatar Button */}
 			<button
 				onClick={() => setIsOpen(!isOpen)}
@@ -107,7 +109,7 @@ export default function UserDropdownMenu({ user }: UserDropdownMenuProps) {
 								className='flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-400 hover:text-white hover:bg-white/5 rounded-md transition-colors group'
 							>
 								<Library className='w-4 h-4 text-zinc-500 group-hover:text-zinc-300 transition-colors' />
-								My library
+								{t('nav', 'library')}
 							</Link>
 
 							<div className='h-px bg-white/5 my-1 mx-1' />
@@ -118,7 +120,7 @@ export default function UserDropdownMenu({ user }: UserDropdownMenuProps) {
 								className='flex items-center gap-3 px-3 py-2.5 text-sm w-full text-left text-red-500/80 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors group'
 							>
 								<LogOut className='w-4 h-4 text-red-500/60 group-hover:text-red-400 transition-colors' />
-								Log out
+								{t('auth', 'logout')}
 							</button>
 						</div>
 					</motion.div>

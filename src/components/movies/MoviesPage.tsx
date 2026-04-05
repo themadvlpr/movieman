@@ -11,6 +11,7 @@ import Link from "next/link"
 import MoviePoster from "@/components/ui/MoviePoster"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
+import { genresById } from "@/lib/tmdb/types/tmdb-types"
 
 // Survives client-side navigation — only resets on full page reload
 let _moviesScrollY = 0
@@ -144,7 +145,6 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         { key: 'upcoming', label: t('categories', 'upcoming') },
     ]
 
-
     return (
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
@@ -248,7 +248,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                             {/* Poster Container */}
                                             <div className={isGrid
                                                 ? "relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500"
-                                                : "relative w-20 sm:w-32 aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0"
+                                                : "relative w-[40%] sm:w-32 aspect-2/3 h-fit sm:h-auto rounded-lg sm:rounded-xl overflow-hidden shrink-0"
                                             }>
                                                 <MoviePoster
                                                     src={movie.poster}
@@ -267,12 +267,14 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                             </div>
 
                                             {/* Info Section */}
-                                            <div className={isGrid ? "px-0.5 sm:px-1" : "flex flex-col justify-center gap-2 sm:gap-3 min-w-0 pr-20"}>
-                                                <h3 className={`text-white font-bold transition-colors truncate ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
+                                            <div className={isGrid ? "px-0.5 sm:px-1" : "flex flex-col justify-center gap-2 sm:gap-3 min-w-0 pr-0 sm:pr-20"}>
+                                                <h3 className={`text-white font-bold transition-colors ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
                                                     {movie.title}
                                                 </h3>
                                                 {isGrid &&
                                                     <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5">
+                                                        <span className="text-zinc-400 text-[10px]">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}</span>
+
                                                         {movie.vote_average > 0 && (
                                                             <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
                                                                 <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
@@ -290,13 +292,20 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                                             </div>
                                                         )}
 
-                                                        <span className="text-zinc-400 text-[10px]">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}</span>
                                                     </div>
                                                 }
 
                                                 {!isGrid && (
                                                     <>
-                                                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5">
+                                                        <span className="text-zinc-400 text-[10px] sm:text-sm">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}</span>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {movie.genre_ids.map((genreId: number) => (
+                                                                <span key={genreId} className='px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-[8px] sm:text-xs font-black uppercase tracking-[0.2em] backdrop-blur-md text-zinc-400'>
+                                                                    {t('genres', genreId.toString())}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                                             {movie.vote_average > 0 && (
                                                                 <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
                                                                     <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
@@ -306,8 +315,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                                                 </div>
                                                             )}
 
-                                                            <span className="text-zinc-400 text-[10px] sm:text-sm">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}</span>
                                                         </div>
+
                                                         {movie.initialDbState.userRating > 0 && (
                                                             <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
                                                                 <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
@@ -316,7 +325,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                                                 </span>
                                                             </div>
                                                         )}
-                                                        <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
+                                                        <p className="hidden text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
                                                             {movie.overview}
                                                         </p>
                                                         <div className="flex items-center gap-4 mt-2 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">

@@ -26,10 +26,8 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
         title = t('common', 'moreLikeThis')
         subtitle = t('common', 'recommendationsForYou')
     } else if (type === 'person-credits') {
-        title = mediaType === 'movie' ? 'Known For (Movies)' :
-            mediaType === 'tv' ? 'Known For (TV)' : 'Known For'
-        subtitle = mediaType === 'movie' ? 'Top rated films' :
-            mediaType === 'tv' ? 'Top rated series' : 'Top rated works'
+        title = t('common', 'knownFor')
+        subtitle = t('common', 'topRatedWorks')
     }
 
     if (!items || items.length === 0) return null

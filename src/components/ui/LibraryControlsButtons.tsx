@@ -3,6 +3,7 @@
 import { Bookmark, Eye, Heart } from "lucide-react"
 import { useMediaActions } from "@/hooks/useDbStates"
 import { dbState, dbMediaStatus } from "@/lib/tmdb/types/db-types"
+import { useTranslation } from "@/providers/LocaleProvider"
 
 interface LibraryControlsButtonsProps {
     mediaId: number;
@@ -23,6 +24,8 @@ export default function LibraryControlsButtons({
 }: LibraryControlsButtonsProps) {
 
     if (!userId) return null;
+
+    const { t } = useTranslation();
 
     const { dbState, toggleAction } = useMediaActions(mediaId, userId, type, initialState);
 
@@ -54,7 +57,7 @@ export default function LibraryControlsButtons({
 								${states.watched ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'}`}
                 >
                     <Eye strokeWidth={3} className={`w-3.5 h-3.5 ${states.watched ? 'fill-black' : ''}`} />
-                    {states.watched ? 'Watched' : 'Mark as Watched'}
+                    {states.watched ? t("common", 'watched') : t("common", 'markAsWatched')}
                 </button> :
                     <button
                         type="button"

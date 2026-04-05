@@ -61,10 +61,10 @@ export default function MobileMenu() {
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 							transition={{ duration: 0.3 }}
-							className='fixed top-0 left-0 w-screen h-dvh z-9999 bg-black/80 backdrop-blur-sm overflow-y-auto'
+							className='fixed top-0 left-0 w-full h-full z-9999 bg-black/80 backdrop-blur-sm overflow-y-auto'
 							onClick={() => setIsOpen(false)}
 						>
-							<div className='min-h-full flex flex-col items-center justify-center py-24 px-4 gap-12'>
+							<div className='min-h-full w-full flex flex-col items-center justify-center py-24 px-4 gap-12'>
 								{/* Close Button */}
 								<button
 									onClick={() => setIsOpen(false)}
