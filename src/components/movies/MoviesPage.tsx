@@ -11,7 +11,6 @@ import Link from "next/link"
 import MoviePoster from "@/components/ui/MoviePoster"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
-import { genresById } from "@/lib/tmdb/types/tmdb-types"
 
 // Survives client-side navigation — only resets on full page reload
 let _moviesScrollY = 0
