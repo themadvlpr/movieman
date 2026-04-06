@@ -191,6 +191,7 @@ export type MergedCredit = RawCredit & {
     job?: string;
     poster_path?: string | null;
     vote_count?: number;
+    vote_average?: number;
     release_date?: string;
     first_air_date?: string;
     title?: string;

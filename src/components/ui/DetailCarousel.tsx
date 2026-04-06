@@ -1,4 +1,4 @@
-import { Actor, CreditMedia, Movie, TvSeries } from "@/lib/tmdb/types/tmdb-types"
+import { Actor, Movie, TvSeries } from "@/lib/tmdb/types/tmdb-types"
 import Link from "next/link"
 import Image from "next/image"
 import { User, Star, Play } from "lucide-react"
@@ -77,7 +77,7 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                             </Link>
                         )
                     } else {
-                        const media = item as CreditMedia;
+                        const media = item as MergedCredit;
                         const id = media.id;
 
                         const isMovie = 'title' in media;
@@ -121,7 +121,7 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                                             <>
                                                 <div className='flex items-center gap-1.5'>
                                                     <Star className='w-3 h-3 fill-amber-400 text-amber-400' />
-                                                    <span className='text-[10px] font-black text-zinc-100'>{voteAverage.toFixed(1)}</span>
+                                                    <span className='text-[10px] font-black text-zinc-100'>{voteAverage?.toFixed(1)}</span>
                                                 </div>
                                                 <span className='text-zinc-800 font-bold'>|</span>
                                             </>
