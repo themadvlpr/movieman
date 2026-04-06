@@ -2,23 +2,9 @@
 
 import prisma from "@/lib/prisma";
 import { Prisma } from "../generated/prisma/client";
+import { LibraryResult } from "../tmdb/types/tmdb-types";
 
-export interface LibraryResult {
-    id: number;
-    media_type: string;
-    title: string;
-    poster_path: string | null;
-    vote_average: number;
-    release_date: string;
-    overview: string | null;
-    user_rating: number | null;
-    watched_date: string | null;
-    initialDbState: {
-        isWatched: boolean;
-        isFavorite: boolean;
-        isWishlist: boolean;
-    }
-}
+
 
 export async function getLibraryAction(
     userId: string,

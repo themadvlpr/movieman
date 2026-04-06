@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { Play, Grid, List, Star, Filter } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
@@ -11,10 +11,8 @@ import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
-import { genresById } from "@/lib/tmdb/types/tmdb-types"
 
 
-const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 // Survives client-side navigation — only resets on full page reload
 let _tvScrollY = 0

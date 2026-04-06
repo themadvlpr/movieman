@@ -199,3 +199,20 @@ export type MergedCredit = RawCredit & {
     title?: string;
     name?: string;
 };
+
+export interface LibraryResult {
+    id: number;
+    media_type: string;
+    title: string;
+    poster_path: string | null;
+    vote_average: number;
+    release_date: string;
+    overview: string | null;
+    user_rating: number | null;
+    watched_date: string | null;
+    initialDbState: {
+        isWatched: boolean;
+        isFavorite: boolean;
+        isWishlist: boolean;
+    }
+}
