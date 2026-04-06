@@ -1,6 +1,7 @@
 'use server'
 
 import prisma from "@/lib/prisma";
+import { translations } from "@/lib/i18n/translation";
 
 export async function exportAllUserMediaAction(userId: string, tmdbLang: string = 'en-US') {
     if (!userId) return { success: false, error: 'Unauthorized' };
@@ -8,29 +9,43 @@ export async function exportAllUserMediaAction(userId: string, tmdbLang: string 
     try {
         const userMediaList = await prisma.userMedia.findMany({
             where: { userId },
-            include: {
-                translations: { where: { language: tmdbLang } }
-            }
         });
 
+        // Map TMDB locale to column names
+        let titleKey: 'titleEn' | 'titleRu' | 'titleUk' = 'titleEn';
+        if (tmdbLang === 'ru-RU') titleKey = 'titleRu';
+        if (tmdbLang === 'uk-UA') titleKey = 'titleUk';
+
         userMediaList.sort((a, b) => {
-            const titleA = a.translations[0]?.title || '';
-            const titleB = b.translations[0]?.title || '';
+            const titleA = a[titleKey] || a.titleEn || '';
+            const titleB = b[titleKey] || b.titleEn || '';
             return titleA.localeCompare(titleB);
         });
 
-        const mappedResults = userMediaList.map(item => ({
-            "Title": item.translations[0]?.title || '',
-            "Type": item.type === 'tv' ? 'TV Series' : 'Movie',
-            "TMDB Rating": item.tmdbRating || 0,
-            "My Rating": item.userRating || "",
-            "Release Date": item.year ? item.year.toISOString().split('T')[0] : (item.releaseYear ? `${item.releaseYear}-01-01` : ''),
-            "Watched Date": item.watchedDate ? item.watchedDate.toISOString().split('T')[0] : '',
-            "Is Watched": item.isWatched ? 'Yes' : 'No',
-            "Is Wishlist": item.isWishlist ? 'Yes' : 'No',
-            "Is Favorite": item.isFavorite ? 'Yes' : 'No',
-            "Comment": item.userComment || ""
-        }));
+        const lang = (tmdbLang.split('-')[0] as 'en' | 'ru' | 'ua') || 'en';
+        const genreMap = translations[lang === 'en' ? 'en' : lang === 'ru' ? 'ru' : 'ua'].genres;
+
+        const mappedResults = userMediaList.map(item => {
+            const genres = item.genreIds
+                ? item.genreIds.split(',')
+                    .map(id => (genreMap as any)[id] || id)
+                    .join(', ')
+                : '';
+
+            return {
+                "Title": item[titleKey] || item.titleEn || '',
+                "Type": item.type === 'tv' ? 'TV Series' : 'Movie',
+                "Genres": genres,
+                "TMDB Rating": item.tmdbRating || 0,
+                "My Rating": item.userRating || "",
+                "Release Date": item.releaseDate ? item.releaseDate.toISOString().split('T')[0] : '',
+                "Watched Date": item.watchedDate ? item.watchedDate.toISOString().split('T')[0] : '',
+                "Is Watched": item.isWatched ? 'Yes' : 'No',
+                "Is Wishlist": item.isWishlist ? 'Yes' : 'No',
+                "Is Favorite": item.isFavorite ? 'Yes' : 'No',
+                "Comment": item.userComment || ""
+            };
+        });
 
         return {
             success: true,

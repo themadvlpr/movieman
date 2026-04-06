@@ -51,7 +51,7 @@ export function useMediaActions(
             const isNowActive = queryClient.getQueryData<dbMediaStatus>(queryKey)?.[action as keyof dbMediaStatus];
 
             const label = actionLabels[action] || "Library";
-            const title = mediaData.title;
+            const title = mediaData.titleEn || mediaData.titleRu || mediaData.titleUk || "Media";
 
             if (isNowActive) {
                 toast.success(`Added to ${label}`, {

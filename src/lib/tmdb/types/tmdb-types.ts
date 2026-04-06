@@ -172,6 +172,7 @@ export interface LibraryResult {
     vote_average: number;
     release_date: string;
     overview: string | null;
+    genre_ids?: number[];
     // Эти поля приходят из твоей БД (UserMedia)
     user_rating: number | null;
     watched_date: string | null;

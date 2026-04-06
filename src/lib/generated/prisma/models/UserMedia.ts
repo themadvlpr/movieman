@@ -29,7 +29,6 @@ export type AggregateUserMedia = {
 export type UserMediaAvgAggregateOutputType = {
   id: number | null
   mediaId: number | null
-  releaseYear: number | null
   tmdbRating: number | null
   userRating: number | null
 }
@@ -37,7 +36,6 @@ export type UserMediaAvgAggregateOutputType = {
 export type UserMediaSumAggregateOutputType = {
   id: number | null
   mediaId: number | null
-  releaseYear: number | null
   tmdbRating: number | null
   userRating: number | null
 }
@@ -47,13 +45,19 @@ export type UserMediaMinAggregateOutputType = {
   userId: string | null
   mediaId: number | null
   type: string | null
-  releaseYear: number | null
   tmdbRating: number | null
+  genreIds: string | null
+  releaseDate: Date | null
   userRating: number | null
   userComment: string | null
-  year: Date | null
-  description: string | null
+  userDescription: string | null
   watchedDate: Date | null
+  titleEn: string | null
+  titleRu: string | null
+  titleUk: string | null
+  posterEn: string | null
+  posterRu: string | null
+  posterUk: string | null
   isWatched: boolean | null
   isFavorite: boolean | null
   isWishlist: boolean | null
@@ -66,13 +70,19 @@ export type UserMediaMaxAggregateOutputType = {
   userId: string | null
   mediaId: number | null
   type: string | null
-  releaseYear: number | null
   tmdbRating: number | null
+  genreIds: string | null
+  releaseDate: Date | null
   userRating: number | null
   userComment: string | null
-  year: Date | null
-  description: string | null
+  userDescription: string | null
   watchedDate: Date | null
+  titleEn: string | null
+  titleRu: string | null
+  titleUk: string | null
+  posterEn: string | null
+  posterRu: string | null
+  posterUk: string | null
   isWatched: boolean | null
   isFavorite: boolean | null
   isWishlist: boolean | null
@@ -85,13 +95,19 @@ export type UserMediaCountAggregateOutputType = {
   userId: number
   mediaId: number
   type: number
-  releaseYear: number
   tmdbRating: number
+  genreIds: number
+  releaseDate: number
   userRating: number
   userComment: number
-  year: number
-  description: number
+  userDescription: number
   watchedDate: number
+  titleEn: number
+  titleRu: number
+  titleUk: number
+  posterEn: number
+  posterRu: number
+  posterUk: number
   isWatched: number
   isFavorite: number
   isWishlist: number
@@ -104,7 +120,6 @@ export type UserMediaCountAggregateOutputType = {
 export type UserMediaAvgAggregateInputType = {
   id?: true
   mediaId?: true
-  releaseYear?: true
   tmdbRating?: true
   userRating?: true
 }
@@ -112,7 +127,6 @@ export type UserMediaAvgAggregateInputType = {
 export type UserMediaSumAggregateInputType = {
   id?: true
   mediaId?: true
-  releaseYear?: true
   tmdbRating?: true
   userRating?: true
 }
@@ -122,13 +136,19 @@ export type UserMediaMinAggregateInputType = {
   userId?: true
   mediaId?: true
   type?: true
-  releaseYear?: true
   tmdbRating?: true
+  genreIds?: true
+  releaseDate?: true
   userRating?: true
   userComment?: true
-  year?: true
-  description?: true
+  userDescription?: true
   watchedDate?: true
+  titleEn?: true
+  titleRu?: true
+  titleUk?: true
+  posterEn?: true
+  posterRu?: true
+  posterUk?: true
   isWatched?: true
   isFavorite?: true
   isWishlist?: true
@@ -141,13 +161,19 @@ export type UserMediaMaxAggregateInputType = {
   userId?: true
   mediaId?: true
   type?: true
-  releaseYear?: true
   tmdbRating?: true
+  genreIds?: true
+  releaseDate?: true
   userRating?: true
   userComment?: true
-  year?: true
-  description?: true
+  userDescription?: true
   watchedDate?: true
+  titleEn?: true
+  titleRu?: true
+  titleUk?: true
+  posterEn?: true
+  posterRu?: true
+  posterUk?: true
   isWatched?: true
   isFavorite?: true
   isWishlist?: true
@@ -160,13 +186,19 @@ export type UserMediaCountAggregateInputType = {
   userId?: true
   mediaId?: true
   type?: true
-  releaseYear?: true
   tmdbRating?: true
+  genreIds?: true
+  releaseDate?: true
   userRating?: true
   userComment?: true
-  year?: true
-  description?: true
+  userDescription?: true
   watchedDate?: true
+  titleEn?: true
+  titleRu?: true
+  titleUk?: true
+  posterEn?: true
+  posterRu?: true
+  posterUk?: true
   isWatched?: true
   isFavorite?: true
   isWishlist?: true
@@ -266,13 +298,19 @@ export type UserMediaGroupByOutputType = {
   userId: string
   mediaId: number
   type: string
-  releaseYear: number | null
   tmdbRating: number | null
+  genreIds: string | null
+  releaseDate: Date | null
   userRating: number | null
   userComment: string | null
-  year: Date | null
-  description: string | null
+  userDescription: string | null
   watchedDate: Date | null
+  titleEn: string | null
+  titleRu: string | null
+  titleUk: string | null
+  posterEn: string | null
+  posterRu: string | null
+  posterUk: string | null
   isWatched: boolean
   isFavorite: boolean
   isWishlist: boolean
@@ -308,20 +346,25 @@ export type UserMediaWhereInput = {
   userId?: Prisma.StringFilter<"UserMedia"> | string
   mediaId?: Prisma.IntFilter<"UserMedia"> | number
   type?: Prisma.StringFilter<"UserMedia"> | string
-  releaseYear?: Prisma.IntNullableFilter<"UserMedia"> | number | null
   tmdbRating?: Prisma.FloatNullableFilter<"UserMedia"> | number | null
+  genreIds?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  releaseDate?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
   userRating?: Prisma.FloatNullableFilter<"UserMedia"> | number | null
   userComment?: Prisma.StringNullableFilter<"UserMedia"> | string | null
-  year?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
-  description?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  userDescription?: Prisma.StringNullableFilter<"UserMedia"> | string | null
   watchedDate?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
+  titleEn?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  titleRu?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  titleUk?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  posterEn?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  posterRu?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  posterUk?: Prisma.StringNullableFilter<"UserMedia"> | string | null
   isWatched?: Prisma.BoolFilter<"UserMedia"> | boolean
   isFavorite?: Prisma.BoolFilter<"UserMedia"> | boolean
   isWishlist?: Prisma.BoolFilter<"UserMedia"> | boolean
   createdAt?: Prisma.DateTimeFilter<"UserMedia"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserMedia"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  translations?: Prisma.MediaTranslationListRelationFilter
 }
 
 export type UserMediaOrderByWithRelationInput = {
@@ -329,20 +372,25 @@ export type UserMediaOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   mediaId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  releaseYear?: Prisma.SortOrderInput | Prisma.SortOrder
   tmdbRating?: Prisma.SortOrderInput | Prisma.SortOrder
+  genreIds?: Prisma.SortOrderInput | Prisma.SortOrder
+  releaseDate?: Prisma.SortOrderInput | Prisma.SortOrder
   userRating?: Prisma.SortOrderInput | Prisma.SortOrder
   userComment?: Prisma.SortOrderInput | Prisma.SortOrder
-  year?: Prisma.SortOrderInput | Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
+  userDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   watchedDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  titleEn?: Prisma.SortOrderInput | Prisma.SortOrder
+  titleRu?: Prisma.SortOrderInput | Prisma.SortOrder
+  titleUk?: Prisma.SortOrderInput | Prisma.SortOrder
+  posterEn?: Prisma.SortOrderInput | Prisma.SortOrder
+  posterRu?: Prisma.SortOrderInput | Prisma.SortOrder
+  posterUk?: Prisma.SortOrderInput | Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
   isWishlist?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
-  translations?: Prisma.MediaTranslationOrderByRelationAggregateInput
 }
 
 export type UserMediaWhereUniqueInput = Prisma.AtLeast<{
@@ -354,20 +402,25 @@ export type UserMediaWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"UserMedia"> | string
   mediaId?: Prisma.IntFilter<"UserMedia"> | number
   type?: Prisma.StringFilter<"UserMedia"> | string
-  releaseYear?: Prisma.IntNullableFilter<"UserMedia"> | number | null
   tmdbRating?: Prisma.FloatNullableFilter<"UserMedia"> | number | null
+  genreIds?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  releaseDate?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
   userRating?: Prisma.FloatNullableFilter<"UserMedia"> | number | null
   userComment?: Prisma.StringNullableFilter<"UserMedia"> | string | null
-  year?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
-  description?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  userDescription?: Prisma.StringNullableFilter<"UserMedia"> | string | null
   watchedDate?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
+  titleEn?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  titleRu?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  titleUk?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  posterEn?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  posterRu?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  posterUk?: Prisma.StringNullableFilter<"UserMedia"> | string | null
   isWatched?: Prisma.BoolFilter<"UserMedia"> | boolean
   isFavorite?: Prisma.BoolFilter<"UserMedia"> | boolean
   isWishlist?: Prisma.BoolFilter<"UserMedia"> | boolean
   createdAt?: Prisma.DateTimeFilter<"UserMedia"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserMedia"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  translations?: Prisma.MediaTranslationListRelationFilter
 }, "id" | "userId_mediaId_type">
 
 export type UserMediaOrderByWithAggregationInput = {
@@ -375,13 +428,19 @@ export type UserMediaOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   mediaId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  releaseYear?: Prisma.SortOrderInput | Prisma.SortOrder
   tmdbRating?: Prisma.SortOrderInput | Prisma.SortOrder
+  genreIds?: Prisma.SortOrderInput | Prisma.SortOrder
+  releaseDate?: Prisma.SortOrderInput | Prisma.SortOrder
   userRating?: Prisma.SortOrderInput | Prisma.SortOrder
   userComment?: Prisma.SortOrderInput | Prisma.SortOrder
-  year?: Prisma.SortOrderInput | Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
+  userDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   watchedDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  titleEn?: Prisma.SortOrderInput | Prisma.SortOrder
+  titleRu?: Prisma.SortOrderInput | Prisma.SortOrder
+  titleUk?: Prisma.SortOrderInput | Prisma.SortOrder
+  posterEn?: Prisma.SortOrderInput | Prisma.SortOrder
+  posterRu?: Prisma.SortOrderInput | Prisma.SortOrder
+  posterUk?: Prisma.SortOrderInput | Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
   isWishlist?: Prisma.SortOrder
@@ -402,13 +461,19 @@ export type UserMediaScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"UserMedia"> | string
   mediaId?: Prisma.IntWithAggregatesFilter<"UserMedia"> | number
   type?: Prisma.StringWithAggregatesFilter<"UserMedia"> | string
-  releaseYear?: Prisma.IntNullableWithAggregatesFilter<"UserMedia"> | number | null
   tmdbRating?: Prisma.FloatNullableWithAggregatesFilter<"UserMedia"> | number | null
+  genreIds?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
+  releaseDate?: Prisma.DateTimeNullableWithAggregatesFilter<"UserMedia"> | Date | string | null
   userRating?: Prisma.FloatNullableWithAggregatesFilter<"UserMedia"> | number | null
   userComment?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
-  year?: Prisma.DateTimeNullableWithAggregatesFilter<"UserMedia"> | Date | string | null
-  description?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
+  userDescription?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
   watchedDate?: Prisma.DateTimeNullableWithAggregatesFilter<"UserMedia"> | Date | string | null
+  titleEn?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
+  titleRu?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
+  titleUk?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
+  posterEn?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
+  posterRu?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
+  posterUk?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
   isWatched?: Prisma.BoolWithAggregatesFilter<"UserMedia"> | boolean
   isFavorite?: Prisma.BoolWithAggregatesFilter<"UserMedia"> | boolean
   isWishlist?: Prisma.BoolWithAggregatesFilter<"UserMedia"> | boolean
@@ -419,20 +484,25 @@ export type UserMediaScalarWhereWithAggregatesInput = {
 export type UserMediaCreateInput = {
   mediaId: number
   type: string
-  releaseYear?: number | null
   tmdbRating?: number | null
+  genreIds?: string | null
+  releaseDate?: Date | string | null
   userRating?: number | null
   userComment?: string | null
-  year?: Date | string | null
-  description?: string | null
+  userDescription?: string | null
   watchedDate?: Date | string | null
+  titleEn?: string | null
+  titleRu?: string | null
+  titleUk?: string | null
+  posterEn?: string | null
+  posterRu?: string | null
+  posterUk?: string | null
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutUserMediaInput
-  translations?: Prisma.MediaTranslationCreateNestedManyWithoutUserMediaInput
 }
 
 export type UserMediaUncheckedCreateInput = {
@@ -440,38 +510,48 @@ export type UserMediaUncheckedCreateInput = {
   userId: string
   mediaId: number
   type: string
-  releaseYear?: number | null
   tmdbRating?: number | null
+  genreIds?: string | null
+  releaseDate?: Date | string | null
   userRating?: number | null
   userComment?: string | null
-  year?: Date | string | null
-  description?: string | null
+  userDescription?: string | null
   watchedDate?: Date | string | null
+  titleEn?: string | null
+  titleRu?: string | null
+  titleUk?: string | null
+  posterEn?: string | null
+  posterRu?: string | null
+  posterUk?: string | null
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  translations?: Prisma.MediaTranslationUncheckedCreateNestedManyWithoutUserMediaInput
 }
 
 export type UserMediaUpdateInput = {
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tmdbRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  genreIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  year?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  titleEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isWishlist?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutUserMediaNestedInput
-  translations?: Prisma.MediaTranslationUpdateManyWithoutUserMediaNestedInput
 }
 
 export type UserMediaUncheckedUpdateInput = {
@@ -479,19 +559,24 @@ export type UserMediaUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tmdbRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  genreIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  year?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  titleEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isWishlist?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  translations?: Prisma.MediaTranslationUncheckedUpdateManyWithoutUserMediaNestedInput
 }
 
 export type UserMediaCreateManyInput = {
@@ -499,13 +584,19 @@ export type UserMediaCreateManyInput = {
   userId: string
   mediaId: number
   type: string
-  releaseYear?: number | null
   tmdbRating?: number | null
+  genreIds?: string | null
+  releaseDate?: Date | string | null
   userRating?: number | null
   userComment?: string | null
-  year?: Date | string | null
-  description?: string | null
+  userDescription?: string | null
   watchedDate?: Date | string | null
+  titleEn?: string | null
+  titleRu?: string | null
+  titleUk?: string | null
+  posterEn?: string | null
+  posterRu?: string | null
+  posterUk?: string | null
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
@@ -516,13 +607,19 @@ export type UserMediaCreateManyInput = {
 export type UserMediaUpdateManyMutationInput = {
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tmdbRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  genreIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  year?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  titleEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isWishlist?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -535,13 +632,19 @@ export type UserMediaUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tmdbRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  genreIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  year?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  titleEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isWishlist?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -570,13 +673,19 @@ export type UserMediaCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   mediaId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  releaseYear?: Prisma.SortOrder
   tmdbRating?: Prisma.SortOrder
+  genreIds?: Prisma.SortOrder
+  releaseDate?: Prisma.SortOrder
   userRating?: Prisma.SortOrder
   userComment?: Prisma.SortOrder
-  year?: Prisma.SortOrder
-  description?: Prisma.SortOrder
+  userDescription?: Prisma.SortOrder
   watchedDate?: Prisma.SortOrder
+  titleEn?: Prisma.SortOrder
+  titleRu?: Prisma.SortOrder
+  titleUk?: Prisma.SortOrder
+  posterEn?: Prisma.SortOrder
+  posterRu?: Prisma.SortOrder
+  posterUk?: Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
   isWishlist?: Prisma.SortOrder
@@ -587,7 +696,6 @@ export type UserMediaCountOrderByAggregateInput = {
 export type UserMediaAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   mediaId?: Prisma.SortOrder
-  releaseYear?: Prisma.SortOrder
   tmdbRating?: Prisma.SortOrder
   userRating?: Prisma.SortOrder
 }
@@ -597,13 +705,19 @@ export type UserMediaMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   mediaId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  releaseYear?: Prisma.SortOrder
   tmdbRating?: Prisma.SortOrder
+  genreIds?: Prisma.SortOrder
+  releaseDate?: Prisma.SortOrder
   userRating?: Prisma.SortOrder
   userComment?: Prisma.SortOrder
-  year?: Prisma.SortOrder
-  description?: Prisma.SortOrder
+  userDescription?: Prisma.SortOrder
   watchedDate?: Prisma.SortOrder
+  titleEn?: Prisma.SortOrder
+  titleRu?: Prisma.SortOrder
+  titleUk?: Prisma.SortOrder
+  posterEn?: Prisma.SortOrder
+  posterRu?: Prisma.SortOrder
+  posterUk?: Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
   isWishlist?: Prisma.SortOrder
@@ -616,13 +730,19 @@ export type UserMediaMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   mediaId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  releaseYear?: Prisma.SortOrder
   tmdbRating?: Prisma.SortOrder
+  genreIds?: Prisma.SortOrder
+  releaseDate?: Prisma.SortOrder
   userRating?: Prisma.SortOrder
   userComment?: Prisma.SortOrder
-  year?: Prisma.SortOrder
-  description?: Prisma.SortOrder
+  userDescription?: Prisma.SortOrder
   watchedDate?: Prisma.SortOrder
+  titleEn?: Prisma.SortOrder
+  titleRu?: Prisma.SortOrder
+  titleUk?: Prisma.SortOrder
+  posterEn?: Prisma.SortOrder
+  posterRu?: Prisma.SortOrder
+  posterUk?: Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
   isWishlist?: Prisma.SortOrder
@@ -633,14 +753,8 @@ export type UserMediaMinOrderByAggregateInput = {
 export type UserMediaSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   mediaId?: Prisma.SortOrder
-  releaseYear?: Prisma.SortOrder
   tmdbRating?: Prisma.SortOrder
   userRating?: Prisma.SortOrder
-}
-
-export type UserMediaScalarRelationFilter = {
-  is?: Prisma.UserMediaWhereInput
-  isNot?: Prisma.UserMediaWhereInput
 }
 
 export type UserMediaCreateNestedManyWithoutUserInput = {
@@ -693,14 +807,6 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type NullableFloatFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -709,55 +815,51 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type UserMediaCreateNestedOneWithoutTranslationsInput = {
-  create?: Prisma.XOR<Prisma.UserMediaCreateWithoutTranslationsInput, Prisma.UserMediaUncheckedCreateWithoutTranslationsInput>
-  connectOrCreate?: Prisma.UserMediaCreateOrConnectWithoutTranslationsInput
-  connect?: Prisma.UserMediaWhereUniqueInput
-}
-
-export type UserMediaUpdateOneRequiredWithoutTranslationsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserMediaCreateWithoutTranslationsInput, Prisma.UserMediaUncheckedCreateWithoutTranslationsInput>
-  connectOrCreate?: Prisma.UserMediaCreateOrConnectWithoutTranslationsInput
-  upsert?: Prisma.UserMediaUpsertWithoutTranslationsInput
-  connect?: Prisma.UserMediaWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserMediaUpdateToOneWithWhereWithoutTranslationsInput, Prisma.UserMediaUpdateWithoutTranslationsInput>, Prisma.UserMediaUncheckedUpdateWithoutTranslationsInput>
-}
-
 export type UserMediaCreateWithoutUserInput = {
   mediaId: number
   type: string
-  releaseYear?: number | null
   tmdbRating?: number | null
+  genreIds?: string | null
+  releaseDate?: Date | string | null
   userRating?: number | null
   userComment?: string | null
-  year?: Date | string | null
-  description?: string | null
+  userDescription?: string | null
   watchedDate?: Date | string | null
+  titleEn?: string | null
+  titleRu?: string | null
+  titleUk?: string | null
+  posterEn?: string | null
+  posterRu?: string | null
+  posterUk?: string | null
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  translations?: Prisma.MediaTranslationCreateNestedManyWithoutUserMediaInput
 }
 
 export type UserMediaUncheckedCreateWithoutUserInput = {
   id?: number
   mediaId: number
   type: string
-  releaseYear?: number | null
   tmdbRating?: number | null
+  genreIds?: string | null
+  releaseDate?: Date | string | null
   userRating?: number | null
   userComment?: string | null
-  year?: Date | string | null
-  description?: string | null
+  userDescription?: string | null
   watchedDate?: Date | string | null
+  titleEn?: string | null
+  titleRu?: string | null
+  titleUk?: string | null
+  posterEn?: string | null
+  posterRu?: string | null
+  posterUk?: string | null
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  translations?: Prisma.MediaTranslationUncheckedCreateNestedManyWithoutUserMediaInput
 }
 
 export type UserMediaCreateOrConnectWithoutUserInput = {
@@ -794,13 +896,19 @@ export type UserMediaScalarWhereInput = {
   userId?: Prisma.StringFilter<"UserMedia"> | string
   mediaId?: Prisma.IntFilter<"UserMedia"> | number
   type?: Prisma.StringFilter<"UserMedia"> | string
-  releaseYear?: Prisma.IntNullableFilter<"UserMedia"> | number | null
   tmdbRating?: Prisma.FloatNullableFilter<"UserMedia"> | number | null
+  genreIds?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  releaseDate?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
   userRating?: Prisma.FloatNullableFilter<"UserMedia"> | number | null
   userComment?: Prisma.StringNullableFilter<"UserMedia"> | string | null
-  year?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
-  description?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  userDescription?: Prisma.StringNullableFilter<"UserMedia"> | string | null
   watchedDate?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
+  titleEn?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  titleRu?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  titleUk?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  posterEn?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  posterRu?: Prisma.StringNullableFilter<"UserMedia"> | string | null
+  posterUk?: Prisma.StringNullableFilter<"UserMedia"> | string | null
   isWatched?: Prisma.BoolFilter<"UserMedia"> | boolean
   isFavorite?: Prisma.BoolFilter<"UserMedia"> | boolean
   isWishlist?: Prisma.BoolFilter<"UserMedia"> | boolean
@@ -808,107 +916,23 @@ export type UserMediaScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"UserMedia"> | Date | string
 }
 
-export type UserMediaCreateWithoutTranslationsInput = {
-  mediaId: number
-  type: string
-  releaseYear?: number | null
-  tmdbRating?: number | null
-  userRating?: number | null
-  userComment?: string | null
-  year?: Date | string | null
-  description?: string | null
-  watchedDate?: Date | string | null
-  isWatched?: boolean
-  isFavorite?: boolean
-  isWishlist?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserMediaInput
-}
-
-export type UserMediaUncheckedCreateWithoutTranslationsInput = {
-  id?: number
-  userId: string
-  mediaId: number
-  type: string
-  releaseYear?: number | null
-  tmdbRating?: number | null
-  userRating?: number | null
-  userComment?: string | null
-  year?: Date | string | null
-  description?: string | null
-  watchedDate?: Date | string | null
-  isWatched?: boolean
-  isFavorite?: boolean
-  isWishlist?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type UserMediaCreateOrConnectWithoutTranslationsInput = {
-  where: Prisma.UserMediaWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserMediaCreateWithoutTranslationsInput, Prisma.UserMediaUncheckedCreateWithoutTranslationsInput>
-}
-
-export type UserMediaUpsertWithoutTranslationsInput = {
-  update: Prisma.XOR<Prisma.UserMediaUpdateWithoutTranslationsInput, Prisma.UserMediaUncheckedUpdateWithoutTranslationsInput>
-  create: Prisma.XOR<Prisma.UserMediaCreateWithoutTranslationsInput, Prisma.UserMediaUncheckedCreateWithoutTranslationsInput>
-  where?: Prisma.UserMediaWhereInput
-}
-
-export type UserMediaUpdateToOneWithWhereWithoutTranslationsInput = {
-  where?: Prisma.UserMediaWhereInput
-  data: Prisma.XOR<Prisma.UserMediaUpdateWithoutTranslationsInput, Prisma.UserMediaUncheckedUpdateWithoutTranslationsInput>
-}
-
-export type UserMediaUpdateWithoutTranslationsInput = {
-  mediaId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  tmdbRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  year?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isWishlist?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserMediaNestedInput
-}
-
-export type UserMediaUncheckedUpdateWithoutTranslationsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  tmdbRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  year?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isWishlist?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 export type UserMediaCreateManyUserInput = {
   id?: number
   mediaId: number
   type: string
-  releaseYear?: number | null
   tmdbRating?: number | null
+  genreIds?: string | null
+  releaseDate?: Date | string | null
   userRating?: number | null
   userComment?: string | null
-  year?: Date | string | null
-  description?: string | null
+  userDescription?: string | null
   watchedDate?: Date | string | null
+  titleEn?: string | null
+  titleRu?: string | null
+  titleUk?: string | null
+  posterEn?: string | null
+  posterRu?: string | null
+  posterUk?: string | null
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
@@ -919,51 +943,67 @@ export type UserMediaCreateManyUserInput = {
 export type UserMediaUpdateWithoutUserInput = {
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tmdbRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  genreIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  year?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  titleEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isWishlist?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  translations?: Prisma.MediaTranslationUpdateManyWithoutUserMediaNestedInput
 }
 
 export type UserMediaUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tmdbRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  genreIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  year?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  titleEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isWishlist?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  translations?: Prisma.MediaTranslationUncheckedUpdateManyWithoutUserMediaNestedInput
 }
 
 export type UserMediaUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tmdbRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  genreIds?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  year?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  titleEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  titleUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterEn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterRu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  posterUk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isWishlist?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -971,35 +1011,6 @@ export type UserMediaUncheckedUpdateManyWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-
-/**
- * Count Type UserMediaCountOutputType
- */
-
-export type UserMediaCountOutputType = {
-  translations: number
-}
-
-export type UserMediaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  translations?: boolean | UserMediaCountOutputTypeCountTranslationsArgs
-}
-
-/**
- * UserMediaCountOutputType without action
- */
-export type UserMediaCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the UserMediaCountOutputType
-   */
-  select?: Prisma.UserMediaCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * UserMediaCountOutputType without action
- */
-export type UserMediaCountOutputTypeCountTranslationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MediaTranslationWhereInput
-}
 
 
 export type UserMediaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1007,21 +1018,25 @@ export type UserMediaSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   userId?: boolean
   mediaId?: boolean
   type?: boolean
-  releaseYear?: boolean
   tmdbRating?: boolean
+  genreIds?: boolean
+  releaseDate?: boolean
   userRating?: boolean
   userComment?: boolean
-  year?: boolean
-  description?: boolean
+  userDescription?: boolean
   watchedDate?: boolean
+  titleEn?: boolean
+  titleRu?: boolean
+  titleUk?: boolean
+  posterEn?: boolean
+  posterRu?: boolean
+  posterUk?: boolean
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  translations?: boolean | Prisma.UserMedia$translationsArgs<ExtArgs>
-  _count?: boolean | Prisma.UserMediaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userMedia"]>
 
 export type UserMediaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1029,13 +1044,19 @@ export type UserMediaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   userId?: boolean
   mediaId?: boolean
   type?: boolean
-  releaseYear?: boolean
   tmdbRating?: boolean
+  genreIds?: boolean
+  releaseDate?: boolean
   userRating?: boolean
   userComment?: boolean
-  year?: boolean
-  description?: boolean
+  userDescription?: boolean
   watchedDate?: boolean
+  titleEn?: boolean
+  titleRu?: boolean
+  titleUk?: boolean
+  posterEn?: boolean
+  posterRu?: boolean
+  posterUk?: boolean
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
@@ -1049,13 +1070,19 @@ export type UserMediaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   userId?: boolean
   mediaId?: boolean
   type?: boolean
-  releaseYear?: boolean
   tmdbRating?: boolean
+  genreIds?: boolean
+  releaseDate?: boolean
   userRating?: boolean
   userComment?: boolean
-  year?: boolean
-  description?: boolean
+  userDescription?: boolean
   watchedDate?: boolean
+  titleEn?: boolean
+  titleRu?: boolean
+  titleUk?: boolean
+  posterEn?: boolean
+  posterRu?: boolean
+  posterUk?: boolean
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
@@ -1069,13 +1096,19 @@ export type UserMediaSelectScalar = {
   userId?: boolean
   mediaId?: boolean
   type?: boolean
-  releaseYear?: boolean
   tmdbRating?: boolean
+  genreIds?: boolean
+  releaseDate?: boolean
   userRating?: boolean
   userComment?: boolean
-  year?: boolean
-  description?: boolean
+  userDescription?: boolean
   watchedDate?: boolean
+  titleEn?: boolean
+  titleRu?: boolean
+  titleUk?: boolean
+  posterEn?: boolean
+  posterRu?: boolean
+  posterUk?: boolean
   isWatched?: boolean
   isFavorite?: boolean
   isWishlist?: boolean
@@ -1083,11 +1116,9 @@ export type UserMediaSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserMediaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "mediaId" | "type" | "releaseYear" | "tmdbRating" | "userRating" | "userComment" | "year" | "description" | "watchedDate" | "isWatched" | "isFavorite" | "isWishlist" | "createdAt" | "updatedAt", ExtArgs["result"]["userMedia"]>
+export type UserMediaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "mediaId" | "type" | "tmdbRating" | "genreIds" | "releaseDate" | "userRating" | "userComment" | "userDescription" | "watchedDate" | "titleEn" | "titleRu" | "titleUk" | "posterEn" | "posterRu" | "posterUk" | "isWatched" | "isFavorite" | "isWishlist" | "createdAt" | "updatedAt", ExtArgs["result"]["userMedia"]>
 export type UserMediaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  translations?: boolean | Prisma.UserMedia$translationsArgs<ExtArgs>
-  _count?: boolean | Prisma.UserMediaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserMediaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1100,20 +1131,25 @@ export type $UserMediaPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "UserMedia"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
-    translations: Prisma.$MediaTranslationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     userId: string
     mediaId: number
     type: string
-    releaseYear: number | null
     tmdbRating: number | null
+    genreIds: string | null
+    releaseDate: Date | null
     userRating: number | null
     userComment: string | null
-    year: Date | null
-    description: string | null
+    userDescription: string | null
     watchedDate: Date | null
+    titleEn: string | null
+    titleRu: string | null
+    titleUk: string | null
+    posterEn: string | null
+    posterRu: string | null
+    posterUk: string | null
     isWatched: boolean
     isFavorite: boolean
     isWishlist: boolean
@@ -1514,7 +1550,6 @@ readonly fields: UserMediaFieldRefs;
 export interface Prisma__UserMediaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  translations<T extends Prisma.UserMedia$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserMedia$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaTranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1548,13 +1583,19 @@ export interface UserMediaFieldRefs {
   readonly userId: Prisma.FieldRef<"UserMedia", 'String'>
   readonly mediaId: Prisma.FieldRef<"UserMedia", 'Int'>
   readonly type: Prisma.FieldRef<"UserMedia", 'String'>
-  readonly releaseYear: Prisma.FieldRef<"UserMedia", 'Int'>
   readonly tmdbRating: Prisma.FieldRef<"UserMedia", 'Float'>
+  readonly genreIds: Prisma.FieldRef<"UserMedia", 'String'>
+  readonly releaseDate: Prisma.FieldRef<"UserMedia", 'DateTime'>
   readonly userRating: Prisma.FieldRef<"UserMedia", 'Float'>
   readonly userComment: Prisma.FieldRef<"UserMedia", 'String'>
-  readonly year: Prisma.FieldRef<"UserMedia", 'DateTime'>
-  readonly description: Prisma.FieldRef<"UserMedia", 'String'>
+  readonly userDescription: Prisma.FieldRef<"UserMedia", 'String'>
   readonly watchedDate: Prisma.FieldRef<"UserMedia", 'DateTime'>
+  readonly titleEn: Prisma.FieldRef<"UserMedia", 'String'>
+  readonly titleRu: Prisma.FieldRef<"UserMedia", 'String'>
+  readonly titleUk: Prisma.FieldRef<"UserMedia", 'String'>
+  readonly posterEn: Prisma.FieldRef<"UserMedia", 'String'>
+  readonly posterRu: Prisma.FieldRef<"UserMedia", 'String'>
+  readonly posterUk: Prisma.FieldRef<"UserMedia", 'String'>
   readonly isWatched: Prisma.FieldRef<"UserMedia", 'Boolean'>
   readonly isFavorite: Prisma.FieldRef<"UserMedia", 'Boolean'>
   readonly isWishlist: Prisma.FieldRef<"UserMedia", 'Boolean'>
@@ -1958,30 +1999,6 @@ export type UserMediaDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many UserMedias to delete.
    */
   limit?: number
-}
-
-/**
- * UserMedia.translations
- */
-export type UserMedia$translationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MediaTranslation
-   */
-  select?: Prisma.MediaTranslationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the MediaTranslation
-   */
-  omit?: Prisma.MediaTranslationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MediaTranslationInclude<ExtArgs> | null
-  where?: Prisma.MediaTranslationWhereInput
-  orderBy?: Prisma.MediaTranslationOrderByWithRelationInput | Prisma.MediaTranslationOrderByWithRelationInput[]
-  cursor?: Prisma.MediaTranslationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MediaTranslationScalarFieldEnum | Prisma.MediaTranslationScalarFieldEnum[]
 }
 
 /**

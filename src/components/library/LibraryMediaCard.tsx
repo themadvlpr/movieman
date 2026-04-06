@@ -41,11 +41,11 @@ const LibraryMediaCard = ({
                 <LibraryControlsButtons
                     mediaId={item.id}
                     mediaData={{
-                        title: item.title,
-                        poster: item.poster_path,
-                        rating: item.vote_average,
-                        year: item.release_date,
-                        description: item.overview
+                        titleEn: item.title,
+                        posterEn: item.poster_path,
+                        tmdbRating: item.vote_average,
+                        releaseDate: item.release_date,
+                        userDescription: item.overview
                     }}
                     type={item.media_type as 'movie' | 'tv'}
                     detailPage={false}
@@ -147,34 +147,53 @@ const LibraryMediaCard = ({
                     {/* Meta Info List */}
                     {!isGrid && (
                         <>
-                            <div className="flex flex-col items-start gap-3 sm:gap-4 mt-1">
-                                <span className="text-zinc-400 text-xs sm:text-sm flex gap-1 items-center">
-                                    <Calendar className="w-2.5 h-2.5 text-zinc-400" />
-                                    {item.release_date?.split('-').reverse().join('.')}
-                                </span>
+                            <div className="flex flex-col items-start gap-2 sm:gap-3 mt-1">
+                                <div className="flex flex-col gap-2 sm:gap-3">
+                                    <span className="text-zinc-400 text-xs sm:text-sm flex gap-1 items-center">
+                                        <Calendar className="w-2.5 h-2.5 text-zinc-400" />
+                                        {item.release_date?.split('-').reverse().join('.')}
+                                    </span>
 
-                                {item.vote_average > 0 && (
-                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/10">
-                                        <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
-                                        <span className="text-white text-xs sm:text-sm font-bold">
-                                            TMDB: {item.vote_average.toFixed(1)}
-                                        </span>
-                                    </div>
-                                )}
-                                {item.user_rating != null && item.user_rating > 0 && (
-                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
-                                        <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
-                                        <span className="text-xs sm:text-sm font-bold">
-                                            {t('common', 'myRating')}: {item.user_rating.toFixed(1)}
-                                        </span>
-                                    </div>
-                                )}
+                                    {item.genre_ids && item.genre_ids.length > 0 && (
+                                        <>
+                                            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                                                {item.genre_ids.slice(0, 3).map((genreId: number) => (
+                                                    <span
+                                                        key={genreId}
+                                                        className="px-1.5 sm:px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-xs sm:text-sm text-zinc-400 font-medium whitespace-nowrap"
+                                                    >
+                                                        {t('genres', genreId.toString())}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
 
-                                {item.watched_date && (
-                                    <div className="flex items-center gap-1.5 text-zinc-400">
-                                        <span className="text-xs sm:text-sm font-medium">{t('common', 'watched')}: {item.watched_date.slice(0, 10).split('-').reverse().join('.')}</span>
-                                    </div>
-                                )}
+                                <div className="flex flex-col gap-3">
+                                    {item.vote_average > 0 && (
+                                        <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-white/10">
+                                            <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
+                                            <span className="text-white text-xs sm:text-sm font-bold">
+                                                TMDB: {item.vote_average.toFixed(1)}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {item.user_rating != null && item.user_rating > 0 && (
+                                        <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
+                                            <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
+                                            <span className="text-xs sm:text-sm font-bold">
+                                                {t('common', 'myRating')}: {item.user_rating.toFixed(1)}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {item.watched_date && (
+                                        <div className="flex items-center gap-1.5 text-zinc-400">
+                                            <span className="text-xs sm:text-sm font-medium">{t('common', 'watched')}: {item.watched_date.slice(0, 10).split('-').reverse().join('.')}</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="hidden sm:flex items-center gap-4 mt-2 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">

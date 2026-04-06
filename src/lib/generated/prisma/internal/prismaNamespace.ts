@@ -388,8 +388,7 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  UserMedia: 'UserMedia',
-  MediaTranslation: 'MediaTranslation'
+  UserMedia: 'UserMedia'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -405,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "userMedia" | "mediaTranslation"
+    modelProps: "user" | "session" | "account" | "verification" | "userMedia"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -779,80 +778,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    MediaTranslation: {
-      payload: Prisma.$MediaTranslationPayload<ExtArgs>
-      fields: Prisma.MediaTranslationFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.MediaTranslationFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.MediaTranslationFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
-        }
-        findFirst: {
-          args: Prisma.MediaTranslationFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.MediaTranslationFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
-        }
-        findMany: {
-          args: Prisma.MediaTranslationFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>[]
-        }
-        create: {
-          args: Prisma.MediaTranslationCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
-        }
-        createMany: {
-          args: Prisma.MediaTranslationCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.MediaTranslationCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>[]
-        }
-        delete: {
-          args: Prisma.MediaTranslationDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
-        }
-        update: {
-          args: Prisma.MediaTranslationUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
-        }
-        deleteMany: {
-          args: Prisma.MediaTranslationDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.MediaTranslationUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.MediaTranslationUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>[]
-        }
-        upsert: {
-          args: Prisma.MediaTranslationUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
-        }
-        aggregate: {
-          args: Prisma.MediaTranslationAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateMediaTranslation>
-        }
-        groupBy: {
-          args: Prisma.MediaTranslationGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.MediaTranslationGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.MediaTranslationCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.MediaTranslationCountAggregateOutputType> | number
-        }
-      }
-    }
   }
 } & {
   other: {
@@ -955,13 +880,19 @@ export const UserMediaScalarFieldEnum = {
   userId: 'userId',
   mediaId: 'mediaId',
   type: 'type',
-  releaseYear: 'releaseYear',
   tmdbRating: 'tmdbRating',
+  genreIds: 'genreIds',
+  releaseDate: 'releaseDate',
   userRating: 'userRating',
   userComment: 'userComment',
-  year: 'year',
-  description: 'description',
+  userDescription: 'userDescription',
   watchedDate: 'watchedDate',
+  titleEn: 'titleEn',
+  titleRu: 'titleRu',
+  titleUk: 'titleUk',
+  posterEn: 'posterEn',
+  posterRu: 'posterRu',
+  posterUk: 'posterUk',
   isWatched: 'isWatched',
   isFavorite: 'isFavorite',
   isWishlist: 'isWishlist',
@@ -970,17 +901,6 @@ export const UserMediaScalarFieldEnum = {
 } as const
 
 export type UserMediaScalarFieldEnum = (typeof UserMediaScalarFieldEnum)[keyof typeof UserMediaScalarFieldEnum]
-
-
-export const MediaTranslationScalarFieldEnum = {
-  id: 'id',
-  userMediaId: 'userMediaId',
-  language: 'language',
-  title: 'title',
-  posterPath: 'posterPath'
-} as const
-
-export type MediaTranslationScalarFieldEnum = (typeof MediaTranslationScalarFieldEnum)[keyof typeof MediaTranslationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1175,7 +1095,6 @@ export type GlobalOmitConfig = {
   account?: Prisma.AccountOmit
   verification?: Prisma.VerificationOmit
   userMedia?: Prisma.UserMediaOmit
-  mediaTranslation?: Prisma.MediaTranslationOmit
 }
 
 /* Types for Logging */

@@ -38,20 +38,50 @@ export async function toggleMediaStatusAction(
     const baseDataQuery = tmdbResponses.find(r => r.status === 'fulfilled' && r.value) as PromiseFulfilledResult<any> | undefined;
     const baseTmdbData = baseDataQuery?.value;
 
-    let finalYear = mediaData.year ? new Date(mediaData.year) : null;
-    let finalReleaseYear = finalYear ? finalYear.getFullYear() : null;
-    let finalRating = mediaData.rating || 0;
-    let finalDescription = mediaData.description || null;
+    let finalReleaseDate = mediaData.releaseDate ? new Date(mediaData.releaseDate) : null;
+    let finalRating = mediaData.tmdbRating || 0;
+    let finalDescription = mediaData.userDescription || null;
+    let finalGenreIds = mediaData.genreIds || null;
 
     if (baseTmdbData) {
         const rawDate = type === 'movie' ? baseTmdbData.release_date : baseTmdbData.first_air_date;
         if (rawDate) {
-            finalYear = new Date(rawDate);
-            finalReleaseYear = finalYear.getFullYear();
+            finalReleaseDate = new Date(rawDate);
         }
         finalRating = baseTmdbData.vote_average || finalRating;
         finalDescription = baseTmdbData.overview || finalDescription;
+        
+        if (baseTmdbData.genre_ids) {
+            finalGenreIds = baseTmdbData.genre_ids.join(',');
+        } else if (baseTmdbData.genres) {
+            finalGenreIds = baseTmdbData.genres.map((g: any) => g.id).join(',');
+        }
     }
+    
+    // Extract Localized Strings securely
+    const getLocalizedTitle = (idx: number) => {
+        const res = tmdbResponses[idx];
+        if (res?.status === 'fulfilled' && res.value) {
+            return type === 'movie' ? res.value.title : res.value.name;
+        }
+        return null;
+    }
+    
+    const getLocalizedPoster = (idx: number) => {
+        const res = tmdbResponses[idx];
+        if (res?.status === 'fulfilled' && res.value) {
+            return res.value.poster_path;
+        }
+        return null;
+    }
+
+    const titleEn = getLocalizedTitle(0) || mediaData.titleEn || "";
+    const titleRu = getLocalizedTitle(1) || mediaData.titleRu || "";
+    const titleUk = getLocalizedTitle(2) || mediaData.titleUk || "";
+    
+    const posterEn = getLocalizedPoster(0) || mediaData.posterEn || null;
+    const posterRu = getLocalizedPoster(1) || mediaData.posterRu || null;
+    const posterUk = getLocalizedPoster(2) || mediaData.posterUk || null;
 
     // Upsert the main UserMedia document
     const userMedia = await prisma.userMedia.upsert({
@@ -64,51 +94,24 @@ export async function toggleMediaStatusAction(
             type,
             [action]: newStatus,
             tmdbRating: finalRating,
-            year: finalYear,
-            releaseYear: finalReleaseYear,
-            description: finalDescription,
+            releaseDate: finalReleaseDate,
+            userDescription: finalDescription,
+            genreIds: finalGenreIds,
+            titleEn, titleRu, titleUk,
+            posterEn, posterRu, posterUk,
             ...(action === 'isWatched' && { watchedDate: new Date() })
         },
         update: {
             [action]: newStatus,
             tmdbRating: finalRating,
-            year: finalYear,
-            releaseYear: finalReleaseYear,
-            description: finalDescription,
+            releaseDate: finalReleaseDate,
+            userDescription: finalDescription,
+            genreIds: finalGenreIds,
+            titleEn, titleRu, titleUk,
+            posterEn, posterRu, posterUk,
             ...(action === 'isWatched' && { watchedDate: newStatus ? new Date() : null })
         }
     });
 
-    // Populate translations
-    const translationPromises = tmdbLocales.map((lang, idx) => {
-        const res = tmdbResponses[idx];
-        if (res.status === 'fulfilled' && res.value) {
-            const data = res.value;
-            const localizedTitle = type === 'movie' ? data.title : data.name;
-            const localizedPoster = data.poster_path;
-
-            return prisma.mediaTranslation.upsert({
-                where: {
-                    userMediaId_language: {
-                        userMediaId: userMedia.id,
-                        language: lang
-                    }
-                },
-                create: {
-                    userMediaId: userMedia.id,
-                    language: lang,
-                    title: localizedTitle || mediaData.title || '',
-                    posterPath: localizedPoster
-                },
-                update: {
-                    title: localizedTitle || mediaData.title || '',
-                    posterPath: localizedPoster
-                }
-            });
-        }
-        return Promise.resolve();
-    });
-
-    await Promise.all(translationPromises);
     revalidatePath("/library");
 }

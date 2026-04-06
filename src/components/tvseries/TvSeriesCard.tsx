@@ -40,11 +40,12 @@ const TvSeriesCard = ({
                 <LibraryControlsButtons
                     mediaId={show.id}
                     mediaData={{
-                        title: show.name,
-                        poster: show.poster_path,
-                        rating: show.vote_average,
-                        year: show.first_air_date,
-                        description: show.overview
+                        titleEn: show.name,
+                        posterEn: show.poster_path,
+                        tmdbRating: show.vote_average,
+                        releaseDate: show.first_air_date,
+                        userDescription: show.overview,
+                        genreIds: show.genre_ids?.join(',')
                     }}
                     type="tv"
                     detailPage={false}

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "UserMedia" ALTER COLUMN "genreIds" DROP NOT NULL,
+ALTER COLUMN "genreIds" SET DATA TYPE TEXT;

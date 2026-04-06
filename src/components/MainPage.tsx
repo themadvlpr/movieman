@@ -207,12 +207,12 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                         <LibraryControlsButtons
                             mediaId={id}
                             mediaData={{
-                                title,
-                                poster: backdrop_path,
-                                rating,
-                                year: release_date,
-                                description: overview
-
+                                titleEn: title,
+                                posterEn: backdrop_path,
+                                tmdbRating: rating,
+                                releaseDate: release_date,
+                                userDescription: overview,
+                                genreIds: currentMovie.genre_ids?.join(',')
                             }}
                             type="movie"
                             userId={userId}

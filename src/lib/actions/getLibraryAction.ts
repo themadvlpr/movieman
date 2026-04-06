@@ -32,11 +32,17 @@ export async function getLibraryAction(
         whereClause.type = mediaType;
     }
 
+    // Map TMDB locale to column names
+    let titleKey: 'titleEn' | 'titleRu' | 'titleUk' = 'titleEn';
+    let posterKey: 'posterEn' | 'posterRu' | 'posterUk' = 'posterEn';
+    
+    if (tmdbLang === 'ru-RU') { titleKey = 'titleRu'; posterKey = 'posterRu'; }
+    if (tmdbLang === 'uk-UA') { titleKey = 'titleUk'; posterKey = 'posterUk'; }
+
     let orderByClause: Prisma.UserMediaOrderByWithRelationInput | undefined;
 
     if (sortBy === 'title') {
-        // Sorting by relation field 'title' requires in-memory sort or complex raw query
-        orderByClause = undefined;
+        orderByClause = { [titleKey]: sortOrder };
     } else if (sortBy === 'rating') {
         orderByClause = { tmdbRating: { sort: sortOrder, nulls: 'last' } };
     } else {
@@ -55,35 +61,20 @@ export async function getLibraryAction(
             prisma.userMedia.findMany({
                 where: whereClause,
                 orderBy: orderByClause,
-                include: {
-                    translations: { where: { language: tmdbLang } }
-                },
-                ...(sortBy !== 'title' && {
-                    skip: (page - 1) * pageSize,
-                    take: pageSize,
-                })
+                skip: (page - 1) * pageSize,
+                take: pageSize,
             })
         ]);
 
-        let finalMediaList = userMediaList;
-
-        if (sortBy === 'title') {
-            finalMediaList.sort((a, b) => {
-                const titleA = a.translations[0]?.title || '';
-                const titleB = b.translations[0]?.title || '';
-                return sortOrder === 'asc' ? titleA.localeCompare(titleB) : titleB.localeCompare(titleA);
-            });
-            finalMediaList = finalMediaList.slice((page - 1) * pageSize, page * pageSize);
-        }
-
-        const mappedResults: LibraryResult[] = finalMediaList.map(item => ({
+        const mappedResults: LibraryResult[] = userMediaList.map(item => ({
             id: item.mediaId,
             media_type: item.type as 'movie' | 'tv',
-            title: item.translations[0]?.title || '',
-            poster_path: item.translations[0]?.posterPath || null,
+            title: item[titleKey] || item.titleEn || '',
+            poster_path: item[posterKey] || item.posterEn || null,
             vote_average: Number(item.tmdbRating) || 0,
-            release_date: item.year ? item.year.toISOString().split('T')[0] : (item.releaseYear ? `${item.releaseYear}-01-01` : ''),
-            overview: item.description,
+            release_date: item.releaseDate ? item.releaseDate.toISOString().split('T')[0] : '',
+            overview: item.userDescription || '',
+            genre_ids: item.genreIds ? item.genreIds.split(',').map(Number) : [],
             user_rating: item.userRating ? Number(item.userRating) : null,
             watched_date: item.watchedDate ? item.watchedDate.toISOString() : null,
             initialDbState: {

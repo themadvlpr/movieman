@@ -74,43 +74,39 @@ model Verification {
 }
 
 
-
 model UserMedia {
-  id           Int      @id @default(autoincrement())
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id           Int      @id @default(autoincrement())
+    userId       String
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  mediaId      Int
-  type         String   // "movie" / "tv"
-  releaseYear  Int?     
-  tmdbRating   Float?   
-  userRating   Float?
-  userComment  String?
-  year         DateTime?
-  description  String?
 
-  watchedDate  DateTime?
+    mediaId      Int
+    type         String // movie or tv
+    tmdbRating   Float?
+    genreIds     String? // comma separated
+    releaseDate  DateTime?
+    
+    
+    userRating   Float?
+    userComment  String?
+    userDescription  String?
+    watchedDate  DateTime?
 
-  isWatched    Boolean   @default(false)
-  isFavorite   Boolean   @default(false)
-  isWishlist   Boolean   @default(false)
+    titleEn      String?
+    titleRu      String?
+    titleUk      String?
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+    posterEn     String?
+    posterRu     String?
+    posterUk     String?
 
-  translations MediaTranslation[]
 
-  @@unique([userId, mediaId, type])
-}
+    isWatched    Boolean   @default(false)
+    isFavorite   Boolean   @default(false)
+    isWishlist   Boolean   @default(false)
 
-model MediaTranslation {
-  id          Int       @id @default(autoincrement())
-  userMediaId Int
-  language    String   
-  title       String    
-  posterPath  String?   
-  
-  userMedia   UserMedia @relation(fields: [userMediaId], references: [id], onDelete: Cascade)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
 
-  @@unique([userMediaId, language])
+    @@unique([userId, mediaId, type])
 }

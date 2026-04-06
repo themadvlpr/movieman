@@ -311,11 +311,12 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                             <LibraryControlsButtons
                                 mediaId={series.id}
                                 mediaData={{
-                                    title: series.name,
-                                    poster: series.poster_path,
-                                    rating: series.vote_average,
-                                    year: series.first_air_date,
-                                    description: series.overview
+                                    titleEn: series.name,
+                                    posterEn: series.poster_path,
+                                    tmdbRating: series.vote_average,
+                                    releaseDate: series.first_air_date,
+                                    userDescription: series.overview,
+                                    genreIds: series.genres?.map(g => g.id).join(',')
                                 }}
                                 type="tv"
                                 userId={userId}

@@ -272,11 +272,12 @@ export default function MovieDetailContent({ data, userId }: Props) {
                             <LibraryControlsButtons
                                 mediaId={movie.id}
                                 mediaData={{
-                                    title: movie.title,
-                                    poster: movie.poster_path,
-                                    rating: movie.vote_average,
-                                    year: movie.release_date,
-                                    description: movie.overview
+                                    titleEn: movie.title,
+                                    posterEn: movie.poster_path,
+                                    tmdbRating: movie.vote_average,
+                                    releaseDate: movie.release_date,
+                                    userDescription: movie.overview,
+                                    genreIds: movie.genres?.map(g => g.id).join(',')
                                 }}
                                 type="movie"
                                 userId={userId}

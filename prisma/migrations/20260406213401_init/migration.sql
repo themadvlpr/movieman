@@ -62,13 +62,18 @@ CREATE TABLE "UserMedia" (
     "userId" TEXT NOT NULL,
     "mediaId" INTEGER NOT NULL,
     "type" TEXT NOT NULL,
-    "releaseYear" INTEGER,
     "tmdbRating" DOUBLE PRECISION,
+    "releaseDate" TIMESTAMP(3),
     "userRating" DOUBLE PRECISION,
     "userComment" TEXT,
-    "year" TIMESTAMP(3),
-    "description" TEXT,
+    "userDescription" TEXT,
     "watchedDate" TIMESTAMP(3),
+    "titleEn" TEXT,
+    "titleRu" TEXT,
+    "titleUk" TEXT,
+    "posterEn" TEXT,
+    "posterRu" TEXT,
+    "posterUk" TEXT,
     "isWatched" BOOLEAN NOT NULL DEFAULT false,
     "isFavorite" BOOLEAN NOT NULL DEFAULT false,
     "isWishlist" BOOLEAN NOT NULL DEFAULT false,
@@ -76,17 +81,6 @@ CREATE TABLE "UserMedia" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "UserMedia_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "MediaTranslation" (
-    "id" SERIAL NOT NULL,
-    "userMediaId" INTEGER NOT NULL,
-    "language" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "posterPath" TEXT,
-
-    CONSTRAINT "MediaTranslation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -110,9 +104,6 @@ CREATE UNIQUE INDEX "verification_identifier_value_key" ON "verification"("ident
 -- CreateIndex
 CREATE UNIQUE INDEX "UserMedia_userId_mediaId_type_key" ON "UserMedia"("userId", "mediaId", "type");
 
--- CreateIndex
-CREATE UNIQUE INDEX "MediaTranslation_userMediaId_language_key" ON "MediaTranslation"("userMediaId", "language");
-
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -121,6 +112,3 @@ ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "UserMedia" ADD CONSTRAINT "UserMedia_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "MediaTranslation" ADD CONSTRAINT "MediaTranslation_userMediaId_fkey" FOREIGN KEY ("userMediaId") REFERENCES "UserMedia"("id") ON DELETE CASCADE ON UPDATE CASCADE;
