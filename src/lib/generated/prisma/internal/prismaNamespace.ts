@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.4.2
- * Query Engine version: 94a226be1cf2967af2541cca5529f0f7ba866919
+ * Prisma Client JS version: 7.5.0
+ * Query Engine version: 280c870be64f457428992c43c1f6d557fab6e29e
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.4.2",
-  engine: "94a226be1cf2967af2541cca5529f0f7ba866919"
+  client: "7.5.0",
+  engine: "280c870be64f457428992c43c1f6d557fab6e29e"
 }
 
 /**
@@ -388,7 +388,8 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  UserMedia: 'UserMedia'
+  UserMedia: 'UserMedia',
+  MediaTranslation: 'MediaTranslation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "userMedia"
+    modelProps: "user" | "session" | "account" | "verification" | "userMedia" | "mediaTranslation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +779,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MediaTranslation: {
+      payload: Prisma.$MediaTranslationPayload<ExtArgs>
+      fields: Prisma.MediaTranslationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MediaTranslationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MediaTranslationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
+        }
+        findFirst: {
+          args: Prisma.MediaTranslationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MediaTranslationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
+        }
+        findMany: {
+          args: Prisma.MediaTranslationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>[]
+        }
+        create: {
+          args: Prisma.MediaTranslationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
+        }
+        createMany: {
+          args: Prisma.MediaTranslationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MediaTranslationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>[]
+        }
+        delete: {
+          args: Prisma.MediaTranslationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
+        }
+        update: {
+          args: Prisma.MediaTranslationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
+        }
+        deleteMany: {
+          args: Prisma.MediaTranslationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MediaTranslationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MediaTranslationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>[]
+        }
+        upsert: {
+          args: Prisma.MediaTranslationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaTranslationPayload>
+        }
+        aggregate: {
+          args: Prisma.MediaTranslationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMediaTranslation>
+        }
+        groupBy: {
+          args: Prisma.MediaTranslationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MediaTranslationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MediaTranslationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MediaTranslationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -880,9 +955,8 @@ export const UserMediaScalarFieldEnum = {
   userId: 'userId',
   mediaId: 'mediaId',
   type: 'type',
-  title: 'title',
-  poster: 'poster',
-  rating: 'rating',
+  releaseYear: 'releaseYear',
+  tmdbRating: 'tmdbRating',
   userRating: 'userRating',
   userComment: 'userComment',
   year: 'year',
@@ -896,6 +970,17 @@ export const UserMediaScalarFieldEnum = {
 } as const
 
 export type UserMediaScalarFieldEnum = (typeof UserMediaScalarFieldEnum)[keyof typeof UserMediaScalarFieldEnum]
+
+
+export const MediaTranslationScalarFieldEnum = {
+  id: 'id',
+  userMediaId: 'userMediaId',
+  language: 'language',
+  title: 'title',
+  posterPath: 'posterPath'
+} as const
+
+export type MediaTranslationScalarFieldEnum = (typeof MediaTranslationScalarFieldEnum)[keyof typeof MediaTranslationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1090,6 +1175,7 @@ export type GlobalOmitConfig = {
   account?: Prisma.AccountOmit
   verification?: Prisma.VerificationOmit
   userMedia?: Prisma.UserMediaOmit
+  mediaTranslation?: Prisma.MediaTranslationOmit
 }
 
 /* Types for Logging */
