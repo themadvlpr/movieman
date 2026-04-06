@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Star, Calendar, ChevronRight, List, Info, Globe, Play } from 'lucide-react'
 import VideoModal from '@/components/ui/VideoModal'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
-import { CrewMember, MainTvCrewItem, TvSeriesDetailProps } from '@/lib/tmdb/types/tmdb-types'
+import { CrewMember, TvSeriesDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import DetailCarousel from '@/components/ui/DetailCarousel'
 import { dbState } from '@/lib/tmdb/types/db-types'
 import { updateMediaDetailsAction } from '@/lib/actions/updateMediaDetailsAction'
@@ -17,6 +17,12 @@ import { useTranslation } from '@/providers/LocaleProvider'
 interface Props {
     data: TvSeriesDetailProps & { initialDbState?: dbState };
     userId: string;
+}
+
+interface MainTvCrewItem {
+    id: number;
+    name: string;
+    jobs: string[];
 }
 
 export default function TvSeriesDetailContent({ data, userId }: Props) {
