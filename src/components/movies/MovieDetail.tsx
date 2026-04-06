@@ -10,7 +10,7 @@ import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 import MovieDetailContent from '@/components/movies/MovieDetailContent';
 
 export default function MovieDetail({ movieId, userId }: { movieId: string, userId: string }) {
-	const { t, locale } = useTranslation();
+	const { locale } = useTranslation();
 	const tmdbLang = TMDB_LANGUAGES[locale as Locale];
 
 	const { data, isLoading } = useQuery<MovieDetailProps & { initialDbState?: dbState }>({
