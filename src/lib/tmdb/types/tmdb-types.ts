@@ -1,57 +1,16 @@
-export const genresById = {
-    28: "Action",
-    12: "Adventure",
-    16: "Animation",
-    35: "Comedy",
-    80: "Crime",
-    99: "Documentary",
-    18: "Drama",
-    10751: "Family",
-    14: "Fantasy",
-    36: "History",
-    27: "Horror",
-    10402: "Music",
-    9648: "Mystery",
-    10749: "Romance",
-    878: "Science Fiction",
-    10770: "TV Movie",
-    53: "Thriller",
-    10752: "War",
-    37: "Western",
+/**
+ * --- COMMON & UTILS ---
+ */
+export type MediaType = 'movie' | 'tv' | 'person';
 
-    10759: "Action & Adventure",
-    10762: "Kids",
-    10763: "News",
-    10764: "Reality",
-    10765: "Sci-Fi & Fantasy",
-    10766: "Soap",
-    10767: "Talk",
-    10768: "War & Politics"
+export const genresById: Record<number, string> = {
+    28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime",
+    99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History",
+    27: "Horror", 10402: "Music", 9648: "Mystery", 10749: "Romance", 878: "Science Fiction",
+    10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western",
+    10759: "Action & Adventure", 10762: "Kids", 10763: "News", 10764: "Reality",
+    10765: "Sci-Fi & Fantasy", 10766: "Soap", 10767: "Talk", 10768: "War & Politics"
 };
-
-export interface Movie {
-    id: number;
-    adult: boolean;
-    backdrop_path: string;
-    genre_ids: number[];
-    original_language: string;
-    original_title: string;
-    overview: string;
-    popularity: number;
-    poster_path: string;
-    release_date: string;
-    tagline?: string;
-    title: string;
-    video: boolean;
-    vote_average: number;
-    vote_count: number;
-    logo_path?: string;
-    production_countries?: { iso_3166_1: string; name: string }[];
-    runtime: number
-    genres: { id: number; name: string }[]
-    origin_country?: string[];
-    videos?: { results: Video[] };
-}
 
 export interface Video {
     id: string;
@@ -64,58 +23,59 @@ export interface Video {
     type: string;
 }
 
-export interface CrewMember {
-    id: number;
-    name: string;
-    job: string;
-    department: string;
-    profile_path: string | null;
-}
-
-export interface MainTvCrewItem {
-    id: number;
-    name: string;
-    jobs: string[];
-}
-
-export interface MovieDetailProps {
-    movie: Movie
-    credits: { cast: Actor[]; crew: CrewMember[] }
-    similarMovies: Movie[]
-}
-
-export interface TvSeries {
+/**
+ * --- BASE MEDIA (Общие поля для фильмов и сериалов) ---
+ */
+interface BaseMedia {
     id: number;
     backdrop_path: string;
+    poster_path: string;
+    overview: string;
+    popularity: number;
+    vote_average: number;
+    vote_count: number;
+    genre_ids: number[];
+    genres: { id: number; name: string }[];
+    tagline?: string;
+    origin_country?: string[];
+    videos?: { results: Video[] };
+}
+
+/**
+ * --- MOVIE ---
+ */
+export interface Movie extends BaseMedia {
+    title: string;
+    original_title: string;
+    original_language: string;
+    release_date: string;
+    runtime: number;
+    adult: boolean;
+    video: boolean;
+    logo_path?: string;
+    production_countries?: { iso_3166_1: string; name: string }[];
+}
+
+/**
+ * --- TV SERIES ---
+ */
+export interface TvSeries extends BaseMedia {
+    name: string;
     first_air_date: string;
     last_air_date?: string;
+    number_of_seasons: number;
+    number_of_episodes: number;
+    status: string;
     created_by?: {
         id: number;
         name: string;
         profile_path: string | null;
     }[];
-    genre_ids: number[];
-    genres: { id: number; name: string }[];
-    name: string;
-    overview: string;
-    popularity: number;
-    poster_path: string;
-    vote_average: number;
-    vote_count: number;
-    tagline?: string;
-    number_of_seasons: number;
-    number_of_episodes: number;
-    status: string;
-    origin_country?: string[];
-    videos?: { results: Video[] };
 }
 
-export interface TvSeriesDetailProps {
-    series: TvSeries
-    credits: { cast: Actor[]; crew: CrewMember[] }
-    similarSeries: TvSeries[]
-}
-
+/**
+ * --- PEOPLE & CREDITS ---
+ */
 export interface Person {
     id: number;
     name: string;
@@ -129,17 +89,25 @@ export interface Person {
     popularity: number;
 }
 
+export interface CrewMember {
+    id: number;
+    name: string;
+    job: string;
+    department: string;
+    profile_path: string | null;
+}
+
 export interface Actor {
     id: number;
-    title?: string;
     name?: string;
+    title?: string; // Для случаев, когда актер в списке фильма (Movie)
     character: string;
-    poster_path: string | null;
+    profile_path: string | null;
+    poster_path: string | null; // Для списка работ
     release_date?: string;
     first_air_date?: string;
     vote_average: number;
     vote_count: number;
-    profile_path: string | null;
     roles?: {
         character: string;
         episode_count?: number;
@@ -151,21 +119,30 @@ export interface PersonCredits {
     crew: CrewMember[];
 }
 
+/**
+ * --- PROPS & RESULTS ---
+ */
+export interface MovieDetailProps {
+    movie: Movie;
+    credits: { cast: Actor[]; crew: CrewMember[] };
+    similarMovies: Movie[];
+}
+
+export interface TvSeriesDetailProps {
+    series: TvSeries;
+    credits: { cast: Actor[]; crew: CrewMember[] };
+    similarSeries: TvSeries[];
+}
+
 export interface PersonDetailProps {
     person: Person;
     movieCredits: PersonCredits;
     tvCredits: PersonCredits;
 }
 
-export type CreditMedia = (Movie | TvSeries) & {
-    id?: number;
-    character?: string;
-    job?: string;
-};
-
 export interface MultiSearchResult {
     id: number;
-    media_type: 'movie' | 'tv' | 'person';
+    media_type: MediaType;
     title?: string;
     name?: string;
     poster_path?: string;
@@ -183,9 +160,30 @@ export interface SearchResponse {
     page: number;
 }
 
+/**
+ * --- LIBRARY (Оптимизированный под Prisma) ---
+ */
+export interface LibraryResult {
+    id: number;
+    media_type: 'movie' | 'tv';
+    // Эти поля приходят из API/кэша
+    title: string;
+    poster_path: string | null;
+    vote_average: number;
+    release_date: string;
+    overview: string | null;
+    // Эти поля приходят из твоей БД (UserMedia)
+    user_rating: number | null;
+    watched_date: string | null;
+    initialDbState: {
+        isWatched: boolean;
+        isFavorite: boolean;
+        isWishlist: boolean;
+    };
+}
+
+// Вспомогательные типы для мерджа
 export type RawCredit = Actor | CrewMember;
-
-
 export type MergedCredit = RawCredit & {
     characters?: string[];
     jobs?: string[];
@@ -198,20 +196,3 @@ export type MergedCredit = RawCredit & {
     title?: string;
     name?: string;
 };
-
-export interface LibraryResult {
-    id: number;
-    media_type: string;
-    title: string;
-    poster_path: string | null;
-    vote_average: number;
-    release_date: string;
-    overview: string | null;
-    user_rating: number | null;
-    watched_date: string | null;
-    initialDbState: {
-        isWatched: boolean;
-        isFavorite: boolean;
-        isWishlist: boolean;
-    }
-}

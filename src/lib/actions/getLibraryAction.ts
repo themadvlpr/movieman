@@ -39,10 +39,6 @@ export async function getLibraryAction(
         orderByClause = { [sortBy]: { sort: sortOrder, nulls: 'last' } };
     }
 
-    const typeFilter = mediaType === 'all'
-        ? { in: ['movie', 'tv'] }
-        : mediaType;
-
     try {
         const [totalCount, wishlListMoviesCount, wishlListTvCount, favoriteMoviesCount, favoriteTvCount, watchedMoviesCount, watchedTvCount, userMediaList] = await Promise.all([
             prisma.userMedia.count({ where: whereClause }),
@@ -62,7 +58,7 @@ export async function getLibraryAction(
 
         const mappedResults: LibraryResult[] = userMediaList.map(item => ({
             id: item.mediaId,
-            media_type: item.type,
+            media_type: item.type as 'movie' | 'tv',
             title: item.title,
             poster_path: item.poster,
             vote_average: Number(item.rating) || 0,
