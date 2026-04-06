@@ -70,7 +70,7 @@ const TvSeriesCard = ({
                 {/* Poster Section */}
                 <div className={isGrid
                     ? "relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500"
-                    : "relative w-[40%] sm:w-32 aspect-2/3 h-fit sm:h-auto rounded-lg sm:rounded-xl overflow-hidden shrink-0"
+                    : "relative w-25 sm:w-35 h-fit aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0"
                 }>
                     <MoviePoster
                         src={"https://image.tmdb.org/t/p/w500" + show.poster_path}
@@ -121,7 +121,7 @@ const TvSeriesCard = ({
                             <span className="text-zinc-400 text-[10px] sm:text-sm">{show.first_air_date?.slice(0, 4)}</span>
                             <div className="flex flex-wrap gap-1">
                                 {show.genre_ids?.slice(0, 3).map((genreId: number) => (
-                                    <span key={genreId} className='px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-[8px] sm:text-xs font-black uppercase tracking-[0.2em] backdrop-blur-md text-zinc-400'>
+                                    <span key={genreId} className='px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm  backdrop-blur-md text-zinc-400'>
                                         {t('genres', genreId.toString())}
                                     </span>
                                 ))}
