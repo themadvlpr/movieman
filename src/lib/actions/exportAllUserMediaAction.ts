@@ -2,23 +2,29 @@
 
 import prisma from "@/lib/prisma";
 
-export async function exportAllUserMediaAction(userId: string) {
+export async function exportAllUserMediaAction(userId: string, tmdbLang: string = 'en-US') {
     if (!userId) return { success: false, error: 'Unauthorized' };
 
     try {
         const userMediaList = await prisma.userMedia.findMany({
             where: { userId },
-            orderBy: {
-                title: 'asc',
+            include: {
+                translations: { where: { language: tmdbLang } }
             }
         });
 
+        userMediaList.sort((a, b) => {
+            const titleA = a.translations[0]?.title || '';
+            const titleB = b.translations[0]?.title || '';
+            return titleA.localeCompare(titleB);
+        });
+
         const mappedResults = userMediaList.map(item => ({
-            "Title": item.title,
+            "Title": item.translations[0]?.title || '',
             "Type": item.type === 'tv' ? 'TV Series' : 'Movie',
-            "TMDB Rating": item.rating || 0,
+            "TMDB Rating": item.tmdbRating || 0,
             "My Rating": item.userRating || "",
-            "Release Date": item.year ? item.year.toISOString().split('T')[0] : '',
+            "Release Date": item.year ? item.year.toISOString().split('T')[0] : (item.releaseYear ? `${item.releaseYear}-01-01` : ''),
             "Watched Date": item.watchedDate ? item.watchedDate.toISOString().split('T')[0] : '',
             "Is Watched": item.isWatched ? 'Yes' : 'No',
             "Is Wishlist": item.isWishlist ? 'Yes' : 'No',

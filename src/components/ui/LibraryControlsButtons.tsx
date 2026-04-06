@@ -29,7 +29,7 @@ export default function LibraryControlsButtons({
 
     const { dbState, toggleAction } = useMediaActions(mediaId, userId, type, initialState);
 
-    const hideWatched = mediaData.year > new Date().toISOString().split('T')[0];
+    const hideWatched = mediaData.year && new Date(mediaData.year).toISOString().split('T')[0] > new Date().toISOString().split('T')[0];
 
     const states = {
         watched: !!dbState?.isWatched,

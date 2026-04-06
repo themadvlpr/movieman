@@ -1,5 +1,13 @@
 export interface dbState extends dbMediaStatus {
-    title: string;
+    // Deprecated fields, keeping optional to prevent widespread build errors if they are still accessed
+    title?: string;
+    poster?: string | null;
+    rating?: number | null;
+    
+    // New schema fields
+    tmdbRating?: number | null;
+    releaseYear?: number | null;
+    
     id?: number;
     type?: string;
     mediaId?: number;
@@ -7,11 +15,9 @@ export interface dbState extends dbMediaStatus {
     description?: string | null;
     createdAt?: Date;
     updatedAt?: Date;
-    poster?: string | null;
-    rating?: number | null;
     userRating?: number | null;
     userComment?: string | null;
-    year: Date | string;
+    year?: Date | string | null;
     watchedDate?: Date | null;
 }
 

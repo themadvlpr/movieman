@@ -5,6 +5,7 @@ import { getAuthSession } from "@/lib/auth-sessions";
 import { revalidatePath } from "next/cache";
 import { dbState } from "../tmdb/types/db-types";
 import { tmdbFetch, CacheConfig } from "@/lib/tmdb/tmdb-api";
+import { TMDB_LANGUAGES } from "@/lib/i18n/languageconfig";
 
 export async function toggleMediaStatusAction(
     mediaId: number,
@@ -23,53 +24,91 @@ export async function toggleMediaStatusAction(
         }
     });
 
-    if (!existing) {
-        await prisma.userMedia.create({
-            data: {
-                userId,
-                mediaId,
-                type,
-                [action]: true,
-                title: mediaData.title,
-                poster: mediaData.poster,
-                rating: mediaData.rating,
-                year: new Date(mediaData.year),
-                description: mediaData.description,
-                ...(action === 'isWatched' && { watchedDate: new Date() })
-            }
-        });
-    } else {
-        const newStatus = !existing[action as keyof typeof existing];
+    const newStatus = existing ? !existing[action as keyof typeof existing] : true;
 
-        // Fetch fresh metadata from TMDB to ensure we have the correct full release date and title
-        let updatedData = { ...mediaData };
-        try {
-            const endpoint = type === 'movie' ? `/movie/${mediaId}` : `/tv/${mediaId}`;
-            const tmdbData = await tmdbFetch(endpoint, {}, CacheConfig.DETAILS);
-            if (tmdbData) {
-                updatedData.year = type === 'movie' ? tmdbData.release_date : tmdbData.first_air_date;
-                updatedData.title = type === 'movie' ? tmdbData.title : tmdbData.name;
-                updatedData.poster = tmdbData.poster_path;
-                updatedData.rating = tmdbData.vote_average;
-            }
-        } catch (error) {
-            console.error("Failed to sync metadata from TMDB:", error);
+    // Fetch TMDB data for ALL supported languages concurrently to populate translations
+    const tmdbLocales = Object.values(TMDB_LANGUAGES); // ['en-US', 'ru-RU', 'uk-UA']
+    const endpoint = type === 'movie' ? `/movie/${mediaId}` : `/tv/${mediaId}`;
+
+    const tmdbResponses = await Promise.allSettled(
+        tmdbLocales.map((lang) => tmdbFetch(endpoint, { language: lang }, CacheConfig.DETAILS))
+    );
+
+    // Grab the English (or first successful) result for base numeric data
+    const baseDataQuery = tmdbResponses.find(r => r.status === 'fulfilled' && r.value) as PromiseFulfilledResult<any> | undefined;
+    const baseTmdbData = baseDataQuery?.value;
+
+    let finalYear = mediaData.year ? new Date(mediaData.year) : null;
+    let finalReleaseYear = finalYear ? finalYear.getFullYear() : null;
+    let finalRating = mediaData.rating || 0;
+    let finalDescription = mediaData.description || null;
+
+    if (baseTmdbData) {
+        const rawDate = type === 'movie' ? baseTmdbData.release_date : baseTmdbData.first_air_date;
+        if (rawDate) {
+            finalYear = new Date(rawDate);
+            finalReleaseYear = finalYear.getFullYear();
         }
-
-        await prisma.userMedia.update({
-            where: { id: existing.id },
-            data: {
-                [action]: newStatus,
-                description: updatedData.description,
-                poster: updatedData.poster,
-                year: updatedData.year ? new Date(updatedData.year) : null,
-                rating: updatedData.rating,
-                title: updatedData.title,
-                ...(action === 'isWatched' && { watchedDate: newStatus ? new Date() : null })
-            }
-        });
+        finalRating = baseTmdbData.vote_average || finalRating;
+        finalDescription = baseTmdbData.overview || finalDescription;
     }
 
-    revalidatePath("/");
+    // Upsert the main UserMedia document
+    const userMedia = await prisma.userMedia.upsert({
+        where: {
+            userId_mediaId_type: { userId, mediaId, type }
+        },
+        create: {
+            userId,
+            mediaId,
+            type,
+            [action]: newStatus,
+            tmdbRating: finalRating,
+            year: finalYear,
+            releaseYear: finalReleaseYear,
+            description: finalDescription,
+            ...(action === 'isWatched' && { watchedDate: new Date() })
+        },
+        update: {
+            [action]: newStatus,
+            tmdbRating: finalRating,
+            year: finalYear,
+            releaseYear: finalReleaseYear,
+            description: finalDescription,
+            ...(action === 'isWatched' && { watchedDate: newStatus ? new Date() : null })
+        }
+    });
+
+    // Populate translations
+    const translationPromises = tmdbLocales.map((lang, idx) => {
+        const res = tmdbResponses[idx];
+        if (res.status === 'fulfilled' && res.value) {
+            const data = res.value;
+            const localizedTitle = type === 'movie' ? data.title : data.name;
+            const localizedPoster = data.poster_path;
+
+            return prisma.mediaTranslation.upsert({
+                where: {
+                    userMediaId_language: {
+                        userMediaId: userMedia.id,
+                        language: lang
+                    }
+                },
+                create: {
+                    userMediaId: userMedia.id,
+                    language: lang,
+                    title: localizedTitle || mediaData.title || '',
+                    posterPath: localizedPoster
+                },
+                update: {
+                    title: localizedTitle || mediaData.title || '',
+                    posterPath: localizedPoster
+                }
+            });
+        }
+        return Promise.resolve();
+    });
+
+    await Promise.all(translationPromises);
     revalidatePath("/library");
 }

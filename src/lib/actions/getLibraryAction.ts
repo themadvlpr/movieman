@@ -12,7 +12,8 @@ export async function getLibraryAction(
     mediaType: 'all' | 'movie' | 'tv',
     sortBy: 'title' | 'watchedDate' | 'year' | 'userRating' | 'rating',
     sortOrder: 'asc' | 'desc',
-    pageParam: string
+    pageParam: string,
+    tmdbLang: string = 'en-US'
 ) {
     if (!userId) return { success: false, error: 'Unauthorized' };
 
@@ -31,10 +32,13 @@ export async function getLibraryAction(
         whereClause.type = mediaType;
     }
 
-    let orderByClause: Prisma.UserMediaOrderByWithRelationInput;
+    let orderByClause: Prisma.UserMediaOrderByWithRelationInput | undefined;
 
     if (sortBy === 'title') {
-        orderByClause = { title: sortOrder };
+        // Sorting by relation field 'title' requires in-memory sort or complex raw query
+        orderByClause = undefined;
+    } else if (sortBy === 'rating') {
+        orderByClause = { tmdbRating: { sort: sortOrder, nulls: 'last' } };
     } else {
         orderByClause = { [sortBy]: { sort: sortOrder, nulls: 'last' } };
     }
@@ -51,18 +55,34 @@ export async function getLibraryAction(
             prisma.userMedia.findMany({
                 where: whereClause,
                 orderBy: orderByClause,
-                skip: (page - 1) * pageSize,
-                take: pageSize,
+                include: {
+                    translations: { where: { language: tmdbLang } }
+                },
+                ...(sortBy !== 'title' && {
+                    skip: (page - 1) * pageSize,
+                    take: pageSize,
+                })
             })
         ]);
 
-        const mappedResults: LibraryResult[] = userMediaList.map(item => ({
+        let finalMediaList = userMediaList;
+
+        if (sortBy === 'title') {
+            finalMediaList.sort((a, b) => {
+                const titleA = a.translations[0]?.title || '';
+                const titleB = b.translations[0]?.title || '';
+                return sortOrder === 'asc' ? titleA.localeCompare(titleB) : titleB.localeCompare(titleA);
+            });
+            finalMediaList = finalMediaList.slice((page - 1) * pageSize, page * pageSize);
+        }
+
+        const mappedResults: LibraryResult[] = finalMediaList.map(item => ({
             id: item.mediaId,
             media_type: item.type as 'movie' | 'tv',
-            title: item.title,
-            poster_path: item.poster,
-            vote_average: Number(item.rating) || 0,
-            release_date: item.year ? item.year.toISOString().split('T')[0] : '',
+            title: item.translations[0]?.title || '',
+            poster_path: item.translations[0]?.posterPath || null,
+            vote_average: Number(item.tmdbRating) || 0,
+            release_date: item.year ? item.year.toISOString().split('T')[0] : (item.releaseYear ? `${item.releaseYear}-01-01` : ''),
             overview: item.description,
             user_rating: item.userRating ? Number(item.userRating) : null,
             watched_date: item.watchedDate ? item.watchedDate.toISOString() : null,

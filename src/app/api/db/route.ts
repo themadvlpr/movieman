@@ -18,6 +18,8 @@ export async function GET(req: Request) {
 }
 
 
+import { toggleMediaStatusAction } from "@/lib/actions/toggleMediaStatus";
+
 export async function PATCH(req: Request) {
     try {
         const session = await getAuthSession();
@@ -25,51 +27,10 @@ export async function PATCH(req: Request) {
 
         const body = await req.json();
         const { mediaId, type, action, mediaData } = body;
-        const userId = session.user.id;
+        
+        await toggleMediaStatusAction(Number(mediaId), action, type, mediaData);
 
-        const record = await prisma.userMedia.findUnique({
-            where: {
-                userId_mediaId_type: {
-                    userId,
-                    mediaId: Number(mediaId),
-                    type
-                }
-            }
-        });
-
-
-        const movieYear = mediaData?.year ? new Date(mediaData.year) : null;
-        const currentStatus = record ? (record[action as keyof typeof record] as boolean) : false;
-        const newStatus = !currentStatus;
-
-        const updated = await prisma.userMedia.upsert({
-            where: {
-                userId_mediaId_type: {
-                    userId,
-                    mediaId: Number(mediaId),
-                    type
-                }
-            },
-            update: {
-                [action]: newStatus,
-                ...(action === 'isWatched' && {
-                    watchedDate: newStatus ? new Date() : null
-                })
-            },
-            create: {
-                userId,
-                mediaId: Number(mediaId),
-                type,
-                title: mediaData?.title || "Unknown",
-                poster: mediaData?.poster,
-                rating: mediaData?.rating ? Number(mediaData?.rating) : null,
-                year: movieYear,
-                [action]: true,
-                ...(action === 'isWatched' && { watchedDate: new Date() })
-            }
-        });
-
-        return NextResponse.json(updated);
+        return NextResponse.json({ success: true });
     } catch (error) {
         console.error("API_DB_PATCH_ERROR:", error);
         return NextResponse.json({ error: "Server Error" }, { status: 500 });

@@ -12,6 +12,7 @@ import * as XLSX from "xlsx"
 import { toast } from "sonner"
 import { useTranslation } from "@/providers/LocaleProvider"
 import LibraryMediaCard from "@/components/library/LibraryMediaCard"
+import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 
 const libraries = [
     { key: 'watched' },
@@ -44,7 +45,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
-    const { t } = useTranslation()
+    const { t, locale } = useTranslation()
 
     const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
     const [isExporting, setIsExporting] = useState(false);
@@ -99,7 +100,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
             setIsExporting(true);
             toast.loading("Gathering all your media...");
 
-            const result = await exportAllUserMediaAction(userId);
+            const result = await exportAllUserMediaAction(userId, TMDB_LANGUAGES[locale as Locale]);
 
             toast.dismiss();
 
@@ -139,7 +140,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
         isFetchingNextPage,
         status,
     } = useInfiniteQuery({
-        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder],
+        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder, t('common', 'explore')], // Just to trigger refetch on locale change
         queryFn: async ({ pageParam = 1 }) => {
             const result = await getLibraryAction(
                 userId,
@@ -147,7 +148,8 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                 mediaType,
                 sortBy as any,
                 sortOrder as any,
-                pageParam.toString()
+                pageParam.toString(),
+                TMDB_LANGUAGES[locale as Locale]
             );
 
             if (!result || !result.success) throw new Error(result?.error || "Error fetching library");
