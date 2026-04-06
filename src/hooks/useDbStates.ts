@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toggleMediaStatusAction } from "@/lib/actions/toggleMediaStatus";
 import { dbMediaStatus, dbState } from "@/lib/tmdb/types/db-types";
-import { toast } from "sonner"; // Импортируем toast
+import { toast } from "sonner";
 
 export function useMediaActions(
     mediaId: number,
@@ -46,7 +46,7 @@ export function useMediaActions(
         },
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['library-list'] });
-            
+
             const { action, mediaData } = variables;
             const isNowActive = queryClient.getQueryData<dbMediaStatus>(queryKey)?.[action as keyof dbMediaStatus];
 
