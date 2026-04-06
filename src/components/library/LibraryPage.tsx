@@ -1,18 +1,17 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { Play, Grid, List, Filter, Star, Calendar, ArrowUp, ArrowDown, Download, Loader2 } from "lucide-react"
-import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
+import { Grid, List, Filter, ArrowUp, ArrowDown, Download, Loader2 } from "lucide-react"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getLibraryAction } from "@/lib/actions/getLibraryAction"
 import { exportAllUserMediaAction } from "@/lib/actions/exportAllUserMediaAction"
 import Link from "next/link"
-import LibraryMediaCard from "./LibraryMediaCard"
 import * as XLSX from "xlsx"
 import { toast } from "sonner"
 import { useTranslation } from "@/providers/LocaleProvider"
+import LibraryMediaCard from "@/components/library/LibraryMediaCard"
 
 const libraries = [
     { key: 'watched' },
