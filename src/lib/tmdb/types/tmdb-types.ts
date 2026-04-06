@@ -96,6 +96,7 @@ export interface TvSeries {
         name: string;
         profile_path: string | null;
     }[];
+    genre_ids: number[];
     genres: { id: number; name: string }[];
     name: string;
     overview: string;
