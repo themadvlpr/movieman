@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { Grid, List, Filter, ArrowUp, ArrowDown, Download, Loader2, ChevronDown } from "lucide-react"
+import { Grid, List, Filter, ArrowUp, ArrowDown, Download, Loader2, X } from "lucide-react"
 import { useInfiniteQuery } from "@tanstack/react-query"
+import { motion, AnimatePresence } from "framer-motion"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getLibraryAction } from "@/lib/actions/getLibraryAction"
@@ -56,6 +57,8 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
     const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
     const [isExporting, setIsExporting] = useState(false);
+
+    const [showFilters, setShowFilters] = useState(false);
 
     const [activeCategory, setActiveCategory] = useState<CategoryType>(() => {
         const urlCategory = searchParams.get('category') as CategoryType;
@@ -317,110 +320,190 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                 ))}
                             </div>
 
-                            {/* Sort Options */}
-                            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
-                                <select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value as SortField)}
-                                    className="bg-transparent text-white text-xs font-semibold py-2 px-3 outline-none cursor-pointer appearance-none"
-                                >
-                                    {sortOptions.map((opt) => (
-                                        <option key={opt.key} value={opt.key} className="bg-zinc-900 text-white">
-                                            {t('common', opt.label)}
-                                        </option>
-                                    ))}
-                                </select>
 
-                                <button
-                                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                                    className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
-                                    aria-label="Toggle Sort Order"
-                                >
-                                    {sortOrder === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
-                                </button>
-                            </div>
                         </div>
 
-                        <div className="flex w-full sm:w-fit justify-between gap-2">
-
-                            {/* Export All Data Button */}
-                            <button
-                                onClick={handleExport}
-                                disabled={isExporting}
-                                className="flex items-center justify-center gap-2 px-3 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                aria-label="Export all to Excel"
-                                title="Export all to Excel"
-                            >
-                                {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                                <span className="text-xs font-semibold">{t('common', 'exportAll')}</span>
-                            </button>
+                        <div className="flex  sm:w-fit justify-between items-center gap-2">
                             {/* View Toggles */}
-                            <div className="flex w-fit items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
+                            <div className="flex w-fit items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg p-1">
                                 <button
                                     onClick={() => toggleView('grid')}
-                                    className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
+                                    className={`p-2 rounded-md transition-all duration-300 cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
                                 >
                                     <Grid className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={() => toggleView('list')}
-                                    className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
+                                    className={`p-2 rounded-md transition-all duration-300 cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
                                 >
                                     <List className="w-4 h-4" />
                                 </button>
                             </div>
-
-
-
                         </div>
 
                     </div>
 
                 </div>
 
-                <div className="flex items-center gap-3 mb-6">
-                    {/* Genre Filter */}
-                    <Select value={selectedGenre} onValueChange={setSelectedGenre}>
-                        <SelectTrigger className="w-fit min-w-[130px] bg-white/5 backdrop-blur-md border-white/10 rounded-xl text-xs font-semibold text-white hover:bg-white/10 transition-all focus:ring-0 focus:ring-offset-0">
-                            <SelectValue placeholder={t('common', 'genre')} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-zinc-900/95 backdrop-blur-xl border-white/10 text-white rounded-xl shadow-2xl">
-                            <SelectItem value="all" className="text-xs focus:bg-white/10 focus:text-white cursor-pointer">
-                                {t('common', 'allGenres')}
-                            </SelectItem>
-                            {genres.map((g) => (
-                                <SelectItem
-                                    key={g.id}
-                                    value={g.id.toString()}
-                                    className="text-xs focus:bg-white/10 focus:text-white cursor-pointer"
-                                >
-                                    {g.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                <div className="flex gap-2">
+                    <div className={`group flex items-center border transition-all duration-300 rounded-md overflow-hidden ${showFilters
+                        ? 'bg-white border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                        : 'bg-white/5 backdrop-blur-md border-white/10'
+                        }`}>
+                        {/* Основная часть кнопки */}
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className={`flex items-center gap-2 px-3 py-2 transition-colors cursor-pointer ${showFilters ? 'text-black' : 'text-white hover:bg-white/10'
+                                }`}
+                        >
+                            <Filter
+                                className={`w-4 h-4 transition-colors ${showFilters
+                                    ? 'text-black animate-pulse'
+                                    : (selectedGenre !== 'all' || selectedYear !== 'all')
+                                        ? 'fill-white'
+                                        : 'text-white'
+                                    }`}
+                            />
+                            <span className="text-xs font-semibold">
+                                {showFilters ? t('common', 'hideFilters') : t('common', 'showFilters')}
+                            </span>
+                        </button>
 
-                    {/* Year Filter */}
-                    <Select value={selectedYear} onValueChange={setSelectedYear}>
-                        <SelectTrigger className="w-fit min-w-[100px] bg-white/5 backdrop-blur-md border-white/10 rounded-xl text-xs font-semibold text-white hover:bg-white/10 transition-all focus:ring-0 focus:ring-offset-0">
-                            <SelectValue placeholder={t('common', 'year')} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-zinc-900/95 backdrop-blur-xl border-white/10 text-white rounded-xl shadow-2xl">
-                            <SelectItem value="all" className="text-xs focus:bg-white/10 focus:text-white cursor-pointer">
-                                {t('common', 'allYears')}
-                            </SelectItem>
-                            {years.map((y) => (
-                                <SelectItem
-                                    key={y}
-                                    value={y.toString()}
-                                    className="text-xs focus:bg-white/10 focus:text-white cursor-pointer"
-                                >
-                                    {y}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                        {/* Кнопка сброса (появляется только если фильтры применены) */}
+                        {(selectedGenre !== 'all' || selectedYear !== 'all') && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Чтобы не сработало открытие фильтров
+                                    setSelectedGenre('all');
+                                    setSelectedYear('all');
+                                }}
+                                className={`flex items-center justify-center px-2 self-stretch border-l transition-colors cursor-pointer ${showFilters
+                                    ? 'border-black/10 text-black hover:bg-black/5'
+                                    : 'border-white/10 text-white hover:bg-white/10'
+                                    }`}
+                                title={t('common', 'resetFilters')}
+                            >
+                                <X className="w-3.5 h-3.5 stroke-[3px]" />
+                            </button>
+                        )}
+                    </div>
                 </div>
+                <AnimatePresence>
+                    {showFilters && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0, scale: 0.98 }}
+                            animate={{ height: "auto", opacity: 1, scale: 1 }}
+                            exit={{ height: 0, opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                            className="overflow-hidden"
+                        >
+                            <div className="flex flex-col mt-5 md:flex-row flex-wrap items-stretch md:items-center gap-3 p-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-md">
+                                {/* Genre Filter */}
+                                <div className="flex flex-col gap-1.5 w-fit">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 ml-1">{t('common', 'genre')}</span>
+                                    <Select value={selectedGenre} onValueChange={setSelectedGenre}>
+                                        <SelectTrigger className="w-full md:w-fit cursor-pointer min-w-[130px] bg-white/5 border-white/10 rounded-md text-xs font-semibold text-white hover:bg-white/10 transition-all focus:ring-0 focus:ring-offset-0">
+                                            <SelectValue placeholder={t('common', 'genre')} />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-900/95 backdrop-blur-xl border-white/10 text-white rounded-md shadow-2xl p-1">
+                                            <SelectItem value="all" className="text-xs focus:bg-white/10 focus:text-white cursor-pointer">
+                                                {t('common', 'genre')}
+                                            </SelectItem>
+                                            {genres.map((g) => (
+                                                <SelectItem
+                                                    key={g.id}
+                                                    value={g.id.toString()}
+                                                    className="text-xs focus:bg-white/10 focus:text-white cursor-pointer"
+                                                >
+                                                    {g.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {/* Year Filter */}
+                                <div className="flex flex-col gap-1.5 w-fit">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 ml-1">{t('common', 'year')}</span>
+                                    <Select value={selectedYear} onValueChange={setSelectedYear}>
+                                        <SelectTrigger className="w-full md:w-fit cursor-pointer min-w-[100px] bg-white/5 border-white/10 rounded-md text-xs font-semibold text-white hover:bg-white/10 transition-all focus:ring-0 focus:ring-offset-0">
+                                            <SelectValue placeholder={t('common', 'year')} />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-900/95 backdrop-blur-xl border-white/10 text-white rounded-md p-1 shadow-2xl">
+                                            <SelectItem value="all" className="text-xs focus:bg-white/10 focus:text-white cursor-pointer">
+                                                {t('common', 'year')}
+                                            </SelectItem>
+                                            {years.map((y) => (
+                                                <SelectItem
+                                                    key={y}
+                                                    value={y.toString()}
+                                                    className="text-xs focus:bg-white/10 focus:text-white cursor-pointer"
+                                                >
+                                                    {y}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {/* Sort Options */}
+                                <div className="flex flex-col gap-1.5 md:w-fit">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 ml-1">
+                                        {t('common', 'sortBy')}
+                                    </span>
+                                    <div className="flex w-fit items-center gap-1 bg-white/5 border border-white/10 rounded-md">
+                                        <Select
+                                            value={sortBy}
+                                            onValueChange={(value) => setSortBy(value as SortField)}
+                                        >
+                                            <SelectTrigger className="h-9 border-0 bg-transparent text-white text-xs font-semibold focus:ring-0 focus:ring-offset-0 cursor-pointer min-w-[140px]">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-zinc-900/95 border-white/10 text-white rounded-xl shadow-2xl p-1">
+                                                {sortOptions.map((opt) => (
+                                                    <SelectItem
+                                                        key={opt.key}
+                                                        value={opt.key}
+                                                        className="text-xs focus:bg-white/10 focus:text-white cursor-pointer px-2.5"
+                                                    >
+                                                        {t('common', opt.label)}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+
+                                        <div className="w-px h-4 bg-white/10" />
+
+                                        <button
+                                            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                                            className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                                            aria-label="Toggle Sort Order"
+                                        >
+                                            {sortOrder === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="flex-1 hidden md:block" />
+
+                                {/* Export and Other Actions */}
+                                <div className="flex flex-col gap-1.5 md:w-fit md:justify-end">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 ml-1 md:text-right">{t('common', 'actions')}</span>
+                                    <button
+                                        onClick={handleExport}
+                                        disabled={isExporting}
+                                        className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-xs font-bold hover:bg-zinc-200 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-white/5"
+                                        aria-label="Export all to Excel"
+                                        title="Export all to Excel"
+                                    >
+                                        {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                                        <span>{t('common', 'exportAll')}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* ─── LIBRARY CONTENT ─── */}
                 {status === 'pending' ? (
@@ -428,7 +511,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                         <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
                     </div>
                 ) : libraryData.length > 0 ? (
-                    <div className="flex flex-col gap-10">
+                    <div className="flex flex-col gap-10 mt-10">
                         <div
                             key={`${activeCategory}-${mediaType}-${sortBy}-${sortOrder}-${viewMode}`}
                             className={viewMode === 'grid'
@@ -469,21 +552,22 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                         <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
                             <Filter className="w-8 h-8 text-zinc-600" />
                         </div>
-                        <h3 className="text-white text-xl font-bold mb-2">{selectedGenre !== 'all' || selectedYear !== 'all' ? 'Your request has no results.' : t('common', 'your') + t('common', activeCategory) + t('common', 'isEmpty')}</h3>
-                        <p className="text-zinc-500 text-sm max-w-xs mb-3">{selectedGenre !== 'all' || selectedYear !== 'all' ? 'Try to reset filters or ' : ''}{selectedGenre === 'all' && selectedYear === 'all' ? t('common', 'startExploring') : t('common', 'startExploring').toLowerCase()} {t('common', 'movies')} {t('common', 'and')} {t('common', 'series')} {t('common', 'toAdd')}</p>
+                        <h3 className="text-white text-xl font-bold mb-2">{selectedGenre !== 'all' || selectedYear !== 'all' ? t('common', 'yourRequestHasNoResults') : t('common', 'your') + t('common', activeCategory) + t('common', 'isEmpty')}</h3>
+                        <p className="text-zinc-500 text-sm max-w-xs mb-3">{selectedGenre !== 'all' || selectedYear !== 'all' ? t('common', 'tryAdjustingYourFilters') : ''}{selectedGenre === 'all' && selectedYear === 'all' ? t('common', 'startExploring') : t('common', 'startExploring').toLowerCase()} {t('common', 'movies')} {t('common', 'and')} {t('common', 'series')} {t('common', 'toAdd')}</p>
                         <div className="flex gap-2 flex-col items-center">
-                            {selectedGenre !== 'all' || selectedYear !== 'all' &&
-                                <button onClick={() => { setMediaType('all'); setSelectedGenre('all'); setSelectedYear('all'); }} className="cursor-pointer px-2 py-1 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors">
+                            {(selectedGenre !== 'all' || selectedYear !== 'all') &&
+                                <button onClick={() => { setShowFilters(false); setMediaType('all'); setSelectedGenre('all'); setSelectedYear('all'); }}
+                                    className="cursor-pointer px-2 py-1 text-white border border-white/50 rounded-lg hover:bg-white/20 transition-colors">
                                     {t('common', 'resetFilters')}
                                 </button>
                             }
                             <div className="flex gap-2 items-center">
                                 <span>{t('common', 'explore')}</span>
                                 <div className="flex gap-2 ">
-                                    <Link href="/movies" className="px-2 py-1 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors">
+                                    <Link href="/movies" className=" text-white border border-white/50 rounded-sm px-2 hover:bg-white/20 transition-colors">
                                         {t('common', 'movies')}
                                     </Link>
-                                    <Link href="/tvseries" className="px-2 py-1 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors">
+                                    <Link href="/tvseries" className=" text-white border border-white/50 rounded-sm px-2 hover:bg-white/20 transition-colors">
                                         {t('common', 'series')}
                                     </Link>
                                 </div>
