@@ -171,9 +171,12 @@ const MovieCard = ({
 export default memo(MovieCard, (prevProps, nextProps) => {
     return (
         prevProps.movie.id === nextProps.movie.id &&
+        prevProps.movie.title === nextProps.movie.title &&
+        prevProps.movie.poster_path === nextProps.movie.poster_path &&
         prevProps.movie.initialDbState?.isWishlist === nextProps.movie.initialDbState?.isWishlist &&
         prevProps.movie.initialDbState?.isWatched === nextProps.movie.initialDbState?.isWatched &&
         prevProps.movie.initialDbState?.isFavorite === nextProps.movie.initialDbState?.isFavorite &&
+        prevProps.movie.initialDbState?.userRating === nextProps.movie.initialDbState?.userRating &&
         prevProps.viewMode === nextProps.viewMode &&
         prevProps.activeCategory === nextProps.activeCategory &&
         prevProps.idx === nextProps.idx

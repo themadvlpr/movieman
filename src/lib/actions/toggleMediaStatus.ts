@@ -114,4 +114,7 @@ export async function toggleMediaStatusAction(
     });
 
     revalidatePath("/library");
+    revalidatePath("/movies");
+    revalidatePath("/tvseries");
+    revalidatePath(`/${type === 'movie' ? 'movies' : 'tvseries'}/${mediaId}`);
 }

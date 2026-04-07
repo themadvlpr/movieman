@@ -217,9 +217,13 @@ export default memo(LibraryMediaCard, (prevProps, nextProps) => {
     // Only re-render if essential props change
     return (
         prevProps.item.id === nextProps.item.id &&
-        prevProps.item.initialDbState?.watchlist === nextProps.item.initialDbState?.watchlist &&
-        prevProps.item.initialDbState?.watched === nextProps.item.initialDbState?.watched &&
-        prevProps.item.initialDbState?.favorite === nextProps.item.initialDbState?.favorite &&
+        prevProps.item.title === nextProps.item.title &&
+        prevProps.item.poster_path === nextProps.item.poster_path &&
+        prevProps.item.user_rating === nextProps.item.user_rating &&
+        prevProps.item.watched_date === nextProps.item.watched_date &&
+        prevProps.item.initialDbState?.isWatched === nextProps.item.initialDbState?.isWatched &&
+        prevProps.item.initialDbState?.isFavorite === nextProps.item.initialDbState?.isFavorite &&
+        prevProps.item.initialDbState?.isWishlist === nextProps.item.initialDbState?.isWishlist &&
         prevProps.viewMode === nextProps.viewMode &&
         prevProps.activeCategory === nextProps.activeCategory &&
         prevProps.idx === nextProps.idx

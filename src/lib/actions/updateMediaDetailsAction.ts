@@ -34,7 +34,10 @@ export async function updateMediaDetailsAction(
                     ...(data.userComment !== undefined && { userComment: data.userComment }),
                 }
             });
-            revalidatePath("/");
+            revalidatePath("/library");
+            revalidatePath("/movies");
+            revalidatePath("/tvseries");
+            revalidatePath(`/${type === 'movie' ? 'movies' : 'tvseries'}/${mediaId}`);
             return { success: true, message: "Changes saved" };
         }
 

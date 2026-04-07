@@ -165,9 +165,12 @@ const TvSeriesCard = ({
 export default memo(TvSeriesCard, (prevProps, nextProps) => {
     return (
         prevProps.show.id === nextProps.show.id &&
+        prevProps.show.name === nextProps.show.name &&
+        prevProps.show.poster_path === nextProps.show.poster_path &&
         prevProps.show.initialDbState?.isWatched === nextProps.show.initialDbState?.isWatched &&
         prevProps.show.initialDbState?.isFavorite === nextProps.show.initialDbState?.isFavorite &&
         prevProps.show.initialDbState?.isWishlist === nextProps.show.initialDbState?.isWishlist &&
+        prevProps.show.initialDbState?.userRating === nextProps.show.initialDbState?.userRating &&
         prevProps.viewMode === nextProps.viewMode &&
         prevProps.idx === nextProps.idx
     );

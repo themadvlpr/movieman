@@ -140,7 +140,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
         isFetchingNextPage,
         status,
     } = useInfiniteQuery({
-        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder, t('common', 'explore')], // Just to trigger refetch on locale change
+        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder, locale], 
         queryFn: async ({ pageParam = 1 }) => {
             const result = await getLibraryAction(
                 userId,
