@@ -45,6 +45,8 @@ export async function getLibraryAction(
         orderByClause = { [titleKey]: sortOrder };
     } else if (sortBy === 'rating') {
         orderByClause = { tmdbRating: { sort: sortOrder, nulls: 'last' } };
+    } else if (sortBy === 'year') {
+        orderByClause = { releaseDate: { sort: sortOrder, nulls: 'last' } };
     } else {
         orderByClause = { [sortBy]: { sort: sortOrder, nulls: 'last' } };
     }
