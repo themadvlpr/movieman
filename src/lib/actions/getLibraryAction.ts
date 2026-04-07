@@ -66,15 +66,28 @@ export async function getLibraryAction(
         orderByClause = { [sortBy]: { sort: sortOrder, nulls: 'last' } };
     }
 
+    const genreYearFilter: Prisma.UserMediaWhereInput = {};
+    if (genreId) {
+        genreYearFilter.genreIds = { contains: genreId.toString() };
+    }
+    if (year && year !== 'all') {
+        const startDate = new Date(`${year}-01-01`);
+        const endDate = new Date(`${year}-12-31`);
+        genreYearFilter.releaseDate = {
+            gte: startDate,
+            lte: endDate
+        };
+    }
+
     try {
         const [totalCount, wishlListMoviesCount, wishlListTvCount, favoriteMoviesCount, favoriteTvCount, watchedMoviesCount, watchedTvCount, userMediaList] = await Promise.all([
             prisma.userMedia.count({ where: whereClause }),
-            prisma.userMedia.count({ where: { userId, type: 'movie', isWishlist: true } }),
-            prisma.userMedia.count({ where: { userId, type: 'tv', isWishlist: true } }),
-            prisma.userMedia.count({ where: { userId, type: 'movie', isFavorite: true } }),
-            prisma.userMedia.count({ where: { userId, type: 'tv', isFavorite: true } }),
-            prisma.userMedia.count({ where: { userId, type: 'movie', isWatched: true } }),
-            prisma.userMedia.count({ where: { userId, type: 'tv', isWatched: true } }),
+            prisma.userMedia.count({ where: { userId, type: 'movie', isWishlist: true, ...genreYearFilter } }),
+            prisma.userMedia.count({ where: { userId, type: 'tv', isWishlist: true, ...genreYearFilter } }),
+            prisma.userMedia.count({ where: { userId, type: 'movie', isFavorite: true, ...genreYearFilter } }),
+            prisma.userMedia.count({ where: { userId, type: 'tv', isFavorite: true, ...genreYearFilter } }),
+            prisma.userMedia.count({ where: { userId, type: 'movie', isWatched: true, ...genreYearFilter } }),
+            prisma.userMedia.count({ where: { userId, type: 'tv', isWatched: true, ...genreYearFilter } }),
             prisma.userMedia.findMany({
                 where: whereClause,
                 orderBy: orderByClause,
