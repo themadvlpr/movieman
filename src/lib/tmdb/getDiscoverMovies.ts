@@ -55,6 +55,7 @@ export async function getDiscoverMovies(genre: string, userId: string, page = "1
                 logo_path: details?.logo_path || "",
                 origin_country: details?.origin_country || "",
                 initialDbState: {
+                    userRating: status?.userRating || 0,
                     isWatched: !!status?.isWatched,
                     isWishlist: !!status?.isWishlist,
                     isFavorite: !!status?.isFavorite,

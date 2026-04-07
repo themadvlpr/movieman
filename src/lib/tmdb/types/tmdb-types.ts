@@ -1,3 +1,5 @@
+import { dbMediaStatus } from "@/lib/tmdb/types/db-types";
+
 /**
  * --- COMMON & UTILS ---
  */
@@ -176,11 +178,7 @@ export interface LibraryResult {
     // Эти поля приходят из твоей БД (UserMedia)
     user_rating: number | null;
     watched_date: string | null;
-    initialDbState: {
-        isWatched: boolean;
-        isFavorite: boolean;
-        isWishlist: boolean;
-    };
+    initialDbState: dbMediaStatus
 }
 
 // Вспомогательные типы для мерджа

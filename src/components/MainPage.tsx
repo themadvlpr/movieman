@@ -13,6 +13,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import Loader from "@/components/ui/Loader"
 import { Movie } from "@/lib/tmdb/types/tmdb-types"
 import { useTranslation } from "@/providers/LocaleProvider"
+import { dbMediaStatus } from "@/lib/tmdb/types/db-types";
 
 
 
@@ -26,6 +27,8 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
     const urlGenre = searchParams.get('genre');
     const selectedGenreId = urlGenre ? parseInt(urlGenre, 10) : initialGenreId;
 
+
+    console.log(movies)
 
     const [currentPage, setCurrentPage] = useState(0)
     const [imageLoading, setImageLoading] = useState(true);
@@ -42,7 +45,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
         setImageLoading(true);
     }, [currentPage]);
 
-    const moviesWithBackdrops = movies.filter((movie): movie is Movie & { backdrop_path: string, initialDbState: { isWatched: boolean; isWishlist: boolean; isFavorite: boolean; } } =>
+    const moviesWithBackdrops = movies.filter((movie): movie is Movie & { backdrop_path: string, initialDbState: dbMediaStatus } =>
         !!movie.backdrop_path
     );
 
@@ -184,6 +187,11 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                         <span className="text-white/80">
                             {release_date?.slice(0, 4)}
                         </span>
+
+                        {initialDbState.userRating ? initialDbState.userRating > 0 && <><span className="text-white/40">|</span><div className='flex items-center gap-1.5 text-zinc-100'>
+                            <Star className='w-4 h-4 fill-blue-400 text-blue-400' />
+                            <span>{initialDbState.userRating && initialDbState.userRating.toFixed(1)}</span>
+                        </div></> : null}
 
                         {country && <>
                             <span className="text-white/40">|</span>

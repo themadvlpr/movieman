@@ -13,7 +13,9 @@ export async function getLibraryAction(
     sortBy: 'title' | 'watchedDate' | 'year' | 'userRating' | 'rating',
     sortOrder: 'asc' | 'desc',
     pageParam: string,
-    tmdbLang: string = 'en-US'
+    tmdbLang: string = 'en-US',
+    genreId?: number | null,
+    year?: string | null
 ) {
     if (!userId) return { success: false, error: 'Unauthorized' };
 
@@ -30,6 +32,19 @@ export async function getLibraryAction(
 
     if (mediaType !== 'all') {
         whereClause.type = mediaType;
+    }
+
+    if (genreId) {
+        whereClause.genreIds = { contains: genreId.toString() };
+    }
+
+    if (year && year !== 'all') {
+        const startDate = new Date(`${year}-01-01`);
+        const endDate = new Date(`${year}-12-31`);
+        whereClause.releaseDate = {
+            gte: startDate,
+            lte: endDate
+        };
     }
 
     // Map TMDB locale to column names

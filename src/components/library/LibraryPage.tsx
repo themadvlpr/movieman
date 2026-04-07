@@ -13,6 +13,7 @@ import { toast } from "sonner"
 import { useTranslation } from "@/providers/LocaleProvider"
 import LibraryMediaCard from "@/components/library/LibraryMediaCard"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
+import { translations } from "@/lib/i18n/translation"
 
 const libraries = [
     { key: 'watched' },
@@ -74,6 +75,9 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
         return 'desc';
     });
 
+    const [selectedGenre, setSelectedGenre] = useState<string>(() => searchParams.get('genre') || 'all');
+    const [selectedYear, setSelectedYear] = useState<string>(() => searchParams.get('year') || 'all');
+
     const toggleView = async (mode: 'grid' | 'list') => {
         const newMode = mode === 'grid' ? 'grid' : 'list'
         setViewMode(newMode)
@@ -89,11 +93,13 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
         if (params.get('type') !== mediaType) { params.set('type', mediaType); changed = true; }
         if (params.get('sort') !== sortBy) { params.set('sort', sortBy); changed = true; }
         if (params.get('order') !== sortOrder) { params.set('order', sortOrder); changed = true; }
+        if (params.get('genre') !== selectedGenre) { params.set('genre', selectedGenre); changed = true; }
+        if (params.get('year') !== selectedYear) { params.set('year', selectedYear); changed = true; }
 
         if (changed) {
             router.replace(pathname + '?' + params.toString(), { scroll: false });
         }
-    }, [activeCategory, mediaType, sortBy, sortOrder, pathname, router, searchParams]);
+    }, [activeCategory, mediaType, sortBy, sortOrder, selectedGenre, selectedYear, pathname, router, searchParams]);
 
     const handleExport = async () => {
         try {
@@ -140,7 +146,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
         isFetchingNextPage,
         status,
     } = useInfiniteQuery({
-        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder, locale], 
+        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder, locale, selectedGenre, selectedYear],
         queryFn: async ({ pageParam = 1 }) => {
             const result = await getLibraryAction(
                 userId,
@@ -149,7 +155,9 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                 sortBy as any,
                 sortOrder as any,
                 pageParam.toString(),
-                TMDB_LANGUAGES[locale as Locale]
+                TMDB_LANGUAGES[locale as Locale],
+                selectedGenre !== 'all' ? parseInt(selectedGenre) : null,
+                selectedYear !== 'all' ? selectedYear : null
             );
 
             if (!result || !result.success) throw new Error(result?.error || "Error fetching library");
@@ -170,6 +178,28 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
     const libraryData = useMemo(() => {
         return data?.pages.flatMap((page) => page?.results || []) || [];
     }, [data]);
+
+    const genreIds = [
+        28, 12, 16, 35, 80, 99, 18, 10751, 14, 36, 27, 10402,
+        9648, 10749, 878, 10770, 53, 10752, 37, 10759, 10762,
+        10763, 10764, 10765, 10766, 10767, 10768
+    ];
+
+    const genres = useMemo(() => {
+        return genreIds.map((id) => ({
+            id: id.toString(),
+            name: t('genres', `${id}`)
+        }));
+    }, [t]);
+
+    const years = useMemo(() => {
+        const currentYear = new Date().getFullYear();
+        const yearsList = [];
+        for (let y = currentYear; y >= 1900; y--) {
+            yearsList.push(y.toString());
+        }
+        return yearsList;
+    }, []);
 
     const handleItemClick = useCallback(() => {
         _libraryScrollY = window.scrollY;
@@ -340,6 +370,40 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
                     </div>
 
+                </div>
+
+                <div className="flex items-center gap-2">
+                    {/* Genre Filter */}
+                    <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
+                        <select
+                            value={selectedGenre}
+                            onChange={(e) => setSelectedGenre(e.target.value)}
+                            className="bg-transparent text-white text-xs font-semibold py-2 px-3 outline-none cursor-pointer appearance-none max-w-[120px] sm:max-w-none"
+                        >
+                            <option value="all" className="bg-zinc-900 text-white">{t('common', 'genre')}</option>
+                            {genres.map((g) => (
+                                <option key={g.id} value={g.id} className="bg-zinc-900 text-white">
+                                    {g.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Year Filter */}
+                    <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
+                        <select
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(e.target.value)}
+                            className="bg-transparent text-white text-xs font-semibold py-2 px-3 outline-none cursor-pointer appearance-none"
+                        >
+                            <option value="all" className="bg-zinc-900 text-white">{t('common', 'all')}</option>
+                            {years.map((y) => (
+                                <option key={y} value={y} className="bg-zinc-900 text-white">
+                                    {y}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 {/* ─── LIBRARY CONTENT ─── */}
