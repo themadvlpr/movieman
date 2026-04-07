@@ -1,6 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from 'next'
-import { Montserrat } from 'next/font/google'
+import { Montserrat, Geist } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/header/Header'
 import Footer from '@/components/Footer'
@@ -11,6 +11,9 @@ import { Suspense } from 'react'
 import Loader from '@/components/ui/Loader'
 import { getAuthSession } from '@/lib/auth-sessions'
 import { Toaster } from 'sonner';
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const montserrat = Montserrat({
 	variable: '--font-montserrat',
@@ -43,7 +46,7 @@ export default async function RootLayout({
 	const session = await getAuthSession();
 
 	return (
-		<html lang='en'>
+		<html lang='en' className={cn("font-sans", geist.variable)}>
 			<body
 				className={`${montserrat.className} antialiased bg-zinc-950 text-zinc-100 selection:bg-white selection:text-black overflow-x-hidden transition-colors duration-500`}
 				suppressHydrationWarning

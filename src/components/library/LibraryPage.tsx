@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { Grid, List, Filter, ArrowUp, ArrowDown, Download, Loader2 } from "lucide-react"
+import { Grid, List, Filter, ArrowUp, ArrowDown, Download, Loader2, ChevronDown } from "lucide-react"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
@@ -13,7 +13,13 @@ import { toast } from "sonner"
 import { useTranslation } from "@/providers/LocaleProvider"
 import LibraryMediaCard from "@/components/library/LibraryMediaCard"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
-import { translations } from "@/lib/i18n/translation"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 const libraries = [
     { key: 'watched' },
@@ -276,7 +282,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                         </span>
                     </div>
                 </div>
-                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 md:gap-6 mb-8">
+                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 md:gap-6 mb-5">
                     {/* Categories */}
                     <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
                         {libraries.map(({ key }) => (
@@ -372,38 +378,48 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 mb-6">
                     {/* Genre Filter */}
-                    <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
-                        <select
-                            value={selectedGenre}
-                            onChange={(e) => setSelectedGenre(e.target.value)}
-                            className="bg-transparent text-white text-xs font-semibold py-2 px-3 outline-none cursor-pointer appearance-none max-w-[120px] sm:max-w-none"
-                        >
-                            <option value="all" className="bg-zinc-900 text-white">{t('common', 'genre')}</option>
+                    <Select value={selectedGenre} onValueChange={setSelectedGenre}>
+                        <SelectTrigger className="w-fit min-w-[130px] bg-white/5 backdrop-blur-md border-white/10 rounded-xl text-xs font-semibold text-white hover:bg-white/10 transition-all focus:ring-0 focus:ring-offset-0">
+                            <SelectValue placeholder={t('common', 'genre')} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-900/95 backdrop-blur-xl border-white/10 text-white rounded-xl shadow-2xl">
+                            <SelectItem value="all" className="text-xs focus:bg-white/10 focus:text-white cursor-pointer">
+                                {t('common', 'allGenres')}
+                            </SelectItem>
                             {genres.map((g) => (
-                                <option key={g.id} value={g.id} className="bg-zinc-900 text-white">
+                                <SelectItem
+                                    key={g.id}
+                                    value={g.id.toString()}
+                                    className="text-xs focus:bg-white/10 focus:text-white cursor-pointer"
+                                >
                                     {g.name}
-                                </option>
+                                </SelectItem>
                             ))}
-                        </select>
-                    </div>
+                        </SelectContent>
+                    </Select>
 
                     {/* Year Filter */}
-                    <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
-                        <select
-                            value={selectedYear}
-                            onChange={(e) => setSelectedYear(e.target.value)}
-                            className="bg-transparent text-white text-xs font-semibold py-2 px-3 outline-none cursor-pointer appearance-none"
-                        >
-                            <option value="all" className="bg-zinc-900 text-white">{t('common', 'all')}</option>
+                    <Select value={selectedYear} onValueChange={setSelectedYear}>
+                        <SelectTrigger className="w-fit min-w-[100px] bg-white/5 backdrop-blur-md border-white/10 rounded-xl text-xs font-semibold text-white hover:bg-white/10 transition-all focus:ring-0 focus:ring-offset-0">
+                            <SelectValue placeholder={t('common', 'year')} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-900/95 backdrop-blur-xl border-white/10 text-white rounded-xl shadow-2xl">
+                            <SelectItem value="all" className="text-xs focus:bg-white/10 focus:text-white cursor-pointer">
+                                {t('common', 'allYears')}
+                            </SelectItem>
                             {years.map((y) => (
-                                <option key={y} value={y} className="bg-zinc-900 text-white">
+                                <SelectItem
+                                    key={y}
+                                    value={y.toString()}
+                                    className="text-xs focus:bg-white/10 focus:text-white cursor-pointer"
+                                >
                                     {y}
-                                </option>
+                                </SelectItem>
                             ))}
-                        </select>
-                    </div>
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 {/* ─── LIBRARY CONTENT ─── */}
@@ -438,7 +454,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                             {hasNextPage ? (
                                 <div className="flex flex-col items-center gap-3">
                                     <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
-                                    <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">Loading...</span>
+                                    <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
                                 </div>
                             ) : libraryData.length > 0 ? (
                                 <div className="flex flex-col items-center gap-2">
@@ -453,11 +469,26 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                         <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
                             <Filter className="w-8 h-8 text-zinc-600" />
                         </div>
-                        <h3 className="text-white text-xl font-bold mb-2">Your {activeCategory} list is empty</h3>
-                        <p className="text-zinc-500 text-sm max-w-xs mb-6">Start exploring movies and TV series to add them to your library.</p>
-                        <Link href="/movies" className="px-6 py-2.5 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors">
-                            Explore Movies
-                        </Link>
+                        <h3 className="text-white text-xl font-bold mb-2">{selectedGenre !== 'all' || selectedYear !== 'all' ? 'Your request has no results.' : t('common', 'your') + t('common', activeCategory) + t('common', 'isEmpty')}</h3>
+                        <p className="text-zinc-500 text-sm max-w-xs mb-3">{selectedGenre !== 'all' || selectedYear !== 'all' ? 'Try to reset filters or ' : ''}{selectedGenre === 'all' && selectedYear === 'all' ? t('common', 'startExploring') : t('common', 'startExploring').toLowerCase()} {t('common', 'movies')} {t('common', 'and')} {t('common', 'series')} {t('common', 'toAdd')}</p>
+                        <div className="flex gap-2 flex-col items-center">
+                            {selectedGenre !== 'all' || selectedYear !== 'all' &&
+                                <button onClick={() => { setMediaType('all'); setSelectedGenre('all'); setSelectedYear('all'); }} className="cursor-pointer px-2 py-1 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors">
+                                    {t('common', 'resetFilters')}
+                                </button>
+                            }
+                            <div className="flex gap-2 items-center">
+                                <span>{t('common', 'explore')}</span>
+                                <div className="flex gap-2 ">
+                                    <Link href="/movies" className="px-2 py-1 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors">
+                                        {t('common', 'movies')}
+                                    </Link>
+                                    <Link href="/tvseries" className="px-2 py-1 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors">
+                                        {t('common', 'series')}
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
