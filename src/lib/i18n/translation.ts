@@ -130,6 +130,7 @@ export const translations = {
             tryAdjustingYourFilters: 'Try adjusting your filters or ',
             sortBy: 'Sort by',
             actions: 'Actions',
+            filter: 'Filter',
         },
         genres: {
             28: "Action",
@@ -300,6 +301,7 @@ export const translations = {
             tryAdjustingYourFilters: 'Попробуйте настроить фильтры или ',
             sortBy: 'Сортировать по',
             actions: 'Действия',
+            filter: 'Фильтр',
         },
         genres: {
             28: "Экшен",
@@ -470,6 +472,7 @@ export const translations = {
             tryAdjustingYourFilters: 'Спробуйте налаштувати фільтри або ',
             sortBy: 'Сортувати за',
             actions: 'Дії',
+            filter: 'Фільтр',
         },
         genres: {
             28: "Екшн",
