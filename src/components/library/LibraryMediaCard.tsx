@@ -60,9 +60,14 @@ const LibraryMediaCard = ({
 
     return (
         <div className="relative group">
-            <Link href={href}
+            <Link
+                href={href}
                 prefetch={false}
+                className="absolute inset-0 z-0"
                 onClick={onItemClick}
+            >
+            </Link>
+            <div
                 className={isGrid
                     ? "flex flex-col gap-2 sm:gap-3 cursor-pointer"
                     : "flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
@@ -160,9 +165,10 @@ const LibraryMediaCard = ({
                                                 {item.genre_ids.slice(0, 3).map((genreId: number) => (
                                                     <span
                                                         key={genreId}
-                                                        className="px-1.5 sm:px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-xs sm:text-sm text-zinc-400 font-medium whitespace-nowrap"
-                                                    >
-                                                        {t('genres', genreId.toString())}
+                                                        className='hover:text-white hover:bg-white/10 px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm  backdrop-blur-md text-zinc-400'>
+                                                        <Link href={`/${item.media_type === 'tv' ? 'tvseries' : 'movies'}?category=genres&genreId=${genreId}`}>
+                                                            {t('genres', genreId.toString())}
+                                                        </Link>
                                                     </span>
                                                 ))}
                                             </div>
@@ -205,7 +211,7 @@ const LibraryMediaCard = ({
                         </>
                     )}
                 </div>
-            </Link>
+            </div>
 
             {controls}
             {isGrid && rankingBadge}

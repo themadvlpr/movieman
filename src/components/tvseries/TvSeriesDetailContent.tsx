@@ -265,8 +265,10 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                             {/* Genres */}
                             <div className='flex flex-wrap gap-2'>
                                 {series.genres?.map((g) => (
-                                    <span key={g.id} className='px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md text-zinc-400'>
-                                        {g.name}
+                                    <span key={g.id} className='px-3 py-1 hover:text-white hover:bg-white/10 cursor-pointer bg-white/5 border border-white/10 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] backdrop-blur-md text-zinc-400'>
+                                        <Link href={`/tvseries?category=genres&genreId=${g.id}`}>
+                                            {g.name}
+                                        </Link>
                                     </span>
                                 ))}
                             </div>

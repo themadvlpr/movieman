@@ -13,7 +13,13 @@ interface TMDBParams {
     [key: string]: string | number | undefined;
 }
 
-export async function getMoviesAction(category: string = "popular", userId: string | null, page: string = "1", language = "en-US") {
+export async function getMoviesAction(
+    category: string = "popular",
+    userId: string | null,
+    page: string = "1",
+    language = "en-US",
+    genreId?: string
+) {
     try {
         let endpoint = '/movie/popular';
         let params: TMDBParams = { page, language };
@@ -29,6 +35,15 @@ export async function getMoviesAction(category: string = "popular", userId: stri
                 'primary_release_date.gte': today,
                 'sort_by': 'popularity.desc',
                 'with_release_type': '2|3'
+            };
+        } else if (category === 'genres') {
+            endpoint = '/discover/movie';
+
+            params = {
+                page,
+                language,
+                with_genres: genreId || 28,
+                sort_by: 'popularity.desc'
             };
         }
 

@@ -6,17 +6,36 @@ import { TvSeries } from "./types/tmdb-types";
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
-export async function getTVSeriesAction(category: string = "popular", page: string = "1", userId?: string, language = "en-US") {
+export async function getTVSeriesAction(
+    category: string = "popular",
+    page: string = "1",
+    userId?: string,
+    language = "en-US",
+    genreId?: string, // Добавили в конец
+    year?: string     // Добавили в конец
+) {
     try {
-        const endpointMap: Record<string, string> = {
-            popular: "/tv/popular",
-            topRated: "/tv/top_rated"
-        };
-        const endpoint = endpointMap[category] || "/tv/popular";
+        // 1. Определяем эндпоинт и базовые параметры
+        let endpoint = "/tv/popular";
+        let params: any = { page, language };
+
+        if (category === "topRated") {
+            endpoint = "/tv/top_rated";
+        }
+        else if (category === "genres") {
+            endpoint = "/discover/tv";
+            params = {
+                ...params,
+                with_genres: genreId || "",
+                sort_by: "popularity.desc",
+                // Для сериалов в discover используется first_air_date_year
+                ...(year && year !== "all" && { first_air_date_year: year }),
+            };
+        }
 
         const data = await tmdbFetch(
             endpoint,
-            { page, language },
+            params,
             CacheConfig.LISTS
         );
 
@@ -39,6 +58,7 @@ export async function getTVSeriesAction(category: string = "popular", page: stri
 
             return {
                 ...tv,
+                // Важно: TMDB возвращает 'name', но мы даем 'title' для унификации с фильмами в UI
                 title: tv.name,
                 poster: tv.poster_path ? `${TMDB_IMAGE_BASE}${tv.poster_path}` : null,
                 initialDbState: {

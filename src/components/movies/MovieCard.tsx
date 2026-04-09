@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import Link from 'next/link';
 import { Play, Star } from 'lucide-react';
 import MoviePoster from '@/components/ui/MoviePoster';
@@ -11,7 +11,7 @@ interface MovieCardProps {
     movie: Movie & { initialDbState?: dbState };
     idx: number;
     viewMode: 'grid' | 'list';
-    activeCategory: 'popular' | 'topRated' | 'upcoming';
+    activeCategory: 'popular' | 'topRated' | 'upcoming' | 'genres';
     userId: string;
     onItemClick: () => void;
 }
@@ -60,9 +60,14 @@ const MovieCard = ({
 
     return (
         <div className="relative group">
-            <Link href={`/movies/${movie.id}`}
+            <Link
+                href={`/movies/${movie.id}`}
                 prefetch={false}
+                className="absolute inset-0 z-0"
                 onClick={onItemClick}
+            >
+            </Link>
+            <div
                 className={isGrid
                     ? "flex flex-col gap-2 sm:gap-3 cursor-pointer"
                     : "flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
@@ -123,8 +128,10 @@ const MovieCard = ({
                             <span className="text-zinc-400 text-[10px] sm:text-sm">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}</span>
                             <div className="flex flex-wrap gap-1">
                                 {movie.genre_ids?.slice(0, 3).map((genreId: number) => (
-                                    <span key={genreId} className='px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm  backdrop-blur-md text-zinc-400'>
-                                        {t('genres', genreId.toString())}
+                                    <span key={genreId} className='hover:text-white hover:bg-white/10 px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm  backdrop-blur-md text-zinc-400'>
+                                        <Link href={`/movies?category=genres&genreId=${genreId}`}>
+                                            {t('genres', genreId.toString())}
+                                        </Link>
                                     </span>
                                 ))}
                             </div>
@@ -160,7 +167,7 @@ const MovieCard = ({
                         </>
                     )}
                 </div>
-            </Link>
+            </div>
 
             {controls}
             {isGrid && rankingBadge}

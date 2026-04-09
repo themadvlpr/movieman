@@ -1,5 +1,3 @@
-import { features } from "process";
-
 export const translations = {
     en: {
         nav: {
@@ -13,6 +11,7 @@ export const translations = {
             popular: 'Popular',
             topRated: 'Top Rated',
             upcoming: 'Upcoming',
+            genres: 'Genres',
         },
         about: {
             title: 'About',
@@ -32,6 +31,8 @@ export const translations = {
             sleekExperienceDescription: "Built with Next.js and Prisma for a fast, responsive, and secure experience across all your devices.",
             theMovieManPhilosophy: "The MovieMan Philosophy",
             theMovieManPhilosophyDescription: "We believe that a movie collection is more than just data. It's a journey through stories that shape us. MovieMan was built to make that journey more organized, beautiful, and accessible.",
+            metaMoviesDestiption: "Discover the most popular movies trending right now. Watch trailers and explore cast information on MovieMan.",
+            metaTvSeriesDestiption: "Discover the most popular TV series trending right now. Watch trailers and explore cast information on MovieMan.",
         },
         common: {
             tv: 'TV',
@@ -131,6 +132,7 @@ export const translations = {
             sortBy: 'Sort by',
             actions: 'Actions',
             filter: 'Filter',
+            backToGenres: 'Back to Genres',
         },
         genres: {
             28: "Action",
@@ -198,11 +200,14 @@ export const translations = {
             sleekExperienceDescription: "Создано с использованием Next.js и Prisma для быстрого, отзывчивого и безопасного опыта на всех ваших устройствах.",
             theMovieManPhilosophy: "Философия MovieMan",
             theMovieManPhilosophyDescription: "Мы верим, что коллекция фильмов - это больше, чем просто данные. Это путешествие сквозь истории, которые нас формируют. MovieMan был создан, чтобы сделать это путешествие более организованным, красивым и доступным.",
+            metaMoviesDestiption: "Откройте для себя самые популярные фильмы прямо сейчас. Смотрите трейлеры и изучайте информацию об актерах на MovieMan.",
+            metaTvSeriesDestiption: "Откройте для себя самые популярные сериалы прямо сейчас. Смотрите трейлеры и изучайте информацию об актерах на MovieMan.",
         },
         categories: {
             popular: 'Популярные',
             topRated: 'Топ Рейтинг',
             upcoming: 'Ожидаемые',
+            genres: 'Жанры',
         },
         common: {
             tv: 'Сериал',
@@ -302,6 +307,7 @@ export const translations = {
             sortBy: 'Сортировать по',
             actions: 'Действия',
             filter: 'Фильтр',
+            backToGenres: 'Назад к жанрам',
         },
         genres: {
             28: "Экшен",
@@ -311,7 +317,7 @@ export const translations = {
             80: "Криминал",
             99: "Документальный",
             18: "Драма",
-            10751: "Семейый",
+            10751: "Семейный",
             14: "Фэнтези",
             36: "История",
             27: "Ужасы",
@@ -369,11 +375,14 @@ export const translations = {
             sleekExperienceDescription: "Створено з використанням Next.js та Prisma для швидкого, чуйного та безпечного досвіду на всіх ваших пристроях.",
             theMovieManPhilosophy: "Філософія MovieMan",
             theMovieManPhilosophyDescription: "Ми віримо, що колекція фільмів - це більше, ніж просто дані. Це подорож крізь історії, які нас формують. MovieMan був створений, щоб зробити цю подорож більш організованою, красивою та доступною.",
+            metaMoviesDestiption: "Відкрийте для себе найпопулярніші фільми прямо зараз. Дивіться трейлери та вивчайте інформацію про акторів на MovieMan.",
+            metaTvSeriesDestiption: "Відкрийте для себе найпопулярніші серіали прямо зараз. Дивіться трейлери та вивчайте інформацію про акторів на MovieMan.",
         },
         categories: {
             popular: 'Популярні',
             topRated: 'Топ Рейтинг',
             upcoming: 'Очікувані',
+            genres: 'Жанри',
         },
         common: {
             tv: 'Серіал',
@@ -473,6 +482,7 @@ export const translations = {
             sortBy: 'Сортувати за',
             actions: 'Дії',
             filter: 'Фільтр',
+            backToGenres: 'Назад до жанрів',
         },
         genres: {
             28: "Екшн",
