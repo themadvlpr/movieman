@@ -11,11 +11,10 @@ export async function getTVSeriesAction(
     page: string = "1",
     userId?: string,
     language = "en-US",
-    genreId?: string, // Добавили в конец
-    year?: string     // Добавили в конец
+    genreId?: string,
+    year?: string
 ) {
     try {
-        // 1. Определяем эндпоинт и базовые параметры
         let endpoint = "/tv/popular";
         let params: any = { page, language };
 
@@ -28,7 +27,6 @@ export async function getTVSeriesAction(
                 ...params,
                 with_genres: genreId || "",
                 sort_by: "popularity.desc",
-                // Для сериалов в discover используется first_air_date_year
                 ...(year && year !== "all" && { first_air_date_year: year }),
             };
         }
@@ -58,7 +56,6 @@ export async function getTVSeriesAction(
 
             return {
                 ...tv,
-                // Важно: TMDB возвращает 'name', но мы даем 'title' для унификации с фильмами в UI
                 title: tv.name,
                 poster: tv.poster_path ? `${TMDB_IMAGE_BASE}${tv.poster_path}` : null,
                 initialDbState: {

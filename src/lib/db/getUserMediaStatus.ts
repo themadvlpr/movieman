@@ -7,11 +7,15 @@ export async function getUserMediaStatus(userId: string | undefined, movieIds: n
         const dbEntries = await prisma.userMedia.findMany({
             where: {
                 userId,
-                mediaId: { in: movieIds },
-                type
+                media: {
+                    tmdbId: { in: movieIds },
+                    type
+                }
             },
             select: {
-                mediaId: true,
+                media: {
+                    select: { tmdbId: true }
+                },
                 isWatched: true,
                 isWishlist: true,
                 isFavorite: true,
@@ -22,9 +26,10 @@ export async function getUserMediaStatus(userId: string | undefined, movieIds: n
         });
 
         return dbEntries.reduce((acc, entry) => {
-            acc[entry.mediaId] = entry;
+            const externalId = entry.media.tmdbId;
+            acc[externalId] = entry;
             return acc;
-        }, {} as Record<number, typeof dbEntries[number]>);
+        }, {} as Record<number, any>);
 
     } catch (error) {
         console.error("Error fetching user media status:", error);

@@ -26,7 +26,7 @@ export interface Video {
 }
 
 /**
- * --- BASE MEDIA (Общие поля для фильмов и сериалов) ---
+ * --- BASE MEDIA ---
  */
 interface BaseMedia {
     id: number;
@@ -102,10 +102,10 @@ export interface CrewMember {
 export interface Actor {
     id: number;
     name?: string;
-    title?: string; // Для случаев, когда актер в списке фильма (Movie)
+    title?: string;
     character: string;
     profile_path: string | null;
-    poster_path: string | null; // Для списка работ
+    poster_path: string | null;
     release_date?: string;
     first_air_date?: string;
     vote_average: number;
@@ -163,25 +163,22 @@ export interface SearchResponse {
 }
 
 /**
- * --- LIBRARY (Оптимизированный под Prisma) ---
+ * --- LIBRARY ---
  */
 export interface LibraryResult {
     id: number;
     media_type: 'movie' | 'tv';
-    // Эти поля приходят из API/кэша
     title: string;
     poster_path: string | null;
     vote_average: number;
     release_date: string;
     overview: string | null;
     genre_ids?: number[];
-    // Эти поля приходят из твоей БД (UserMedia)
     user_rating: number | null;
     watched_date: string | null;
     initialDbState: dbMediaStatus
 }
 
-// Вспомогательные типы для мерджа
 export type RawCredit = Actor | CrewMember;
 export type MergedCredit = RawCredit & {
     characters?: string[];

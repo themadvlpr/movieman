@@ -75,38 +75,46 @@ model Verification {
 
 
 model UserMedia {
-    id           Int      @id @default(autoincrement())
-    userId       String
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              Int       @id @default(autoincrement())
+  
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  mediaId         Int
+  media           Media     @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 
+  userRating      Float?
+  userComment     String?
+  userDescription String?
+  watchedDate     DateTime?
 
-    mediaId      Int
-    type         String // movie or tv
-    tmdbRating   Float?
-    genreIds     String? // comma separated
-    releaseDate  DateTime?
-    
-    
-    userRating   Float?
-    userComment  String?
-    userDescription  String?
-    watchedDate  DateTime?
+  isWatched       Boolean   @default(false)
+  isFavorite      Boolean   @default(false)
+  isWishlist      Boolean   @default(false)
 
-    titleEn      String?
-    titleRu      String?
-    titleUk      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-    posterEn     String?
-    posterRu     String?
-    posterUk     String?
+  @@unique([userId, mediaId]) 
+}
 
+model Media {
+  id           Int         @id @default(autoincrement())
+  tmdbId       Int
+  type         String      // movie or tv
+  tmdbRating   Float?
+  genreIds     String?     
+  releaseDate  DateTime?
 
-    isWatched    Boolean   @default(false)
-    isFavorite   Boolean   @default(false)
-    isWishlist   Boolean   @default(false)
+  titleEn      String?
+  titleRu      String?
+  titleUk      String?
 
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+  posterEn     String?
+  posterRu     String?
+  posterUk     String?
 
-    @@unique([userId, mediaId, type])
+  users        UserMedia[]
+
+  @@unique([tmdbId, type]) 
 }

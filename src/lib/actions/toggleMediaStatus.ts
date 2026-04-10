@@ -18,15 +18,20 @@ export async function toggleMediaStatusAction(
 
     const userId = session.user.id;
 
-    const existing = await prisma.userMedia.findUnique({
+    const existing = await prisma.userMedia.findFirst({
         where: {
-            userId_mediaId_type: { userId, mediaId, type }
+            userId,
+            media: {
+                tmdbId: mediaId,
+                type: type
+            }
         }
     });
 
     const newStatus = existing ? !existing[action as keyof typeof existing] : true;
 
-    // Fetch TMDB data for ALL supported languages concurrently to populate translations
+    // Fetch TMDB data for ALL supported languages concurrently...
+    // ... (rest of the fetching logic stays same until the DB operations) ...
     const tmdbLocales = Object.values(TMDB_LANGUAGES); // ['en-US', 'ru-RU', 'uk-UA']
     const endpoint = type === 'movie' ? `/movie/${mediaId}` : `/tv/${mediaId}`;
 
@@ -34,7 +39,6 @@ export async function toggleMediaStatusAction(
         tmdbLocales.map((lang) => tmdbFetch(endpoint, { language: lang }, CacheConfig.DETAILS))
     );
 
-    // Grab the English (or first successful) result for base numeric data
     const baseDataQuery = tmdbResponses.find(r => r.status === 'fulfilled' && r.value) as PromiseFulfilledResult<any> | undefined;
     const baseTmdbData = baseDataQuery?.value;
 
@@ -58,7 +62,6 @@ export async function toggleMediaStatusAction(
         }
     }
     
-    // Extract Localized Strings securely
     const getLocalizedTitle = (idx: number) => {
         const res = tmdbResponses[idx];
         if (res?.status === 'fulfilled' && res.value) {
@@ -83,32 +86,44 @@ export async function toggleMediaStatusAction(
     const posterRu = getLocalizedPoster(1) || mediaData.posterRu || null;
     const posterUk = getLocalizedPoster(2) || mediaData.posterUk || null;
 
-    // Upsert the main UserMedia document
-    const userMedia = await prisma.userMedia.upsert({
+    // 1. Upsert the Media record (shared metadata)
+    const media = await prisma.media.upsert({
         where: {
-            userId_mediaId_type: { userId, mediaId, type }
+            tmdbId_type: { tmdbId: mediaId, type }
         },
         create: {
-            userId,
-            mediaId,
+            tmdbId: mediaId,
             type,
-            [action]: newStatus,
             tmdbRating: finalRating,
             releaseDate: finalReleaseDate,
-            userDescription: finalDescription,
             genreIds: finalGenreIds,
             titleEn, titleRu, titleUk,
             posterEn, posterRu, posterUk,
+        },
+        update: {
+            tmdbRating: finalRating,
+            releaseDate: finalReleaseDate,
+            genreIds: finalGenreIds,
+            titleEn, titleRu, titleUk,
+            posterEn, posterRu, posterUk,
+        }
+    });
+
+    // 2. Upsert the UserMedia record (user-specific status)
+    const userMedia = await prisma.userMedia.upsert({
+        where: {
+            userId_mediaId: { userId, mediaId: media.id }
+        },
+        create: {
+            userId,
+            mediaId: media.id,
+            [action]: newStatus,
+            userDescription: finalDescription,
             ...(action === 'isWatched' && { watchedDate: new Date() })
         },
         update: {
             [action]: newStatus,
-            tmdbRating: finalRating,
-            releaseDate: finalReleaseDate,
             userDescription: finalDescription,
-            genreIds: finalGenreIds,
-            titleEn, titleRu, titleUk,
-            posterEn, posterRu, posterUk,
             ...(action === 'isWatched' && { watchedDate: newStatus ? new Date() : null })
         }
     });

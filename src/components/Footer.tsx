@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion' // Добавил AnimatePresence (опционально)
+import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useTranslation } from '@/providers/LocaleProvider'
 

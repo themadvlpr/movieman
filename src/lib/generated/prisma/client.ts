@@ -66,3 +66,8 @@ export type Verification = Prisma.VerificationModel
  * 
  */
 export type UserMedia = Prisma.UserMediaModel
+/**
+ * Model Media
+ * 
+ */
+export type Media = Prisma.MediaModel

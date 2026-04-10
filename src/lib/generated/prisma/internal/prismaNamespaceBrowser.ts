@@ -55,7 +55,8 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  UserMedia: 'UserMedia'
+  UserMedia: 'UserMedia',
+  Media: 'Media'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -136,20 +137,10 @@ export const UserMediaScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   mediaId: 'mediaId',
-  type: 'type',
-  tmdbRating: 'tmdbRating',
-  genreIds: 'genreIds',
-  releaseDate: 'releaseDate',
   userRating: 'userRating',
   userComment: 'userComment',
   userDescription: 'userDescription',
   watchedDate: 'watchedDate',
-  titleEn: 'titleEn',
-  titleRu: 'titleRu',
-  titleUk: 'titleUk',
-  posterEn: 'posterEn',
-  posterRu: 'posterRu',
-  posterUk: 'posterUk',
   isWatched: 'isWatched',
   isFavorite: 'isFavorite',
   isWishlist: 'isWishlist',
@@ -158,6 +149,24 @@ export const UserMediaScalarFieldEnum = {
 } as const
 
 export type UserMediaScalarFieldEnum = (typeof UserMediaScalarFieldEnum)[keyof typeof UserMediaScalarFieldEnum]
+
+
+export const MediaScalarFieldEnum = {
+  id: 'id',
+  tmdbId: 'tmdbId',
+  type: 'type',
+  tmdbRating: 'tmdbRating',
+  genreIds: 'genreIds',
+  releaseDate: 'releaseDate',
+  titleEn: 'titleEn',
+  titleRu: 'titleRu',
+  titleUk: 'titleUk',
+  posterEn: 'posterEn',
+  posterRu: 'posterRu',
+  posterUk: 'posterUk'
+} as const
+
+export type MediaScalarFieldEnum = (typeof MediaScalarFieldEnum)[keyof typeof MediaScalarFieldEnum]
 
 
 export const SortOrder = {

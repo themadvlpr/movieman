@@ -19,9 +19,13 @@ export async function updateMediaDetailsAction(
 
         const userId = session.user.id;
 
-        const existing = await prisma.userMedia.findUnique({
+        const existing = await prisma.userMedia.findFirst({
             where: {
-                userId_mediaId_type: { userId, mediaId, type }
+                userId,
+                media: {
+                    tmdbId: mediaId,
+                    type: type
+                }
             }
         });
 

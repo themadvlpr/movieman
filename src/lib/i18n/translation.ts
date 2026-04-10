@@ -133,6 +133,12 @@ export const translations = {
             actions: 'Actions',
             filter: 'Filter',
             backToGenres: 'Back to Genres',
+            share: 'Share',
+            successfullyShared: 'Successfully shared!',
+            failedToShare: 'Failed to share',
+            linkCopied: 'Link copied!',
+            nowYouCanSendItToYourFriends: 'Now you can send it to your friends.',
+            failedToCopyLink: 'Failed to copy link',
         },
         genres: {
             28: "Action",
@@ -308,6 +314,14 @@ export const translations = {
             actions: 'Действия',
             filter: 'Фильтр',
             backToGenres: 'Назад к жанрам',
+            share: 'Поделиться',
+            successfullyShared: 'Успешно поделились!',
+            failedToShare: 'Не удалось поделиться',
+            linkCopied: 'Ссылка скопирована!',
+            nowYouCanSendItToYourFriends: 'Теперь вы можете отправить ее своим друзьям.',
+            failedToCopyLink: 'Не удалось скопировать ссылку',
+
+
         },
         genres: {
             28: "Экшен",
@@ -483,6 +497,12 @@ export const translations = {
             actions: 'Дії',
             filter: 'Фільтр',
             backToGenres: 'Назад до жанрів',
+            share: 'Поділитися',
+            successfullyShared: 'Успішно поділилися!',
+            failedToShare: 'Не вдалося поділитися',
+            linkCopied: 'Посилання скопійовано!',
+            nowYouCanSendItToYourFriends: 'Тепер ви можете надіслати його своїм друзям.',
+            failedToCopyLink: 'Не вдалося скопіювати посилання',
         },
         genres: {
             28: "Екшн",

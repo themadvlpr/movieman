@@ -30,43 +30,41 @@ export async function getLibraryAction(
     if (category === 'wishlist') whereClause.isWishlist = true;
     if (category === 'favorite') whereClause.isFavorite = true;
 
-    if (mediaType !== 'all') {
-        whereClause.type = mediaType;
-    }
-
-    if (genreId) {
-        whereClause.genreIds = { contains: genreId.toString() };
-    }
-
-    if (year && year !== 'all') {
-        const startDate = new Date(`${year}-01-01`);
-        const endDate = new Date(`${year}-12-31`);
-        whereClause.releaseDate = {
-            gte: startDate,
-            lte: endDate
-        };
+    if (mediaType !== 'all' || genreId || (year && year !== 'all')) {
+        const mediaFilter: any = {};
+        if (mediaType !== 'all') mediaFilter.type = mediaType;
+        if (genreId) mediaFilter.genreIds = { contains: genreId.toString() };
+        if (year && year !== 'all') {
+            const startDate = new Date(`${year}-01-01`);
+            const endDate = new Date(`${year}-12-31`);
+            mediaFilter.releaseDate = {
+                gte: startDate,
+                lte: endDate
+            };
+        }
+        whereClause.media = mediaFilter;
     }
 
     // Map TMDB locale to column names
     let titleKey: 'titleEn' | 'titleRu' | 'titleUk' = 'titleEn';
     let posterKey: 'posterEn' | 'posterRu' | 'posterUk' = 'posterEn';
-    
+
     if (tmdbLang === 'ru-RU') { titleKey = 'titleRu'; posterKey = 'posterRu'; }
     if (tmdbLang === 'uk-UA') { titleKey = 'titleUk'; posterKey = 'posterUk'; }
 
     let orderByClause: Prisma.UserMediaOrderByWithRelationInput | undefined;
 
     if (sortBy === 'title') {
-        orderByClause = { [titleKey]: sortOrder };
+        orderByClause = { media: { [titleKey]: sortOrder } };
     } else if (sortBy === 'rating') {
-        orderByClause = { tmdbRating: { sort: sortOrder, nulls: 'last' } };
+        orderByClause = { media: { tmdbRating: { sort: sortOrder, nulls: 'last' } } };
     } else if (sortBy === 'year') {
-        orderByClause = { releaseDate: { sort: sortOrder, nulls: 'last' } };
+        orderByClause = { media: { releaseDate: { sort: sortOrder, nulls: 'last' } } };
     } else {
         orderByClause = { [sortBy]: { sort: sortOrder, nulls: 'last' } };
     }
 
-    const genreYearFilter: Prisma.UserMediaWhereInput = {};
+    const genreYearFilter: any = {};
     if (genreId) {
         genreYearFilter.genreIds = { contains: genreId.toString() };
     }
@@ -82,29 +80,30 @@ export async function getLibraryAction(
     try {
         const [totalCount, wishlListMoviesCount, wishlListTvCount, favoriteMoviesCount, favoriteTvCount, watchedMoviesCount, watchedTvCount, userMediaList] = await Promise.all([
             prisma.userMedia.count({ where: whereClause }),
-            prisma.userMedia.count({ where: { userId, type: 'movie', isWishlist: true, ...genreYearFilter } }),
-            prisma.userMedia.count({ where: { userId, type: 'tv', isWishlist: true, ...genreYearFilter } }),
-            prisma.userMedia.count({ where: { userId, type: 'movie', isFavorite: true, ...genreYearFilter } }),
-            prisma.userMedia.count({ where: { userId, type: 'tv', isFavorite: true, ...genreYearFilter } }),
-            prisma.userMedia.count({ where: { userId, type: 'movie', isWatched: true, ...genreYearFilter } }),
-            prisma.userMedia.count({ where: { userId, type: 'tv', isWatched: true, ...genreYearFilter } }),
+            prisma.userMedia.count({ where: { userId, isWishlist: true, media: { type: 'movie', ...genreYearFilter } } }),
+            prisma.userMedia.count({ where: { userId, isWishlist: true, media: { type: 'tv', ...genreYearFilter } } }),
+            prisma.userMedia.count({ where: { userId, isFavorite: true, media: { type: 'movie', ...genreYearFilter } } }),
+            prisma.userMedia.count({ where: { userId, isFavorite: true, media: { type: 'tv', ...genreYearFilter } } }),
+            prisma.userMedia.count({ where: { userId, isWatched: true, media: { type: 'movie', ...genreYearFilter } } }),
+            prisma.userMedia.count({ where: { userId, isWatched: true, media: { type: 'tv', ...genreYearFilter } } }),
             prisma.userMedia.findMany({
                 where: whereClause,
                 orderBy: orderByClause,
                 skip: (page - 1) * pageSize,
                 take: pageSize,
+                include: { media: true }
             })
         ]);
 
         const mappedResults: LibraryResult[] = userMediaList.map(item => ({
-            id: item.mediaId,
-            media_type: item.type as 'movie' | 'tv',
-            title: item[titleKey] || item.titleEn || '',
-            poster_path: item[posterKey] || item.posterEn || null,
-            vote_average: Number(item.tmdbRating) || 0,
-            release_date: item.releaseDate ? item.releaseDate.toISOString().split('T')[0] : '',
+            id: item.media.tmdbId,
+            media_type: item.media.type as 'movie' | 'tv',
+            title: (item.media as any)[titleKey] || item.media.titleEn || '',
+            poster_path: (item.media as any)[posterKey] || item.media.posterEn || null,
+            vote_average: Number(item.media.tmdbRating) || 0,
+            release_date: item.media.releaseDate ? item.media.releaseDate.toISOString().split('T')[0] : '',
             overview: item.userDescription || '',
-            genre_ids: item.genreIds ? item.genreIds.split(',').map(Number) : [],
+            genre_ids: item.media.genreIds ? item.media.genreIds.split(',').map(Number) : [],
             user_rating: item.userRating ? Number(item.userRating) : null,
             watched_date: item.watchedDate ? item.watchedDate.toISOString() : null,
             initialDbState: {
@@ -113,6 +112,7 @@ export async function getLibraryAction(
                 isWishlist: item.isWishlist,
             }
         }));
+
 
         return {
             success: true,

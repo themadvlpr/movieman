@@ -101,8 +101,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
 
     const genres = genresResponse?.data || [];
 
-    console.log('genres: ', genres);
-    console.log('data: ', data?.pages[0].results[0].title);
+
 
 
     const handleGenreSelect = (id: number) => {

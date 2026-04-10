@@ -28,7 +28,6 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
     const selectedGenreId = urlGenre ? parseInt(urlGenre, 10) : initialGenreId;
 
 
-    console.log(movies)
 
     const [currentPage, setCurrentPage] = useState(0)
     const [imageLoading, setImageLoading] = useState(true);

@@ -9,6 +9,7 @@ export async function exportAllUserMediaAction(userId: string, tmdbLang: string 
     try {
         const userMediaList = await prisma.userMedia.findMany({
             where: { userId },
+            include: { media: true }
         });
 
         // Map TMDB locale to column names
@@ -17,8 +18,8 @@ export async function exportAllUserMediaAction(userId: string, tmdbLang: string 
         if (tmdbLang === 'uk-UA') titleKey = 'titleUk';
 
         userMediaList.sort((a, b) => {
-            const titleA = a[titleKey] || a.titleEn || '';
-            const titleB = b[titleKey] || b.titleEn || '';
+            const titleA = (a.media as any)[titleKey] || a.media.titleEn || '';
+            const titleB = (b.media as any)[titleKey] || b.media.titleEn || '';
             return titleA.localeCompare(titleB);
         });
 
@@ -26,19 +27,19 @@ export async function exportAllUserMediaAction(userId: string, tmdbLang: string 
         const genreMap = translations[lang === 'en' ? 'en' : lang === 'ru' ? 'ru' : 'ua'].genres;
 
         const mappedResults = userMediaList.map(item => {
-            const genres = item.genreIds
-                ? item.genreIds.split(',')
+            const genres = item.media.genreIds
+                ? item.media.genreIds.split(',')
                     .map(id => (genreMap as any)[id] || id)
                     .join(', ')
                 : '';
 
             return {
-                "Title": item[titleKey] || item.titleEn || '',
-                "Type": item.type === 'tv' ? 'TV Series' : 'Movie',
+                "Title": (item.media as any)[titleKey] || item.media.titleEn || '',
+                "Type": item.media.type === 'tv' ? 'TV Series' : 'Movie',
                 "Genres": genres,
-                "TMDB Rating": item.tmdbRating || 0,
+                "TMDB Rating": item.media.tmdbRating || 0,
                 "My Rating": item.userRating || "",
-                "Release Date": item.releaseDate ? item.releaseDate.toISOString().split('T')[0] : '',
+                "Release Date": item.media.releaseDate ? item.media.releaseDate.toISOString().split('T')[0] : '',
                 "Watched Date": item.watchedDate ? item.watchedDate.toISOString().split('T')[0] : '',
                 "Is Watched": item.isWatched ? 'Yes' : 'No',
                 "Is Wishlist": item.isWishlist ? 'Yes' : 'No',

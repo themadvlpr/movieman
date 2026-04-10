@@ -13,6 +13,8 @@ import { toast } from "sonner"
 import { useTranslation } from '@/providers/LocaleProvider'
 import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import { dbState } from '@/lib/tmdb/types/db-types'
+import { ExpandableMarkdown } from '@/components/ui/UserNote'
+import ShareButton from '@/components/ui/ShareButton'
 
 
 interface Props {
@@ -24,6 +26,8 @@ export default function MovieDetailContent({ data, userId }: Props) {
     const { t } = useTranslation();
     const [imageLoading, setImageLoading] = useState(true);
     const { movie, credits, similarMovies, initialDbState } = data;
+
+
 
     const [watchDate, setWatchDate] = useState(
         initialDbState?.watchedDate
@@ -61,7 +65,6 @@ export default function MovieDetailContent({ data, userId }: Props) {
     }
 
     useEffect(() => {
-        // Если заметка пустая и в базе её нет — ничего не делаем
         const currentNote = note.trim();
         const savedNote = initialDbState?.userComment || '';
 
@@ -234,6 +237,8 @@ export default function MovieDetailContent({ data, userId }: Props) {
                                 ))}
                             </div>
 
+                            <ShareButton title={movie.title} />
+
                             {movie.tagline && (
                                 <p className='text-xl italic text-zinc-500 font-medium'>
                                     "{movie.tagline}"
@@ -370,7 +375,7 @@ export default function MovieDetailContent({ data, userId }: Props) {
                             <p className='text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700 mb-6'>{t('common', 'personalNotes')}</p>
                             {initialDbState?.userComment !== '' && initialDbState?.userComment !== null ?
                                 (!editNote && <>
-                                    <p className='text-lg sm:text-xl font-medium text-zinc-300'>{note || initialDbState?.userComment}</p>
+                                    <ExpandableMarkdown content={note || initialDbState?.userComment || ''} t={t} />
                                     <button onClick={() => setEditNote(true)} className='text-md mt-5 bg-white px-4 py-2 rounded-md sm:text-lg font-bold hover:bg-zinc-200 transition-colors cursor-pointer text-left text-black'>{t('common', 'editCommentary')}</button>
                                 </>) :
 
