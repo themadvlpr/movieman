@@ -65,7 +65,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
         refetchOnMount: "always",
     })
 
-    const { data: genresResponse } = useQuery({
+    const { data: genresResponse, isLoading: isLoadingGenres } = useQuery({
         queryKey: ['genres-list', tmdbLang, activeCategory],
         queryFn: () => getGenresAction('tv', tmdbLang),
         enabled: activeCategory === 'genres',
@@ -73,9 +73,6 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
     });
 
     const genres = genresResponse?.data || [];
-
-    console.log(genres);
-
 
     const handleGenreSelect = (id: number) => {
         // setSelectedGenreId(id);
@@ -218,6 +215,8 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                         </div>
                     </div>
                 </div>
+
+
 
                 {activeCategory === 'genres' && !isGenreSelected && (
                     /* Genre Grid */

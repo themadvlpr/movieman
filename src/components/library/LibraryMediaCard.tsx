@@ -4,6 +4,7 @@ import { Play, Star, Calendar } from 'lucide-react';
 import MoviePoster from '@/components/ui/MoviePoster';
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons';
 import { useTranslation } from '@/providers/LocaleProvider';
+import { useRouter } from 'next/navigation';
 
 interface LibraryMediaCardProps {
     item: any;
@@ -24,6 +25,8 @@ const LibraryMediaCard = ({
 }: LibraryMediaCardProps) => {
     const { t } = useTranslation();
     const isGrid = viewMode === 'grid';
+
+    const router = useRouter();
 
     const rankingBadge = (
         <div className={`absolute ${isGrid ? 'top-2 left-2 w-6 h-6 rounded-lg' : 'top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg'} 
@@ -60,14 +63,11 @@ const LibraryMediaCard = ({
 
     return (
         <div className="relative group">
+
             <Link
                 href={href}
                 prefetch={false}
-                className="absolute inset-0 z-0"
                 onClick={onItemClick}
-            >
-            </Link>
-            <div
                 className={isGrid
                     ? "flex flex-col gap-2 sm:gap-3 cursor-pointer"
                     : "flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
@@ -163,12 +163,14 @@ const LibraryMediaCard = ({
                                         <>
                                             <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                                 {item.genre_ids.slice(0, 3).map((genreId: number) => (
-                                                    <span
-                                                        key={genreId}
-                                                        className='hover:text-white hover:bg-white/10 px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm  backdrop-blur-md text-zinc-400'>
-                                                        <Link href={`/${item.media_type === 'tv' ? 'tvseries' : 'movies'}?category=genres&genreId=${genreId}`}>
-                                                            {t('genres', genreId.toString())}
-                                                        </Link>
+                                                    <span key={genreId} className='hover:text-white hover:bg-white/10 px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm  backdrop-blur-md text-zinc-400'
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            onItemClick();
+                                                            router.push(`/${item.media_type === 'tv' ? 'tvseries' : 'movies'}?category=genres&genreId=${genreId}`);
+                                                        }}
+                                                    >
+                                                        {t('genres', genreId.toString())}
                                                     </span>
                                                 ))}
                                             </div>
@@ -211,7 +213,7 @@ const LibraryMediaCard = ({
                         </>
                     )}
                 </div>
-            </div>
+            </Link>
 
             {controls}
             {isGrid && rankingBadge}

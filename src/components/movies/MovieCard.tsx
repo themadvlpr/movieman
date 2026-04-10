@@ -6,6 +6,7 @@ import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons';
 import { useTranslation } from '@/providers/LocaleProvider';
 import { Movie } from '@/lib/tmdb/types/tmdb-types';
 import { dbState } from '@/lib/tmdb/types/db-types';
+import { useRouter } from 'next/navigation';
 
 interface MovieCardProps {
     movie: Movie & { initialDbState?: dbState };
@@ -26,6 +27,7 @@ const MovieCard = ({
 }: MovieCardProps) => {
     const { t } = useTranslation();
     const isGrid = viewMode === 'grid';
+    const router = useRouter();
 
     const rankingBadge = (
         <div className={`absolute ${isGrid ? 'top-2 left-2 w-6 h-6 rounded-lg' : 'top-1.5 left-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg'} bg-black/70 backdrop-blur-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-white border border-white/20 z-30 pointer-events-none`}>
@@ -60,14 +62,11 @@ const MovieCard = ({
 
     return (
         <div className="relative group">
+
             <Link
                 href={`/movies/${movie.id}`}
                 prefetch={false}
-                className="absolute inset-0 z-0"
                 onClick={onItemClick}
-            >
-            </Link>
-            <div
                 className={isGrid
                     ? "flex flex-col gap-2 sm:gap-3 cursor-pointer"
                     : "flex flex-row gap-3 sm:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
@@ -128,10 +127,15 @@ const MovieCard = ({
                             <span className="text-zinc-400 text-[10px] sm:text-sm">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}</span>
                             <div className="flex flex-wrap gap-1">
                                 {movie.genre_ids?.slice(0, 3).map((genreId: number) => (
-                                    <span key={genreId} className='hover:text-white hover:bg-white/10 px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm  backdrop-blur-md text-zinc-400'>
-                                        <Link href={`/movies?category=genres&genreId=${genreId}`}>
-                                            {t('genres', genreId.toString())}
-                                        </Link>
+                                    <span key={genreId} className='hover:text-white hover:bg-white/10 px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm  backdrop-blur-md text-zinc-400'
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            onItemClick();
+                                            router.push(`/movies?category=genres&genreId=${genreId}`);
+                                            window.scrollTo({ top: 0, behavior: 'instant' });
+                                        }}
+                                    >
+                                        {t('genres', genreId.toString())}
                                     </span>
                                 ))}
                             </div>
@@ -167,11 +171,11 @@ const MovieCard = ({
                         </>
                     )}
                 </div>
-            </div>
+            </Link>
 
             {controls}
             {isGrid && rankingBadge}
-        </div>
+        </div >
     );
 };
 

@@ -92,7 +92,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
     });
 
 
-    const { data: genresResponse } = useQuery({
+    const { data: genresResponse, isLoading: isLoadingGenres } = useQuery({
         queryKey: ['genres-list', tmdbLang],
         queryFn: () => getGenresAction('movie', tmdbLang),
         enabled: activeCategory === 'genres',
@@ -229,6 +229,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
 
                     </div>
                 </div>
+
+
 
                 {activeCategory === 'genres' && !isGenreSelected && (
                     /* Genre Grid */
