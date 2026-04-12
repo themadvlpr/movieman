@@ -4,9 +4,11 @@ import { toast } from 'sonner';
 
 export default function ShareButton({ title }: { title: string }) {
     const { t } = useTranslation();
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+
     const shareData = {
         title: title,
-        url: window.location.href,
+        url: currentUrl,
     };
 
     const handleShare = async () => {
@@ -41,8 +43,8 @@ export default function ShareButton({ title }: { title: string }) {
                  transition-all hover:bg-white/20 hover:ring-slate-900/10 
                  active:scale-95 dark:text-white dark:ring-white/10"
         >
-            <Share2 className="h-4 w-4 transition-transform group-hover:rotate-12" />
-            <span>{t('common', 'share')}</span>
+            <Share2 className="h-4 w-4 text-zinc-300 transition-transform group-hover:rotate-12" />
+            <span className='text-zinc-300'>{t('common', 'share')}</span>
 
             <div className="absolute inset-0 flex h-full w-full justify-center transform-[skew(-12deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-12deg)_translateX(100%)]">
                 <div className="relative h-full w-8 bg-white/20" />
