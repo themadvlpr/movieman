@@ -8,7 +8,7 @@ import { LibraryResult } from "../tmdb/types/tmdb-types";
 
 export async function getLibraryAction(
     userId: string,
-    category: 'watched' | 'wishlist' | 'favorite',
+    category: 'watched' | 'wishlist' | 'favorite' | string,
     mediaType: 'all' | 'movie' | 'tv',
     sortBy: 'title' | 'watchedDate' | 'year' | 'userRating' | 'rating',
     sortOrder: 'asc' | 'desc',
@@ -26,12 +26,20 @@ export async function getLibraryAction(
         userId: userId,
     };
 
+    const isCustomList = category.startsWith('list_');
+    const listId = isCustomList ? category.replace('list_', '') : null;
+
     if (category === 'watched') whereClause.isWatched = true;
-    if (category === 'wishlist') whereClause.isWishlist = true;
-    if (category === 'favorite') whereClause.isFavorite = true;
+    else if (category === 'wishlist') whereClause.isWishlist = true;
+    else if (category === 'favorite') whereClause.isFavorite = true;
+    else if (isCustomList && listId) {
+        whereClause.media = {
+             listItems: { some: { listId } }
+        };
+    }
 
     if (mediaType !== 'all' || genreId || (year && year !== 'all')) {
-        const mediaFilter: any = {};
+        const mediaFilter: any = { ...((whereClause.media as any) || {}) };
         if (mediaType !== 'all') mediaFilter.type = mediaType;
         if (genreId) mediaFilter.genreIds = { contains: genreId.toString() };
         if (year && year !== 'all') {

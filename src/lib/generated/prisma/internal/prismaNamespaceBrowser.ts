@@ -56,7 +56,9 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   UserMedia: 'UserMedia',
-  Media: 'Media'
+  Media: 'Media',
+  UserList: 'UserList',
+  UserListItem: 'UserListItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -139,7 +141,6 @@ export const UserMediaScalarFieldEnum = {
   mediaId: 'mediaId',
   userRating: 'userRating',
   userComment: 'userComment',
-  userDescription: 'userDescription',
   watchedDate: 'watchedDate',
   isWatched: 'isWatched',
   isFavorite: 'isFavorite',
@@ -167,6 +168,28 @@ export const MediaScalarFieldEnum = {
 } as const
 
 export type MediaScalarFieldEnum = (typeof MediaScalarFieldEnum)[keyof typeof MediaScalarFieldEnum]
+
+
+export const UserListScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserListScalarFieldEnum = (typeof UserListScalarFieldEnum)[keyof typeof UserListScalarFieldEnum]
+
+
+export const UserListItemScalarFieldEnum = {
+  id: 'id',
+  listId: 'listId',
+  mediaId: 'mediaId',
+  createdAt: 'createdAt'
+} as const
+
+export type UserListItemScalarFieldEnum = (typeof UserListItemScalarFieldEnum)[keyof typeof UserListItemScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -10,7 +10,7 @@ interface LibraryMediaCardProps {
     item: any;
     idx: number;
     viewMode: 'grid' | 'list';
-    activeCategory: 'watched' | 'wishlist' | 'favorite';
+    activeCategory: 'watched' | 'wishlist' | 'favorite' | string;
     userId: string;
     onItemClick: () => void;
 }

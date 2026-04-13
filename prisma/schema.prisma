@@ -19,6 +19,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   userMedia     UserMedia[]
+  lists         UserList[]
 
   @@unique([email])
   @@map("user")
@@ -114,6 +115,35 @@ model Media {
   posterUk     String?
 
   users        UserMedia[]
+  listItems    UserListItem[]
 
   @@unique([tmdbId, type]) 
+}
+
+model UserList {
+  id          String         @id @default(cuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  items       UserListItem[]
+
+  @@unique([userId, name])
+  @@map("user_list")
+}
+
+model UserListItem {
+  id        String   @id @default(cuid())
+  listId    String
+  list      UserList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  mediaId   Int
+  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([listId, mediaId])
+  @@index([listId])
+  @@index([mediaId])
+  @@map("user_list_item")
 }

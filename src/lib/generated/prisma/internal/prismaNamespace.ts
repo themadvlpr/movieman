@@ -389,7 +389,9 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   UserMedia: 'UserMedia',
-  Media: 'Media'
+  Media: 'Media',
+  UserList: 'UserList',
+  UserListItem: 'UserListItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -405,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "userMedia" | "media"
+    modelProps: "user" | "session" | "account" | "verification" | "userMedia" | "media" | "userList" | "userListItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -853,6 +855,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    UserList: {
+      payload: Prisma.$UserListPayload<ExtArgs>
+      fields: Prisma.UserListFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserListFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserListFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload>
+        }
+        findFirst: {
+          args: Prisma.UserListFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserListFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload>
+        }
+        findMany: {
+          args: Prisma.UserListFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload>[]
+        }
+        create: {
+          args: Prisma.UserListCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload>
+        }
+        createMany: {
+          args: Prisma.UserListCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserListCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload>[]
+        }
+        delete: {
+          args: Prisma.UserListDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload>
+        }
+        update: {
+          args: Prisma.UserListUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserListDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserListUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserListUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserListUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListPayload>
+        }
+        aggregate: {
+          args: Prisma.UserListAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserList>
+        }
+        groupBy: {
+          args: Prisma.UserListGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserListGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserListCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserListCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserListItem: {
+      payload: Prisma.$UserListItemPayload<ExtArgs>
+      fields: Prisma.UserListItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserListItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserListItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload>
+        }
+        findFirst: {
+          args: Prisma.UserListItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserListItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload>
+        }
+        findMany: {
+          args: Prisma.UserListItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload>[]
+        }
+        create: {
+          args: Prisma.UserListItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload>
+        }
+        createMany: {
+          args: Prisma.UserListItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserListItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload>[]
+        }
+        delete: {
+          args: Prisma.UserListItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload>
+        }
+        update: {
+          args: Prisma.UserListItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserListItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserListItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserListItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserListItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserListItemPayload>
+        }
+        aggregate: {
+          args: Prisma.UserListItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserListItem>
+        }
+        groupBy: {
+          args: Prisma.UserListItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserListItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserListItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserListItemCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -956,7 +1106,6 @@ export const UserMediaScalarFieldEnum = {
   mediaId: 'mediaId',
   userRating: 'userRating',
   userComment: 'userComment',
-  userDescription: 'userDescription',
   watchedDate: 'watchedDate',
   isWatched: 'isWatched',
   isFavorite: 'isFavorite',
@@ -984,6 +1133,28 @@ export const MediaScalarFieldEnum = {
 } as const
 
 export type MediaScalarFieldEnum = (typeof MediaScalarFieldEnum)[keyof typeof MediaScalarFieldEnum]
+
+
+export const UserListScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserListScalarFieldEnum = (typeof UserListScalarFieldEnum)[keyof typeof UserListScalarFieldEnum]
+
+
+export const UserListItemScalarFieldEnum = {
+  id: 'id',
+  listId: 'listId',
+  mediaId: 'mediaId',
+  createdAt: 'createdAt'
+} as const
+
+export type UserListItemScalarFieldEnum = (typeof UserListItemScalarFieldEnum)[keyof typeof UserListItemScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1179,6 +1350,8 @@ export type GlobalOmitConfig = {
   verification?: Prisma.VerificationOmit
   userMedia?: Prisma.UserMediaOmit
   media?: Prisma.MediaOmit
+  userList?: Prisma.UserListOmit
+  userListItem?: Prisma.UserListItemOmit
 }
 
 /* Types for Logging */

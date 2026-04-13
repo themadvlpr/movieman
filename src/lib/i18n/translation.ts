@@ -139,6 +139,7 @@ export const translations = {
             linkCopied: 'Link copied!',
             nowYouCanSendItToYourFriends: 'Now you can send it to your friends.',
             failedToCopyLink: 'Failed to copy link',
+            myLists: 'My lists',
         },
         genres: {
             28: "Action",
@@ -320,6 +321,7 @@ export const translations = {
             linkCopied: 'Ссылка скопирована!',
             nowYouCanSendItToYourFriends: 'Теперь вы можете отправить ее своим друзьям.',
             failedToCopyLink: 'Не удалось скопировать ссылку',
+            myLists: 'Мои списки',
 
 
         },
@@ -503,6 +505,7 @@ export const translations = {
             linkCopied: 'Посилання скопійовано!',
             nowYouCanSendItToYourFriends: 'Тепер ви можете надіслати його своїм друзям.',
             failedToCopyLink: 'Не вдалося скопіювати посилання',
+            myLists: 'Мої списки',
         },
         genres: {
             28: "Екшн",

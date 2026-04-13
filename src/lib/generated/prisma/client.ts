@@ -71,3 +71,13 @@ export type UserMedia = Prisma.UserMediaModel
  * 
  */
 export type Media = Prisma.MediaModel
+/**
+ * Model UserList
+ * 
+ */
+export type UserList = Prisma.UserListModel
+/**
+ * Model UserListItem
+ * 
+ */
+export type UserListItem = Prisma.UserListItemModel

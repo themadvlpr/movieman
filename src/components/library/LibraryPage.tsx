@@ -8,6 +8,8 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getLibraryAction } from "@/lib/actions/getLibraryAction"
 import { exportAllUserMediaAction } from "@/lib/actions/exportAllUserMediaAction"
+import { getUserListsAction } from "@/lib/actions/userListsActions"
+import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import * as XLSX from "xlsx"
 import { toast } from "sonner"
@@ -60,9 +62,15 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
     const [showFilters, setShowFilters] = useState(false);
 
-    const [activeCategory, setActiveCategory] = useState<CategoryType>(() => {
-        const urlCategory = searchParams.get('category') as CategoryType;
-        if (['watched', 'wishlist', 'favorite'].includes(urlCategory)) return urlCategory;
+    const { data: userLists = [] } = useQuery({
+        queryKey: ['library-user-lists', userId],
+        queryFn: async () => await getUserListsAction(),
+        enabled: !!userId,
+    });
+
+    const [activeCategory, setActiveCategory] = useState<string>(() => {
+        const urlCategory = searchParams.get('category');
+        if (urlCategory && (['watched', 'wishlist', 'favorite'].includes(urlCategory) || urlCategory.startsWith('list_'))) return urlCategory;
         return 'watched';
     });
 
@@ -251,6 +259,11 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
 
     const currentCategoryDataCount = (type: 'tv' | 'movie') => {
+        // We only show counts for standard categories right now. For custom lists, returning total directly from results or leaving empty.
+        if (activeCategory.startsWith('list_')) {
+            return type === 'tv' ? (data?.pages[0]?.results.filter(r => r.media_type === 'tv').length || 0) : (data?.pages[0]?.results.filter(r => r.media_type === 'movie').length || 0);
+        }
+
         if (activeCategory === 'watched') {
             return type === 'tv' ? data?.pages[0]?.watchedTvCount : data?.pages[0]?.watchedMoviesCount;
         }
@@ -287,20 +300,46 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                 </div>
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 md:gap-6 mb-5">
                     {/* Categories */}
-                    <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
-                        {libraries.map(({ key }) => (
-                            <button
-                                key={key}
-                                onClick={() => setActiveCategory(key as CategoryType)}
-                                className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
-                                    ${activeCategory === key
-                                        ? 'bg-white text-black shadow-lg shadow-white/10'
-                                        : 'text-zinc-400 hover:text-white hover:bg-white/10'
-                                    }`}
-                            >
-                                <span className="relative z-10">{t('common', key)}</span>
-                            </button>
-                        ))}
+                    <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
+                            {libraries.map((cat) => (
+                                <button
+                                    key={cat.key}
+                                    onClick={() => setActiveCategory(cat.key)}
+                                    className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
+                                        ${activeCategory === cat.key
+                                            ? 'bg-white text-black shadow-lg shadow-white/10'
+                                            : 'text-zinc-400 hover:text-white hover:bg-white/10'
+                                        }`}
+                                >
+                                    <span className="relative z-10">{t('common', cat.key)}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {userLists.length > 0 && (
+                            <div className="w-fit">
+                                <Select
+                                    value={activeCategory.startsWith('list_') ? activeCategory : ''}
+                                    onValueChange={(val) => setActiveCategory(val)}
+                                >
+                                    <SelectTrigger className={`h-full py-2.5 px-2 sm:py-5 sm:px-3 cursor-pointer min-w-[140px] rounded-lg text-xs sm:text-sm font-semibold transition-all focus:ring-0 focus:ring-offset-0 ${activeCategory.startsWith('list_') ? 'bg-white text-black border-white shadow-lg shadow-white/10' : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 backdrop-blur-md border border-white/10'}`}>
+                                        <SelectValue placeholder={t('common', 'myLists')} />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-zinc-900/95 border-white/10 text-white rounded-md shadow-2xl p-1">
+                                        {userLists.map((l) => (
+                                            <SelectItem
+                                                key={l.id}
+                                                value={`list_${l.id}`}
+                                                className="text-xs sm:text-sm focus:bg-white/10 focus:text-white cursor-pointer px-2.5 py-1.5"
+                                            >
+                                                {l.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
@@ -577,7 +616,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                         <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
                             <Filter className="w-8 h-8 text-zinc-600" />
                         </div>
-                        <h3 className="text-white text-xl font-bold mb-2">{selectedGenre !== 'all' || selectedYear !== 'all' ? t('common', 'yourRequestHasNoResults') : t('common', 'your') + t('common', activeCategory) + t('common', 'isEmpty')}</h3>
+                        <h3 className="text-white text-xl font-bold mb-2">{selectedGenre !== 'all' || selectedYear !== 'all' ? t('common', 'yourRequestHasNoResults') : t('common', 'your') + (activeCategory.startsWith('list_') ? userLists.find((list) => list.id === activeCategory.slice(5))?.name : t('common', activeCategory)) + t('common', 'isEmpty')}</h3>
                         <p className="text-zinc-500 text-sm max-w-xs mb-3">{selectedGenre !== 'all' || selectedYear !== 'all' ? t('common', 'tryAdjustingYourFilters') : ''}{selectedGenre === 'all' && selectedYear === 'all' ? t('common', 'startExploring') : t('common', 'startExploring').toLowerCase()} {t('common', 'movies')} {t('common', 'and')} {t('common', 'series')} {t('common', 'toAdd')}</p>
                         <div className="flex gap-2 flex-col items-center">
                             {(selectedGenre !== 'all' || selectedYear !== 'all') &&

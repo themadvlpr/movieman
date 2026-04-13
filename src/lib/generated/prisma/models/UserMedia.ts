@@ -44,7 +44,6 @@ export type UserMediaMinAggregateOutputType = {
   mediaId: number | null
   userRating: number | null
   userComment: string | null
-  userDescription: string | null
   watchedDate: Date | null
   isWatched: boolean | null
   isFavorite: boolean | null
@@ -59,7 +58,6 @@ export type UserMediaMaxAggregateOutputType = {
   mediaId: number | null
   userRating: number | null
   userComment: string | null
-  userDescription: string | null
   watchedDate: Date | null
   isWatched: boolean | null
   isFavorite: boolean | null
@@ -74,7 +72,6 @@ export type UserMediaCountAggregateOutputType = {
   mediaId: number
   userRating: number
   userComment: number
-  userDescription: number
   watchedDate: number
   isWatched: number
   isFavorite: number
@@ -103,7 +100,6 @@ export type UserMediaMinAggregateInputType = {
   mediaId?: true
   userRating?: true
   userComment?: true
-  userDescription?: true
   watchedDate?: true
   isWatched?: true
   isFavorite?: true
@@ -118,7 +114,6 @@ export type UserMediaMaxAggregateInputType = {
   mediaId?: true
   userRating?: true
   userComment?: true
-  userDescription?: true
   watchedDate?: true
   isWatched?: true
   isFavorite?: true
@@ -133,7 +128,6 @@ export type UserMediaCountAggregateInputType = {
   mediaId?: true
   userRating?: true
   userComment?: true
-  userDescription?: true
   watchedDate?: true
   isWatched?: true
   isFavorite?: true
@@ -235,7 +229,6 @@ export type UserMediaGroupByOutputType = {
   mediaId: number
   userRating: number | null
   userComment: string | null
-  userDescription: string | null
   watchedDate: Date | null
   isWatched: boolean
   isFavorite: boolean
@@ -273,7 +266,6 @@ export type UserMediaWhereInput = {
   mediaId?: Prisma.IntFilter<"UserMedia"> | number
   userRating?: Prisma.FloatNullableFilter<"UserMedia"> | number | null
   userComment?: Prisma.StringNullableFilter<"UserMedia"> | string | null
-  userDescription?: Prisma.StringNullableFilter<"UserMedia"> | string | null
   watchedDate?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
   isWatched?: Prisma.BoolFilter<"UserMedia"> | boolean
   isFavorite?: Prisma.BoolFilter<"UserMedia"> | boolean
@@ -290,7 +282,6 @@ export type UserMediaOrderByWithRelationInput = {
   mediaId?: Prisma.SortOrder
   userRating?: Prisma.SortOrderInput | Prisma.SortOrder
   userComment?: Prisma.SortOrderInput | Prisma.SortOrder
-  userDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   watchedDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
@@ -311,7 +302,6 @@ export type UserMediaWhereUniqueInput = Prisma.AtLeast<{
   mediaId?: Prisma.IntFilter<"UserMedia"> | number
   userRating?: Prisma.FloatNullableFilter<"UserMedia"> | number | null
   userComment?: Prisma.StringNullableFilter<"UserMedia"> | string | null
-  userDescription?: Prisma.StringNullableFilter<"UserMedia"> | string | null
   watchedDate?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
   isWatched?: Prisma.BoolFilter<"UserMedia"> | boolean
   isFavorite?: Prisma.BoolFilter<"UserMedia"> | boolean
@@ -328,7 +318,6 @@ export type UserMediaOrderByWithAggregationInput = {
   mediaId?: Prisma.SortOrder
   userRating?: Prisma.SortOrderInput | Prisma.SortOrder
   userComment?: Prisma.SortOrderInput | Prisma.SortOrder
-  userDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   watchedDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
@@ -351,7 +340,6 @@ export type UserMediaScalarWhereWithAggregatesInput = {
   mediaId?: Prisma.IntWithAggregatesFilter<"UserMedia"> | number
   userRating?: Prisma.FloatNullableWithAggregatesFilter<"UserMedia"> | number | null
   userComment?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
-  userDescription?: Prisma.StringNullableWithAggregatesFilter<"UserMedia"> | string | null
   watchedDate?: Prisma.DateTimeNullableWithAggregatesFilter<"UserMedia"> | Date | string | null
   isWatched?: Prisma.BoolWithAggregatesFilter<"UserMedia"> | boolean
   isFavorite?: Prisma.BoolWithAggregatesFilter<"UserMedia"> | boolean
@@ -363,7 +351,6 @@ export type UserMediaScalarWhereWithAggregatesInput = {
 export type UserMediaCreateInput = {
   userRating?: number | null
   userComment?: string | null
-  userDescription?: string | null
   watchedDate?: Date | string | null
   isWatched?: boolean
   isFavorite?: boolean
@@ -380,7 +367,6 @@ export type UserMediaUncheckedCreateInput = {
   mediaId: number
   userRating?: number | null
   userComment?: string | null
-  userDescription?: string | null
   watchedDate?: Date | string | null
   isWatched?: boolean
   isFavorite?: boolean
@@ -392,7 +378,6 @@ export type UserMediaUncheckedCreateInput = {
 export type UserMediaUpdateInput = {
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -409,7 +394,6 @@ export type UserMediaUncheckedUpdateInput = {
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -424,7 +408,6 @@ export type UserMediaCreateManyInput = {
   mediaId: number
   userRating?: number | null
   userComment?: string | null
-  userDescription?: string | null
   watchedDate?: Date | string | null
   isWatched?: boolean
   isFavorite?: boolean
@@ -436,7 +419,6 @@ export type UserMediaCreateManyInput = {
 export type UserMediaUpdateManyMutationInput = {
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -451,7 +433,6 @@ export type UserMediaUncheckedUpdateManyInput = {
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -481,7 +462,6 @@ export type UserMediaCountOrderByAggregateInput = {
   mediaId?: Prisma.SortOrder
   userRating?: Prisma.SortOrder
   userComment?: Prisma.SortOrder
-  userDescription?: Prisma.SortOrder
   watchedDate?: Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
@@ -502,7 +482,6 @@ export type UserMediaMaxOrderByAggregateInput = {
   mediaId?: Prisma.SortOrder
   userRating?: Prisma.SortOrder
   userComment?: Prisma.SortOrder
-  userDescription?: Prisma.SortOrder
   watchedDate?: Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
@@ -517,7 +496,6 @@ export type UserMediaMinOrderByAggregateInput = {
   mediaId?: Prisma.SortOrder
   userRating?: Prisma.SortOrder
   userComment?: Prisma.SortOrder
-  userDescription?: Prisma.SortOrder
   watchedDate?: Prisma.SortOrder
   isWatched?: Prisma.SortOrder
   isFavorite?: Prisma.SortOrder
@@ -635,7 +613,6 @@ export type UserMediaUncheckedUpdateManyWithoutMediaNestedInput = {
 export type UserMediaCreateWithoutUserInput = {
   userRating?: number | null
   userComment?: string | null
-  userDescription?: string | null
   watchedDate?: Date | string | null
   isWatched?: boolean
   isFavorite?: boolean
@@ -650,7 +627,6 @@ export type UserMediaUncheckedCreateWithoutUserInput = {
   mediaId: number
   userRating?: number | null
   userComment?: string | null
-  userDescription?: string | null
   watchedDate?: Date | string | null
   isWatched?: boolean
   isFavorite?: boolean
@@ -694,7 +670,6 @@ export type UserMediaScalarWhereInput = {
   mediaId?: Prisma.IntFilter<"UserMedia"> | number
   userRating?: Prisma.FloatNullableFilter<"UserMedia"> | number | null
   userComment?: Prisma.StringNullableFilter<"UserMedia"> | string | null
-  userDescription?: Prisma.StringNullableFilter<"UserMedia"> | string | null
   watchedDate?: Prisma.DateTimeNullableFilter<"UserMedia"> | Date | string | null
   isWatched?: Prisma.BoolFilter<"UserMedia"> | boolean
   isFavorite?: Prisma.BoolFilter<"UserMedia"> | boolean
@@ -706,7 +681,6 @@ export type UserMediaScalarWhereInput = {
 export type UserMediaCreateWithoutMediaInput = {
   userRating?: number | null
   userComment?: string | null
-  userDescription?: string | null
   watchedDate?: Date | string | null
   isWatched?: boolean
   isFavorite?: boolean
@@ -721,7 +695,6 @@ export type UserMediaUncheckedCreateWithoutMediaInput = {
   userId: string
   userRating?: number | null
   userComment?: string | null
-  userDescription?: string | null
   watchedDate?: Date | string | null
   isWatched?: boolean
   isFavorite?: boolean
@@ -761,7 +734,6 @@ export type UserMediaCreateManyUserInput = {
   mediaId: number
   userRating?: number | null
   userComment?: string | null
-  userDescription?: string | null
   watchedDate?: Date | string | null
   isWatched?: boolean
   isFavorite?: boolean
@@ -773,7 +745,6 @@ export type UserMediaCreateManyUserInput = {
 export type UserMediaUpdateWithoutUserInput = {
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -788,7 +759,6 @@ export type UserMediaUncheckedUpdateWithoutUserInput = {
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -802,7 +772,6 @@ export type UserMediaUncheckedUpdateManyWithoutUserInput = {
   mediaId?: Prisma.IntFieldUpdateOperationsInput | number
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -816,7 +785,6 @@ export type UserMediaCreateManyMediaInput = {
   userId: string
   userRating?: number | null
   userComment?: string | null
-  userDescription?: string | null
   watchedDate?: Date | string | null
   isWatched?: boolean
   isFavorite?: boolean
@@ -828,7 +796,6 @@ export type UserMediaCreateManyMediaInput = {
 export type UserMediaUpdateWithoutMediaInput = {
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -843,7 +810,6 @@ export type UserMediaUncheckedUpdateWithoutMediaInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -857,7 +823,6 @@ export type UserMediaUncheckedUpdateManyWithoutMediaInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   userRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userComment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   watchedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isWatched?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -874,7 +839,6 @@ export type UserMediaSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   mediaId?: boolean
   userRating?: boolean
   userComment?: boolean
-  userDescription?: boolean
   watchedDate?: boolean
   isWatched?: boolean
   isFavorite?: boolean
@@ -891,7 +855,6 @@ export type UserMediaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   mediaId?: boolean
   userRating?: boolean
   userComment?: boolean
-  userDescription?: boolean
   watchedDate?: boolean
   isWatched?: boolean
   isFavorite?: boolean
@@ -908,7 +871,6 @@ export type UserMediaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   mediaId?: boolean
   userRating?: boolean
   userComment?: boolean
-  userDescription?: boolean
   watchedDate?: boolean
   isWatched?: boolean
   isFavorite?: boolean
@@ -925,7 +887,6 @@ export type UserMediaSelectScalar = {
   mediaId?: boolean
   userRating?: boolean
   userComment?: boolean
-  userDescription?: boolean
   watchedDate?: boolean
   isWatched?: boolean
   isFavorite?: boolean
@@ -934,7 +895,7 @@ export type UserMediaSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserMediaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "mediaId" | "userRating" | "userComment" | "userDescription" | "watchedDate" | "isWatched" | "isFavorite" | "isWishlist" | "createdAt" | "updatedAt", ExtArgs["result"]["userMedia"]>
+export type UserMediaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "mediaId" | "userRating" | "userComment" | "watchedDate" | "isWatched" | "isFavorite" | "isWishlist" | "createdAt" | "updatedAt", ExtArgs["result"]["userMedia"]>
 export type UserMediaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   media?: boolean | Prisma.MediaDefaultArgs<ExtArgs>
@@ -960,7 +921,6 @@ export type $UserMediaPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     mediaId: number
     userRating: number | null
     userComment: string | null
-    userDescription: string | null
     watchedDate: Date | null
     isWatched: boolean
     isFavorite: boolean
@@ -1397,7 +1357,6 @@ export interface UserMediaFieldRefs {
   readonly mediaId: Prisma.FieldRef<"UserMedia", 'Int'>
   readonly userRating: Prisma.FieldRef<"UserMedia", 'Float'>
   readonly userComment: Prisma.FieldRef<"UserMedia", 'String'>
-  readonly userDescription: Prisma.FieldRef<"UserMedia", 'String'>
   readonly watchedDate: Prisma.FieldRef<"UserMedia", 'DateTime'>
   readonly isWatched: Prisma.FieldRef<"UserMedia", 'Boolean'>
   readonly isFavorite: Prisma.FieldRef<"UserMedia", 'Boolean'>
