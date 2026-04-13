@@ -12,6 +12,7 @@ interface LibraryMediaCardProps {
     viewMode: 'grid' | 'list';
     activeCategory: 'watched' | 'wishlist' | 'favorite' | string;
     userId: string;
+    isPublic?: boolean;
     onItemClick: () => void;
 }
 
@@ -21,6 +22,7 @@ const LibraryMediaCard = ({
     viewMode,
     activeCategory,
     userId,
+    isPublic,
     onItemClick
 }: LibraryMediaCardProps) => {
     const { t } = useTranslation();
@@ -35,7 +37,7 @@ const LibraryMediaCard = ({
         </div>
     );
 
-    const controls = (
+    const controls = !isPublic ? (
         <div className={isGrid
             ? "absolute top-0 inset-0 pointer-events-none z-20 flex flex-col items-center justify-end"
             : "absolute bottom-6 right-6 z-30 pointer-events-none translate-x-4 group-hover:translate-x-0 transition-all duration-300"
@@ -56,7 +58,7 @@ const LibraryMediaCard = ({
                 />
             </div>
         </div>
-    );
+    ) : null;
 
     const href = item.media_type === 'tv' ? `/tvseries/${item.id}` : `/movies/${item.id}`;
 

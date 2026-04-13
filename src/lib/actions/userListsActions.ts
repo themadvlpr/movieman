@@ -30,6 +30,27 @@ export async function getUserListsAction(mediaId?: number) {
     }));
 }
 
+export async function getPublicUserListsAction(userId: string, mediaId?: number) {
+    if (!userId) throw new Error("Missing user ID");
+
+    const lists = await prisma.userList.findMany({
+        where: { userId },
+        include: {
+            items: mediaId ? {
+                where: { media: { tmdbId: mediaId } },
+                select: { id: true }
+            } : false
+        },
+        orderBy: { createdAt: 'desc' }
+    });
+
+    return lists.map(list => ({
+        id: list.id,
+        name: list.name,
+        isActive: list.items ? list.items.length > 0 : false
+    }));
+}
+
 export async function createUserListAction(name: string) {
     const session = await getAuthSession();
     if (!session?.user?.id) throw new Error("Unauthorized");

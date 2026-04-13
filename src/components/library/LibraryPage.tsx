@@ -43,6 +43,8 @@ let _libraryScrollY = 0
 interface Props {
     initialViewMode: 'grid' | 'list';
     userId: string;
+    isPublic?: boolean;
+    publicProfile?: { name: string, image: string | null, sharedListName?: string };
 }
 
 type SortField = 'title' | 'watchedDate' | 'year' | 'userRating' | 'rating';
@@ -50,7 +52,7 @@ type SortOrder = 'asc' | 'desc';
 type MediaType = 'all' | 'movie' | 'tv';
 type CategoryType = 'watched' | 'wishlist' | 'favorite';
 
-export default function LibraryPage({ initialViewMode, userId }: Props) {
+export default function LibraryPage({ initialViewMode, userId, isPublic, publicProfile }: Props) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -64,7 +66,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
     const { data: userLists = [] } = useQuery({
         queryKey: ['library-user-lists', userId],
         queryFn: async () => await getUserListsAction(),
-        enabled: !!userId,
+        enabled: !!userId && !isPublic,
         staleTime: 1000 * 60 * 5,
     });
 
@@ -321,10 +323,38 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
     return (
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
-                <h1 className="text-3xl sm:text-5xl font-bold mb-5 flex flex-wrap items-center gap-3 sm:gap-6">
-                    <span>{t('nav', 'library')}</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-5">
+                    <h1 className="text-3xl sm:text-5xl font-bold flex flex-wrap items-center gap-3 sm:gap-6">
+                        {isPublic ? (
+                            <div className="flex items-center gap-4">
+                                {publicProfile?.image ? (
+                                    <img src={publicProfile.image} alt={publicProfile.name} className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-white/10" />
+                                ) : (
+                                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/10 border-2 border-white/10 flex items-center justify-center">
+                                        <span className="text-xl sm:text-3xl font-bold text-white">{publicProfile?.name?.[0]?.toUpperCase() || '?'}</span>
+                                    </div>
+                                )}
+                                <span>{publicProfile?.sharedListName ? publicProfile.sharedListName : `${publicProfile?.name}'s ${t('nav', 'library')}`}</span>
+                            </div>
+                        ) : (
+                            <span>{t('nav', 'library')}</span>
+                        )}
+                    </h1>
 
-                </h1>
+                    {!isPublic && (
+                        <button
+                            onClick={() => {
+                                const url = `${window.location.origin}/sharelist/${userId}?category=${activeCategory}`;
+                                navigator.clipboard.writeText(url);
+                                toast.success(t('common', 'linkCopied') || "Link copied to clipboard!");
+                            }}
+                            className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-zinc-900/40 backdrop-blur-lg border border-white/10 hover:border-white/20 text-white rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer shadow-2xl whitespace-nowrap self-start sm:self-auto active:scale-95" title={t('common', 'shareList') || "Share List"}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-share-2"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /><line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></svg>
+                            <span>{activeCategory.startsWith('list_') ? t('common', 'share') + ' ' + userLists.find((list: any) => list.id === activeCategory.slice(5))?.name : t('common', 'shareLibrary')}</span>
+                        </button>
+                    )}
+                </div>
                 <div className="flex items-center gap-2 sm:gap-3 mb-5">
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
                         <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">{t('common', 'movies')}</span>
@@ -344,23 +374,31 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 md:gap-6 mb-5">
                     {/* Categories */}
                     <div className="flex flex-wrap items-center gap-2">
-                        <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
-                            {libraries.map((cat) => (
-                                <button
-                                    key={cat.key}
-                                    onClick={() => setActiveCategory(cat.key)}
-                                    className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
-                                        ${activeCategory === cat.key
-                                            ? 'bg-white text-black shadow-lg shadow-white/10'
-                                            : 'text-zinc-400 hover:text-white hover:bg-white/10'
-                                        }`}
-                                >
-                                    <span className="relative z-10">{t('common', cat.key)}</span>
+                        {isPublic && publicProfile?.sharedListName ? (
+                            <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
+                                <button className="relative px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-default whitespace-nowrap bg-white text-black shadow-lg shadow-white/10">
+                                    <span className="relative z-10">{publicProfile.sharedListName}</span>
                                 </button>
-                            ))}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
+                                {libraries.map((cat) => (
+                                    <button
+                                        key={cat.key}
+                                        onClick={() => setActiveCategory(cat.key)}
+                                        className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
+                                            ${activeCategory === cat.key
+                                                ? 'bg-white text-black shadow-lg shadow-white/10'
+                                                : 'text-zinc-400 hover:text-white hover:bg-white/10'
+                                            }`}
+                                    >
+                                        <span className="relative z-10">{t('common', cat.key)}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
-                        {userLists.length > 0 && (
+                        {!isPublic && userLists.length > 0 && (
                             <div className="w-fit flex items-center gap-1">
                                 {!isEditingList ? (
                                     <Select
@@ -416,7 +454,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                     </div>
                                 )}
 
-                                {activeCategory.startsWith('list_') && !isEditingList && (
+                                {activeCategory.startsWith('list_') && !isEditingList && !isPublic && (
                                     <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-1 backdrop-blur-md h-full">
                                         <button
                                             onClick={() => setIsEditingList(true)}
@@ -651,19 +689,24 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
                                 <div className="flex-1 hidden md:block" />
 
-                                {/* Export and Other Actions */}
                                 <div className="flex flex-col gap-1.5 md:w-fit md:justify-end">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 ml-1 md:text-right">{t('common', 'actions')}</span>
-                                    <button
-                                        onClick={handleExport}
-                                        disabled={isExporting}
-                                        className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-xs font-bold hover:bg-zinc-200 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-white/5"
-                                        aria-label="Export all to Excel"
-                                        title="Export all to Excel"
-                                    >
-                                        {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                                        <span>{t('common', 'exportAll')}</span>
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        {!isPublic && (
+                                            <>
+                                                <button
+                                                    onClick={handleExport}
+                                                    disabled={isExporting}
+                                                    className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-xs font-bold hover:bg-zinc-200 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-white/5 whitespace-nowrap"
+                                                    aria-label="Export all to Excel"
+                                                    title="Export all to Excel"
+                                                >
+                                                    {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                                                    <span>{t('common', 'exportAll')}</span>
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>
@@ -692,6 +735,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                                     viewMode={viewMode}
                                     activeCategory={activeCategory}
                                     userId={userId}
+                                    isPublic={isPublic}
                                     onItemClick={handleItemClick}
                                 />
                             ))}

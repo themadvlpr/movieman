@@ -146,6 +146,7 @@ export const translations = {
             create: 'Create',
             addToCollection: 'Add to collection',
             createNewList: 'Create new list',
+            shareLibrary: 'Share library',
         },
         genres: {
             28: "Action",
@@ -334,6 +335,7 @@ export const translations = {
             create: 'Создать',
             addToCollection: 'Добавить в коллекцию',
             createNewList: 'Создать новый список',
+            shareLibrary: 'Поделиться библиотекой',
         },
         genres: {
             28: "Экшен",
@@ -522,6 +524,7 @@ export const translations = {
             create: 'Створити',
             addToCollection: 'Додати до колекції',
             createNewList: 'Створити новий список',
+            shareLibrary: 'Поділитися бібліотекою',
         },
         genres: {
             28: "Екшн",
