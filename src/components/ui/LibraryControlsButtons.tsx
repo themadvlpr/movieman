@@ -7,6 +7,7 @@ import { useUserLists } from "@/hooks/useUserLists"
 import { dbState, dbMediaStatus } from "@/lib/tmdb/types/db-types"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { cn } from "@/lib/utils"
+import CreateListModal from "@/components/ui/CreateListModal"
 
 import {
     DropdownMenu,
@@ -105,10 +106,11 @@ export default function LibraryControlsButtons({
                 <Bookmark className={cn(iconClass, states.wishlist && "fill-current")} strokeWidth={2.5} />
             </button>
 
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                    <button type="button" className={getButtonClass(false)}>
+                    <button type="button" className={getButtonClass(false) + " relative"}>
                         <Plus className={iconClass} strokeWidth={2.5} />
+                        {userLists.filter(list => list.isActive).length > 0 && <span className="absolute bottom-0 right-0 text-blue-500 text-[8px] rounded-full px-1">{userLists.filter(list => list.isActive).length}</span>}
                     </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-zinc-950/90 border-white/10 backdrop-blur-xl text-zinc-200 shadow-2xl">
@@ -142,34 +144,26 @@ export default function LibraryControlsButtons({
 
                     <DropdownMenuSeparator className="bg-white/5" />
 
-                    {!isCreatingList ? (
-                        <DropdownMenuItem 
-                            onClick={(e) => { e.preventDefault(); setIsCreatingList(true); }}
-                            className="px-3 py-2 text-xs text-blue-400 focus:bg-blue-500/10 focus:text-blue-300 cursor-pointer"
-                        >
-                            <Plus className="mr-2 h-3.5 w-3.5" />
-                            <span>Создать новый список</span>
-                        </DropdownMenuItem>
-                    ) : (
-                        <div className="px-3 py-2">
-                            <form onSubmit={handleCreateList} className="flex flex-col gap-2">
-                                <input 
-                                    autoFocus
-                                    type="text" 
-                                    value={newListName}
-                                    onChange={(e) => setNewListName(e.target.value)}
-                                    placeholder="Имя списка..."
-                                    className="w-full bg-black/50 border border-white/20 rounded-md px-2 py-1 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white/50"
-                                />
-                                <div className="flex gap-2">
-                                    <button type="button" onClick={() => setIsCreatingList(false)} className="flex-1 px-2 py-1 bg-white/10 hover:bg-white/20 rounded-md text-[10px] uppercase cursor-pointer">Отмена</button>
-                                    <button type="submit" className="flex-1 px-2 py-1 bg-blue-500/20 text-blue-300 hover:bg-blue-500/40 rounded-md text-[10px] uppercase cursor-pointer">Создать</button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
+                    <DropdownMenuItem
+                        onSelect={() => setIsCreatingList(true)} // Используем onSelect для закрытия меню и открытия модалки
+                        className="px-3 py-2 text-xs text-blue-400 focus:bg-blue-500/10 focus:text-blue-300 cursor-pointer"
+                    >
+                        <Plus className="mr-2 h-3.5 w-3.5" />
+                        <span>{t("common", "createList")}</span>
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+
+            {isCreatingList && (
+                <CreateListModal
+                    handleCreateList={handleCreateList}
+                    newListName={newListName}
+                    setNewListName={setNewListName}
+                    setIsCreatingList={setIsCreatingList}
+                />
+            )}
         </div>
     );
 }
+
+

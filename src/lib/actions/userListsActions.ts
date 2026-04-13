@@ -22,7 +22,7 @@ export async function getUserListsAction(mediaId?: number) {
         },
         orderBy: { createdAt: 'desc' }
     });
-    
+
     return lists.map(list => ({
         id: list.id,
         name: list.name,
@@ -164,4 +164,36 @@ export async function toggleMediaInListAction(
 
     revalidatePath("/library");
     return { success: true, isNowActive: !existing };
+}
+
+export async function renameUserListAction(listId: string, newName: string) {
+    const session = await getAuthSession();
+    if (!session?.user?.id) throw new Error("Unauthorized");
+
+    try {
+        const updatedList = await prisma.userList.update({
+            where: { id: listId, userId: session.user.id },
+            data: { name: newName }
+        });
+        revalidatePath("/library");
+        return { success: true, data: { id: updatedList.id, name: updatedList.name } };
+    } catch (e: any) {
+        if (e.code === 'P2002') return { success: false, error: 'List with this name already exists' };
+        return { success: false, error: 'Failed to rename list' };
+    }
+}
+
+export async function deleteUserListAction(listId: string) {
+    const session = await getAuthSession();
+    if (!session?.user?.id) throw new Error("Unauthorized");
+
+    try {
+        await prisma.userList.delete({
+            where: { id: listId, userId: session.user.id }
+        });
+        revalidatePath("/library");
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: 'Failed to delete list' };
+    }
 }

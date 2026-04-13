@@ -140,6 +140,12 @@ export const translations = {
             nowYouCanSendItToYourFriends: 'Now you can send it to your friends.',
             failedToCopyLink: 'Failed to copy link',
             myLists: 'My lists',
+            createList: 'Create new list',
+            listNamePlaceholder: 'List name...',
+            cancel: 'Cancel',
+            create: 'Create',
+            addToCollection: 'Add to collection',
+            createNewList: 'Create new list',
         },
         genres: {
             28: "Action",
@@ -322,8 +328,12 @@ export const translations = {
             nowYouCanSendItToYourFriends: 'Теперь вы можете отправить ее своим друзьям.',
             failedToCopyLink: 'Не удалось скопировать ссылку',
             myLists: 'Мои списки',
-
-
+            createList: 'Создать новый список',
+            listNamePlaceholder: 'Имя списка...',
+            cancel: 'Отмена',
+            create: 'Создать',
+            addToCollection: 'Добавить в коллекцию',
+            createNewList: 'Создать новый список',
         },
         genres: {
             28: "Экшен",
@@ -506,6 +516,12 @@ export const translations = {
             nowYouCanSendItToYourFriends: 'Тепер ви можете надіслати його своїм друзям.',
             failedToCopyLink: 'Не вдалося скопіювати посилання',
             myLists: 'Мої списки',
+            createList: 'Створити новий список',
+            listNamePlaceholder: 'Ім\'я списку...',
+            cancel: 'Скасувати',
+            create: 'Створити',
+            addToCollection: 'Додати до колекції',
+            createNewList: 'Створити новий список',
         },
         genres: {
             28: "Екшн",

@@ -1,4 +1,5 @@
 import styles from './SocialAuthButton.module.css'
+import { useTranslation } from '@/providers/LocaleProvider'
 
 type AuthProvider = 'google' | 'github'
 
@@ -50,6 +51,8 @@ export const SocialAuthButton = ({
 	disabled,
 }: SocialAuthButtonProps) => {
 	const { text, icon } = providersData[provider]
+
+	const { t } = useTranslation();
 
 	return (
 		<button

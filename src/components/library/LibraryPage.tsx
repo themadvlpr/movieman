@@ -1,15 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { Grid, List, Filter, ArrowUp, ArrowDown, Download, Loader2, X } from "lucide-react"
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { Grid, List, Filter, ArrowUp, ArrowDown, Download, Loader2, X, Pencil, Trash2, Check } from "lucide-react"
+import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getLibraryAction } from "@/lib/actions/getLibraryAction"
 import { exportAllUserMediaAction } from "@/lib/actions/exportAllUserMediaAction"
-import { getUserListsAction } from "@/lib/actions/userListsActions"
-import { useQuery } from "@tanstack/react-query"
+import { getUserListsAction, renameUserListAction, deleteUserListAction } from "@/lib/actions/userListsActions"
 import Link from "next/link"
 import * as XLSX from "xlsx"
 import { toast } from "sonner"
@@ -66,6 +65,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
         queryKey: ['library-user-lists', userId],
         queryFn: async () => await getUserListsAction(),
         enabled: !!userId,
+        staleTime: 1000 * 60 * 5,
     });
 
     const [activeCategory, setActiveCategory] = useState<string>(() => {
@@ -94,6 +94,49 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
 
     const [selectedGenre, setSelectedGenre] = useState<string>(() => searchParams.get('genre') || 'all');
     const [selectedYear, setSelectedYear] = useState<string>(() => searchParams.get('year') || 'all');
+
+    const queryClient = useQueryClient();
+    const [isEditingList, setIsEditingList] = useState(false);
+    const [editListName, setEditListName] = useState("");
+
+    const activeListId = activeCategory.startsWith('list_') ? activeCategory.slice(5) : null;
+    const activeList = activeListId ? userLists.find((l: any) => l.id === activeListId) : null;
+
+    useEffect(() => {
+        if (activeList && !isEditingList) {
+            setEditListName(activeList.name);
+        }
+    }, [activeList, isEditingList]);
+
+    const { mutate: renameList, isPending: isRenaming } = useMutation({
+        mutationFn: async ({ listId, newName }: { listId: string, newName: string }) => {
+            return await renameUserListAction(listId, newName);
+        },
+        onSuccess: (res) => {
+            if (res.success) {
+                toast.success(t('common', 'listRenamed') || "List renamed");
+                queryClient.invalidateQueries({ queryKey: ['library-user-lists'] });
+                setIsEditingList(false);
+            } else {
+                toast.error(res.error || "Failed to rename list");
+            }
+        }
+    });
+
+    const { mutate: deleteList, isPending: isDeleting } = useMutation({
+        mutationFn: async (listId: string) => {
+            return await deleteUserListAction(listId);
+        },
+        onSuccess: (res) => {
+            if (res.success) {
+                toast.success(t('common', 'listDeleted') || "List deleted");
+                queryClient.invalidateQueries({ queryKey: ['library-user-lists'] });
+                setActiveCategory('watched');
+            } else {
+                toast.error(res.error || "Failed to delete list");
+            }
+        }
+    });
 
     const toggleView = async (mode: 'grid' | 'list') => {
         const newMode = mode === 'grid' ? 'grid' : 'list'
@@ -188,7 +231,7 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
             return undefined;
         },
         initialPageParam: 1,
-        staleTime: 1000 * 30, // 30 seconds
+        staleTime: 1000 * 60 * 5, // 5 minutes
         refetchOnMount: "always",
     });
 
@@ -318,26 +361,84 @@ export default function LibraryPage({ initialViewMode, userId }: Props) {
                         </div>
 
                         {userLists.length > 0 && (
-                            <div className="w-fit">
-                                <Select
-                                    value={activeCategory.startsWith('list_') ? activeCategory : ''}
-                                    onValueChange={(val) => setActiveCategory(val)}
-                                >
-                                    <SelectTrigger className={`h-full py-2.5 px-2 sm:py-5 sm:px-3 cursor-pointer min-w-[140px] rounded-lg text-xs sm:text-sm font-semibold transition-all focus:ring-0 focus:ring-offset-0 ${activeCategory.startsWith('list_') ? 'bg-white text-black border-white shadow-lg shadow-white/10' : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 backdrop-blur-md border border-white/10'}`}>
-                                        <SelectValue placeholder={t('common', 'myLists')} />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-zinc-900/95 border-white/10 text-white rounded-md shadow-2xl p-1">
-                                        {userLists.map((l) => (
-                                            <SelectItem
-                                                key={l.id}
-                                                value={`list_${l.id}`}
-                                                className="text-xs sm:text-sm focus:bg-white/10 focus:text-white cursor-pointer px-2.5 py-1.5"
-                                            >
-                                                {l.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                            <div className="w-fit flex items-center gap-1">
+                                {!isEditingList ? (
+                                    <Select
+                                        value={activeCategory.startsWith('list_') ? activeCategory : ''}
+                                        onValueChange={(val) => setActiveCategory(val)}
+                                    >
+                                        <SelectTrigger className={`h-full py-2.5 px-2 sm:py-5 sm:px-3 cursor-pointer min-w-[140px] rounded-lg text-xs sm:text-sm font-semibold transition-all focus:ring-0 focus:ring-offset-0 ${activeCategory.startsWith('list_') ? 'bg-white text-black border-white shadow-lg shadow-white/10' : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 backdrop-blur-md border border-white/10'}`}>
+                                            <SelectValue placeholder={t('common', 'myLists')} />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-900/95 border-white/10 text-white rounded-md shadow-2xl p-1">
+                                            {userLists.map((l) => (
+                                                <SelectItem
+                                                    key={l.id}
+                                                    value={`list_${l.id}`}
+                                                    className="text-xs sm:text-sm focus:bg-white/10 focus:text-white cursor-pointer px-2.5 py-1.5"
+                                                >
+                                                    {l.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                ) : (
+                                    <div className="flex items-center gap-1">
+                                        <input
+                                            autoFocus
+                                            type="text"
+                                            value={editListName}
+                                            onChange={(e) => setEditListName(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    if (editListName.trim() && activeListId) {
+                                                        renameList({ listId: activeListId, newName: editListName.trim() });
+                                                    }
+                                                } else if (e.key === 'Escape') {
+                                                    setIsEditingList(false);
+                                                }
+                                            }}
+                                            className="h-full py-1.5 px-2 sm:py-4.5 sm:px-3 text-xs sm:text-sm min-w-[140px] bg-white/10 text-white border border-white/20 rounded-lg focus:outline-none focus:border-white transition-all w-36"
+                                        />
+                                        <button
+                                            disabled={isRenaming || !editListName.trim() || editListName === activeList?.name}
+                                            onClick={() => activeListId && renameList({ listId: activeListId, newName: editListName.trim() })}
+                                            className="p-1.5 sm:p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isRenaming ? <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" /> : <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-400" />}
+                                        </button>
+                                        <button
+                                            onClick={() => setIsEditingList(false)}
+                                            className="p-1.5 sm:p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg cursor-pointer transition-colors"
+                                        >
+                                            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-400" />
+                                        </button>
+                                    </div>
+                                )}
+
+                                {activeCategory.startsWith('list_') && !isEditingList && (
+                                    <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-1 backdrop-blur-md h-full">
+                                        <button
+                                            onClick={() => setIsEditingList(true)}
+                                            className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+                                            title={t('common', 'editList') || "Edit list"}
+                                        >
+                                            <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                if (window.confirm("Are you sure you want to delete this list?")) {
+                                                    if (activeListId) deleteList(activeListId);
+                                                }
+                                            }}
+                                            disabled={isDeleting}
+                                            className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                            title={t('common', 'deleteList') || "Delete list"}
+                                        >
+                                            {isDeleting ? <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" /> : <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
