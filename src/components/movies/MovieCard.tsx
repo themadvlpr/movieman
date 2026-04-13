@@ -48,7 +48,6 @@ const MovieCard = ({
                         posterEn: movie.poster_path,
                         tmdbRating: movie.vote_average,
                         releaseDate: movie.release_date,
-                        userDescription: movie.overview,
                         genreIds: movie.genre_ids?.join(',')
                     }}
                     type="movie"

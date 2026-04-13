@@ -44,7 +44,6 @@ export async function toggleMediaStatusAction(
 
     let finalReleaseDate = mediaData.releaseDate ? new Date(mediaData.releaseDate) : null;
     let finalRating = mediaData.tmdbRating || 0;
-    let finalDescription = mediaData.userDescription || null;
     let finalGenreIds = mediaData.genreIds || null;
 
     if (baseTmdbData) {
@@ -53,15 +52,14 @@ export async function toggleMediaStatusAction(
             finalReleaseDate = new Date(rawDate);
         }
         finalRating = baseTmdbData.vote_average || finalRating;
-        finalDescription = baseTmdbData.overview || finalDescription;
-        
+
         if (baseTmdbData.genre_ids) {
             finalGenreIds = baseTmdbData.genre_ids.join(',');
         } else if (baseTmdbData.genres) {
             finalGenreIds = baseTmdbData.genres.map((g: any) => g.id).join(',');
         }
     }
-    
+
     const getLocalizedTitle = (idx: number) => {
         const res = tmdbResponses[idx];
         if (res?.status === 'fulfilled' && res.value) {
@@ -69,7 +67,7 @@ export async function toggleMediaStatusAction(
         }
         return null;
     }
-    
+
     const getLocalizedPoster = (idx: number) => {
         const res = tmdbResponses[idx];
         if (res?.status === 'fulfilled' && res.value) {
@@ -81,7 +79,7 @@ export async function toggleMediaStatusAction(
     const titleEn = getLocalizedTitle(0) || mediaData.titleEn || "";
     const titleRu = getLocalizedTitle(1) || mediaData.titleRu || "";
     const titleUk = getLocalizedTitle(2) || mediaData.titleUk || "";
-    
+
     const posterEn = getLocalizedPoster(0) || mediaData.posterEn || null;
     const posterRu = getLocalizedPoster(1) || mediaData.posterRu || null;
     const posterUk = getLocalizedPoster(2) || mediaData.posterUk || null;
@@ -118,12 +116,10 @@ export async function toggleMediaStatusAction(
             userId,
             mediaId: media.id,
             [action]: newStatus,
-            userDescription: finalDescription,
             ...(action === 'isWatched' && { watchedDate: new Date() })
         },
         update: {
             [action]: newStatus,
-            userDescription: finalDescription,
             ...(action === 'isWatched' && { watchedDate: newStatus ? new Date() : null })
         }
     });

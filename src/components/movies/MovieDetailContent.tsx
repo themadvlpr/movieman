@@ -283,7 +283,6 @@ export default function MovieDetailContent({ data, userId }: Props) {
                                     posterEn: movie.poster_path,
                                     tmdbRating: movie.vote_average,
                                     releaseDate: movie.release_date,
-                                    userDescription: movie.overview,
                                     genreIds: movie.genres?.map(g => g.id).join(',')
                                 }}
                                 type="movie"

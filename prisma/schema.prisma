@@ -85,7 +85,6 @@ model UserMedia {
 
   userRating      Float?
   userComment     String?
-  userDescription String?
   watchedDate     DateTime?
 
   isWatched       Boolean   @default(false)

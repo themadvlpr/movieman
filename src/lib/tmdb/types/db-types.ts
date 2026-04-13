@@ -7,7 +7,6 @@ export interface dbState extends dbMediaStatus {
     tmdbRating?: number | null;
     releaseDate?: Date | string | null;
 
-    userDescription?: string | null;
     createdAt?: Date;
     updatedAt?: Date;
 

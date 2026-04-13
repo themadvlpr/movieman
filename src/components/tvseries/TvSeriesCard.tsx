@@ -47,7 +47,6 @@ const TvSeriesCard = ({
                         posterEn: show.poster_path,
                         tmdbRating: show.vote_average,
                         releaseDate: show.first_air_date,
-                        userDescription: show.overview,
                         genreIds: show.genre_ids?.join(',')
                     }}
                     type="tv"

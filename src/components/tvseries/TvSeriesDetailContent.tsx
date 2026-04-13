@@ -321,7 +321,6 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                                     posterEn: series.poster_path,
                                     tmdbRating: series.vote_average,
                                     releaseDate: series.first_air_date,
-                                    userDescription: series.overview,
                                     genreIds: series.genres?.map(g => g.id).join(',')
                                 }}
                                 type="tv"

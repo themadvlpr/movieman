@@ -218,7 +218,6 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                                 posterEn: backdrop_path,
                                 tmdbRating: rating,
                                 releaseDate: release_date,
-                                userDescription: overview,
                                 genreIds: currentMovie.genre_ids?.join(',')
                             }}
                             type="movie"

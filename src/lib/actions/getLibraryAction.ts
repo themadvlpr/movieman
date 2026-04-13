@@ -102,7 +102,6 @@ export async function getLibraryAction(
             poster_path: (item.media as any)[posterKey] || item.media.posterEn || null,
             vote_average: Number(item.media.tmdbRating) || 0,
             release_date: item.media.releaseDate ? item.media.releaseDate.toISOString().split('T')[0] : '',
-            overview: item.userDescription || '',
             genre_ids: item.media.genreIds ? item.media.genreIds.split(',').map(Number) : [],
             user_rating: item.userRating ? Number(item.userRating) : null,
             watched_date: item.watchedDate ? item.watchedDate.toISOString() : null,

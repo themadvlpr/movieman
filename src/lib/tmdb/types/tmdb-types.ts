@@ -172,7 +172,6 @@ export interface LibraryResult {
     poster_path: string | null;
     vote_average: number;
     release_date: string;
-    overview: string | null;
     genre_ids?: number[];
     user_rating: number | null;
     watched_date: string | null;

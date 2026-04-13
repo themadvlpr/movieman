@@ -48,7 +48,6 @@ const LibraryMediaCard = ({
                         posterEn: item.poster_path,
                         tmdbRating: item.vote_average,
                         releaseDate: item.release_date,
-                        userDescription: item.overview
                     }}
                     type={item.media_type as 'movie' | 'tv'}
                     detailPage={false}
