@@ -147,6 +147,9 @@ export const translations = {
             addToCollection: 'Add to collection',
             createNewList: 'Create new list',
             shareLibrary: 'Share library',
+            areYouSure: 'Are you sure you want to delete this list?',
+            listRenamed: 'List renamed',
+            listDeleted: 'List deleted',
         },
         genres: {
             28: "Action",
@@ -336,6 +339,9 @@ export const translations = {
             addToCollection: 'Добавить в коллекцию',
             createNewList: 'Создать новый список',
             shareLibrary: 'Поделиться библиотекой',
+            areYouSure: 'Вы уверены, что хотите удалить этот список?',
+            listRenamed: 'Список переименован',
+            listDeleted: 'Список удален',
         },
         genres: {
             28: "Экшен",
@@ -525,6 +531,9 @@ export const translations = {
             addToCollection: 'Додати до колекції',
             createNewList: 'Створити новий список',
             shareLibrary: 'Поділитися бібліотекою',
+            areYouSure: 'Ви впевнені, що хочете видалити цей список?',
+            listRenamed: 'Список перейменовано',
+            listDeleted: 'Список видалено',
         },
         genres: {
             28: "Екшн",

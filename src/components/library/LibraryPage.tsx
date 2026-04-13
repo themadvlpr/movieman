@@ -234,7 +234,6 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
         },
         initialPageParam: 1,
         staleTime: 1000 * 60 * 5, // 5 minutes
-        refetchOnMount: "always",
     });
 
     const libraryData = useMemo(() => {
@@ -279,11 +278,17 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
         }, 50)
     }, [status])
 
+    const hasNextPageRef = useRef<boolean>(false);
+    hasNextPageRef.current = !!hasNextPage;
+
+    const isFetchingNextRef = useRef<boolean>(false);
+    isFetchingNextRef.current = !!isFetchingNextPage;
+
     // Intersection Observer for infinite scroll
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             const target = entries[0]
-            if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+            if (target.isIntersecting && hasNextPageRef.current && !isFetchingNextRef.current) {
                 fetchNextPage()
             }
         }, {
@@ -291,16 +296,18 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
             rootMargin: '200px'
         })
 
-        if (loaderRef.current) {
-            observer.observe(loaderRef.current)
+        const currentLoader = loaderRef.current;
+        if (currentLoader) {
+            observer.observe(currentLoader)
         }
 
         return () => {
-            if (loaderRef.current) {
-                observer.unobserve(loaderRef.current)
+            if (currentLoader) {
+                observer.unobserve(currentLoader)
             }
+            observer.disconnect()
         }
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+    }, [fetchNextPage])
 
 
     const currentCategoryDataCount = (type: 'tv' | 'movie') => {
@@ -465,7 +472,7 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
                                         </button>
                                         <button
                                             onClick={() => {
-                                                if (window.confirm("Are you sure you want to delete this list?")) {
+                                                if (window.confirm(t('common', 'areYouSure') || "Are you sure you want to delete this list?")) {
                                                     if (activeListId) deleteList(activeListId);
                                                 }
                                             }}
