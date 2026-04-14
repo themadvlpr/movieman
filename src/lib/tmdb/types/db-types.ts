@@ -30,4 +30,5 @@ export interface dbMediaStatus {
     isWatched?: boolean;
     isFavorite?: boolean;
     isWishlist?: boolean;
+    listIds?: string[];
 }

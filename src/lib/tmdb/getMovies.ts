@@ -67,6 +67,7 @@ export async function getMoviesAction(
                     isWatched: !!status?.isWatched,
                     isWishlist: !!status?.isWishlist,
                     isFavorite: !!status?.isFavorite,
+                    listIds: status?.listIds || []
                 }
             };
         });

@@ -44,7 +44,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
         queryKey: ['movie', id],
         queryFn: async () => {
             const movieData = await getMovieDetails(id, tmdbLang);
-            let dbStatus = { isWatched: false, isWishlist: false, isFavorite: false };
+            let dbStatus = { isWatched: false, isWishlist: false, isFavorite: false, listIds: [] };
 
             if (userId) {
                 const statuses = await getUserMediaStatus(userId, [Number(id)], "movie");

@@ -63,6 +63,7 @@ export async function getTVSeriesAction(
                     isWatched: !!status.isWatched,
                     isWishlist: !!status.isWishlist,
                     isFavorite: !!status.isFavorite,
+                    listIds: status?.listIds || []
                 }
             };
         });

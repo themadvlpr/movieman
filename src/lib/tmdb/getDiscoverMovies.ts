@@ -59,6 +59,7 @@ export async function getDiscoverMovies(genre: string, userId: string, page = "1
                     isWatched: !!status?.isWatched,
                     isWishlist: !!status?.isWishlist,
                     isFavorite: !!status?.isFavorite,
+                    listIds: status?.listIds || []
                 }
             };
         });

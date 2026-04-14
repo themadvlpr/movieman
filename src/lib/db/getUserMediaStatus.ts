@@ -25,9 +25,39 @@ export async function getUserMediaStatus(userId: string | undefined, movieIds: n
             }
         });
 
-        return dbEntries.reduce((acc, entry) => {
-            const externalId = entry.media.tmdbId;
-            acc[externalId] = entry;
+        const listEntries = await prisma.userListItem.findMany({
+            where: {
+                list: { userId },
+                media: {
+                    tmdbId: { in: movieIds },
+                    type
+                }
+            },
+            select: {
+                listId: true,
+                media: {
+                    select: { tmdbId: true }
+                }
+            }
+        });
+
+        const listIdsMap = listEntries.reduce((acc, entry) => {
+            const tmdbId = entry.media.tmdbId;
+            if (!acc[tmdbId]) acc[tmdbId] = [];
+            acc[tmdbId].push(entry.listId);
+            return acc;
+        }, {} as Record<number, string[]>);
+
+        return movieIds.reduce((acc, movieId) => {
+            const entry = dbEntries.find(e => e.media.tmdbId === movieId);
+            acc[movieId] = {
+                ...(entry || {
+                    isWatched: false,
+                    isWishlist: false,
+                    isFavorite: false,
+                }),
+                listIds: listIdsMap[movieId] || []
+            };
             return acc;
         }, {} as Record<number, any>);
 

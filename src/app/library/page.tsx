@@ -52,7 +52,18 @@ export default async function Library({ searchParams }: { searchParams: Promise<
     await queryClient.prefetchInfiniteQuery({
         queryKey,
         queryFn: async () => {
-            const res = await getLibraryAction(userId, category, type as any, sort as any, order as any, "1", TMDB_LANGUAGES[locale]);
+             const tmdbLang = locale === 'ru' ? 'ru-RU' : locale === 'ua' ? 'uk-UA' : 'en-US';
+             const res = await getLibraryAction(
+                userId, 
+                category, 
+                type as any, 
+                sort as any, 
+                order as any, 
+                "1", 
+                tmdbLang,
+                genre !== 'all' ? parseInt(genre) : null,
+                year !== 'all' ? year : null
+            );
             return res.success ? res.data : null;
         },
         initialPageParam: 1,

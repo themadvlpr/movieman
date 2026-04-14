@@ -166,7 +166,7 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
     const handleExport = async () => {
         try {
             setIsExporting(true);
-            toast.loading("Gathering all your media...");
+            toast.loading(t('common', 'gatheringAllYourMedia'));
 
             const result = await exportAllUserMediaAction(userId, TMDB_LANGUAGES[locale as Locale]);
 
@@ -189,7 +189,7 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
             const fileName = `MyLibrary_AllMedia_${new Date().toISOString().split('T')[0]}.xlsx`;
             XLSX.writeFile(workbook, fileName);
 
-            toast.success("Library exported successfully!");
+            toast.success(t('common', 'libraryExportedSuccessfully'));
         } catch (error) {
             console.error("Export Error: ", error);
             toast.dismiss();

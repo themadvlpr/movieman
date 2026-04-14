@@ -15,6 +15,7 @@ import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import { dbState } from '@/lib/tmdb/types/db-types'
 import { ExpandableMarkdown } from '@/components/ui/UserNote'
 import ShareButton from '@/components/ui/ShareButton'
+import Loader from '../ui/Loader'
 
 
 interface Props {
@@ -27,7 +28,7 @@ export default function MovieDetailContent({ data, userId }: Props) {
     const [imageLoading, setImageLoading] = useState(true);
     const { movie, credits, similarMovies, initialDbState } = data;
 
-
+    if (!movie) return <Loader />
 
     const [watchDate, setWatchDate] = useState(
         initialDbState?.watchedDate
@@ -43,10 +44,10 @@ export default function MovieDetailContent({ data, userId }: Props) {
     const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const newDate = e.target.value;
         setWatchDate(newDate);
-        const toastId = toast.loading("Saving date...");
+        const toastId = toast.loading(t('common', 'savingDate'));
         const result = await updateMediaDetailsAction(movie.id, 'movie', { watchedDate: new Date(newDate) });
         if (result.success) {
-            toast.success("Date updated", { id: toastId });
+            toast.success(t('common', 'dateUpdated'), { id: toastId });
         } else {
             toast.error(result.error || "Something went wrong", { id: toastId });
         }
@@ -55,10 +56,10 @@ export default function MovieDetailContent({ data, userId }: Props) {
     const handleRatingChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newRating = parseInt(e.target.value);
         setPersonalRating(newRating);
-        const toastId = toast.loading("Saving rating...");
+        const toastId = toast.loading(t('common', 'savingRating'));
         const result = await updateMediaDetailsAction(movie.id, 'movie', { userRating: newRating });
         if (result.success) {
-            toast.success("Rating updated", { id: toastId });
+            toast.success(t('common', 'ratingUpdated'), { id: toastId });
         } else {
             toast.error(result.error || "Something went wrong", { id: toastId });
         }
@@ -71,14 +72,14 @@ export default function MovieDetailContent({ data, userId }: Props) {
         const timer = setTimeout(async () => {
             if (initialDbState?.isWatched && currentNote !== savedNote) {
 
-                const toastId = toast.loading("Saving comment...");
+                const toastId = toast.loading(t('common', 'savingComment'));
 
                 const result = await updateMediaDetailsAction(movie.id, 'movie', {
                     userComment: currentNote
                 });
 
                 if (result.success) {
-                    toast.success("Comment updated", { id: toastId });
+                    toast.success(t('common', 'commentUpdated'), { id: toastId });
                 } else {
                     toast.error(result.error || "Something went wrong", { id: toastId });
                 }
@@ -90,14 +91,14 @@ export default function MovieDetailContent({ data, userId }: Props) {
 
     const handleSaveNote = async () => {
         setEditNote(false);
-        const toastId = toast.loading("Saving comment...");
+        const toastId = toast.loading(t('common', 'savingComment'));
 
         const result = await updateMediaDetailsAction(movie.id, 'movie', {
             userComment: note
         });
 
         if (result.success) {
-            toast.success("Comment updated", { id: toastId });
+            toast.success(t('common', 'commentUpdated'), { id: toastId });
         } else {
             toast.error(result.error || "Something went wrong", { id: toastId });
         }

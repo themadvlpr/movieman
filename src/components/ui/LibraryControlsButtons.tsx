@@ -40,7 +40,7 @@ export default function LibraryControlsButtons({
 
     const { t } = useTranslation();
     const { dbState, toggleAction } = useMediaActions(mediaId, userId, type, initialState);
-    const { userLists, isLoading, toggleListAction, createListAction } = useUserLists(mediaId, userId, type);
+    const { userLists, isLoading, toggleListAction, createListAction } = useUserLists(mediaId, userId, type, initialState.listIds);
 
     const [isCreatingList, setIsCreatingList] = useState(false);
     const [newListName, setNewListName] = useState("");

@@ -20,7 +20,7 @@ export async function getLibraryAction(
     if (!userId) return { success: false, error: 'Unauthorized' };
 
     const page = parseInt(pageParam, 10) || 1;
-    const pageSize = 20;
+    const pageSize = 48;
 
     const whereClause: Prisma.UserMediaWhereInput = {
         userId: userId,
@@ -99,7 +99,16 @@ export async function getLibraryAction(
                 orderBy: orderByClause,
                 skip: (page - 1) * pageSize,
                 take: pageSize,
-                include: { media: true }
+                include: { 
+                    media: {
+                        include: {
+                            listItems: {
+                                where: { list: { userId } },
+                                select: { listId: true }
+                            }
+                        }
+                    } 
+                }
             })
         ]);
 
@@ -117,6 +126,7 @@ export async function getLibraryAction(
                 isWatched: item.isWatched,
                 isFavorite: item.isFavorite,
                 isWishlist: item.isWishlist,
+                listIds: item.media.listItems.map(li => li.listId)
             }
         }));
 

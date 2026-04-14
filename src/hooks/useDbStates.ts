@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toggleMediaStatusAction } from "@/lib/actions/toggleMediaStatus";
 import { dbMediaStatus, dbState } from "@/lib/tmdb/types/db-types";
 import { toast } from "sonner";
+import { useTranslation } from "@/providers/LocaleProvider";
 
 export function useMediaActions(
     mediaId: number,
@@ -10,18 +11,14 @@ export function useMediaActions(
     initialState?: dbMediaStatus
 ) {
     const queryClient = useQueryClient();
-    const queryKey = ["media-state", mediaId, userId];
+    const { t, locale } = useTranslation();
 
-    const actionLabels: Record<string, string> = {
-        isWatched: "Watched",
-        isFavorite: "Favorite",
-        isWishlist: "Wishlist"
-    };
+    const queryKey = ["media-state", mediaId, userId, locale];
 
     const { data: currentDbState } = useQuery({
         queryKey,
         queryFn: async () => {
-            const res = await fetch(`/api/db?mediaId=${mediaId}&userId=${userId}&type=${type}`);
+            const res = await fetch(`/api/db?mediaId=${mediaId}&userId=${userId}&type=${type}&lang=${locale}`);
             return res.json();
         },
         initialData: initialState,
@@ -50,23 +47,28 @@ export function useMediaActions(
             const { action, mediaData } = variables;
             const isNowActive = queryClient.getQueryData<dbMediaStatus>(queryKey)?.[action as keyof dbMediaStatus];
 
-            const label = actionLabels[action] || "Library";
-            const title = mediaData.titleEn || mediaData.titleRu || mediaData.titleUk || "Media";
+            const title = locale === 'ru' ? mediaData.titleRu
+                : locale === 'ua' ? mediaData.titleUk
+                    : mediaData.titleEn || "Media";
+
+
+            const label = t('common', action.slice(2).toLowerCase()).toLocaleLowerCase();
+
 
             if (isNowActive) {
-                toast.success(`Added to ${label}`, {
+                toast.success(t('common', 'addedTo') + ' ' + label, {
                     description: title,
                 });
             } else {
-                toast.info(`Removed from ${label}`, {
+                toast.info(t('common', 'removedFrom') + ' ' + label, {
                     description: title,
                 });
             }
         },
         onError: (err, variables, context) => {
             queryClient.setQueryData(queryKey, context?.previous);
-            toast.error("Failed to update library", {
-                description: "Please try again later."
+            toast.error(t('errors', 'updateFailed'), {
+                description: t('errors', 'tryAgain')
             });
         },
     });

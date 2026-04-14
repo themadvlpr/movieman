@@ -44,7 +44,7 @@ export default async function TvSeriesPage({ params }: TvSeriesPageProps) {
         queryKey: ['tv', id],
         queryFn: async () => {
             const tvData = await getTVDetails(id, tmdbLang);
-            let dbStatus = { isWatched: false, isWishlist: false, isFavorite: false };
+            let dbStatus = { isWatched: false, isWishlist: false, isFavorite: false, listIds: [] };
 
             if (userId) {
                 const statuses = await getUserMediaStatus(userId, [Number(id)], "tv");

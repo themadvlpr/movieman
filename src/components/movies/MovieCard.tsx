@@ -187,6 +187,7 @@ export default memo(MovieCard, (prevProps, nextProps) => {
         prevProps.movie.initialDbState?.isWatched === nextProps.movie.initialDbState?.isWatched &&
         prevProps.movie.initialDbState?.isFavorite === nextProps.movie.initialDbState?.isFavorite &&
         prevProps.movie.initialDbState?.userRating === nextProps.movie.initialDbState?.userRating &&
+        JSON.stringify(prevProps.movie.initialDbState?.listIds) === JSON.stringify(nextProps.movie.initialDbState?.listIds) &&
         prevProps.viewMode === nextProps.viewMode &&
         prevProps.activeCategory === nextProps.activeCategory &&
         prevProps.idx === nextProps.idx
