@@ -341,7 +341,7 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
                                         <span className="text-xl sm:text-3xl font-bold text-white">{publicProfile?.name?.[0]?.toUpperCase() || '?'}</span>
                                     </div>
                                 )}
-                                <span>{publicProfile?.sharedListName ? publicProfile.sharedListName : `${publicProfile?.name}'s ${t('nav', 'library')}`}</span>
+                                <span>{publicProfile?.sharedListName ? publicProfile.sharedListName : `${publicProfile?.name?.split(' ')[0]}: ${t('nav', 'library').split(' ')[1].toLowerCase()}`}</span>
                             </div>
                         ) : (
                             <span>{t('nav', 'library')}</span>

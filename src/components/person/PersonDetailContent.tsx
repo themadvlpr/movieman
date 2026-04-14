@@ -96,7 +96,7 @@ export default function PersonDetailContent({ data }: { data: PersonDetailProps 
                                     <div className='flex items-center gap-1.5 text-zinc-300'>
                                         <span className='text-zinc-800'>|</span>
                                         <Calendar className='w-4 h-4' />
-                                        <span>{person.birthday.split('-').reverse().join('-')}{person.deathday && ` — ${person.deathday}`}</span>
+                                        <span>{person.birthday.split('-').reverse().join('.')}{person.deathday && ` — ${person.deathday.split('-').reverse().join('.')}`}</span>
                                     </div>
                                 )}
                                 {person.place_of_birth && (

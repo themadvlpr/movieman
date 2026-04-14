@@ -28,8 +28,6 @@ export default function MovieDetailContent({ data, userId }: Props) {
     const [imageLoading, setImageLoading] = useState(true);
     const { movie, credits, similarMovies, initialDbState } = data;
 
-    if (!movie) return <Loader />
-
     const [watchDate, setWatchDate] = useState(
         initialDbState?.watchedDate
             ? new Date(initialDbState.watchedDate).toISOString().split('T')[0]
@@ -66,6 +64,8 @@ export default function MovieDetailContent({ data, userId }: Props) {
     }
 
     useEffect(() => {
+        if (!movie.id) return;
+
         const currentNote = note.trim();
         const savedNote = initialDbState?.userComment || '';
 
@@ -123,6 +123,9 @@ export default function MovieDetailContent({ data, userId }: Props) {
         const m = minutes % 60
         return `${h}h ${m}m`
     }
+
+    if (!movie) return <Loader />
+
 
     return (
         <div className='flex-1 relative bg-black text-white min-h-screen'>
@@ -205,7 +208,7 @@ export default function MovieDetailContent({ data, userId }: Props) {
                                 )}
                                 <div className='flex items-center gap-1.5 text-zinc-300'>
                                     <Calendar className='w-4 h-4' />
-                                    <span>{movie.release_date.split('-').reverse().join('-')}</span>
+                                    <span>{movie.release_date.split('-').reverse().join('.')}</span>
                                 </div>
                                 {movie.production_countries && movie.production_countries.length > 0 && (
                                     <>

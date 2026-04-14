@@ -8,6 +8,7 @@ import { useTranslation } from "@/providers/LocaleProvider";
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 import TvSeriesDetailContent from './TvSeriesDetailContent';
 import { TvSeriesDetailProps } from '@/lib/tmdb/types/tmdb-types';
+import { Loader2 } from 'lucide-react'
 
 
 
@@ -24,7 +25,7 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 	});
 
 
-	if (!data) return <Loader />
+	if (!data) return <Loader2 />
 
 	return <TvSeriesDetailContent data={data} userId={userId} />
 }

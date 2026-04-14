@@ -61,9 +61,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
     };
 
 
-    if (!movies || movies.length === 0) {
-        return <Loader />;
-    }
+
 
 
     const currentMovie = moviesWithBackdrops[currentPage];
@@ -75,13 +73,15 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
         vote_average: rating,
         release_date,
         tagline,
-        overview,
         backdrop_path,
         origin_country: country,
         logo_path,
         initialDbState
     } = currentMovie;
 
+    if (!movies || movies.length === 0) {
+        return <Loader />;
+    }
 
     return (
         <div className='flex-1 relative flex flex-col justify-end bg-black lg:bg-[#010101]'

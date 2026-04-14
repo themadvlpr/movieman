@@ -71,6 +71,8 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
     }
 
     useEffect(() => {
+        if (!series.id) return;
+
         const currentNote = note.trim();
         const savedNote = initialDbState?.userComment || '';
 
@@ -244,13 +246,13 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                                     >
                                         {series.first_air_date ? (
                                             showFullDate
-                                                ? series.first_air_date.split('-').reverse().join('-')
+                                                ? series.first_air_date.split('-').reverse().join('.')
                                                 : series.first_air_date.split('-')[0]
                                         ) : 'Unknown'}
 
                                         {(series.status === 'Ended' || series.status === 'Canceled') && series.last_air_date ? (
                                             showFullDate
-                                                ? ` – ${series.last_air_date.split('-').reverse().join('-')}`
+                                                ? ` – ${series.last_air_date.split('-').reverse().join('.')}`
                                                 : ` – ${series.last_air_date.split('-')[0]}`
                                         ) : (
                                             !series.last_air_date && series.status !== 'Ended' ? ' – Present' : ''
