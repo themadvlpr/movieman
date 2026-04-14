@@ -43,6 +43,7 @@ let _libraryScrollY = 0
 interface Props {
     initialViewMode: 'grid' | 'list';
     userId: string;
+    sessionUserId?: string;
     isPublic?: boolean;
     publicProfile?: { name: string, image: string | null, sharedListName?: string };
 }
@@ -52,7 +53,7 @@ type SortOrder = 'asc' | 'desc';
 type MediaType = 'all' | 'movie' | 'tv';
 type CategoryType = 'watched' | 'wishlist' | 'favorite';
 
-export default function LibraryPage({ initialViewMode, userId, isPublic, publicProfile }: Props) {
+export default function LibraryPage({ initialViewMode, userId, sessionUserId, isPublic, publicProfile }: Props) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -64,9 +65,9 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
     const [showFilters, setShowFilters] = useState(false);
 
     const { data: userLists = [] } = useQuery({
-        queryKey: ['library-user-lists', userId],
+        queryKey: ['library-user-lists', isPublic ? sessionUserId : userId],
         queryFn: async () => await getUserListsAction(),
-        enabled: !!userId && !isPublic,
+        enabled: isPublic ? !!sessionUserId : !!userId,
         staleTime: 1000 * 60 * 5,
     });
 
@@ -208,7 +209,7 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
         isFetchingNextPage,
         status,
     } = useInfiniteQuery({
-        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder, locale, selectedGenre, selectedYear],
+        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder, locale, selectedGenre, selectedYear, sessionUserId],
         queryFn: async ({ pageParam = 1 }) => {
             const result = await getLibraryAction(
                 userId,
@@ -219,7 +220,8 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
                 pageParam.toString(),
                 TMDB_LANGUAGES[locale as Locale],
                 selectedGenre !== 'all' ? parseInt(selectedGenre) : null,
-                selectedYear !== 'all' ? selectedYear : null
+                selectedYear !== 'all' ? selectedYear : null,
+                sessionUserId
             );
 
             if (!result || !result.success) throw new Error(result?.error || "Error fetching library");
@@ -742,7 +744,9 @@ export default function LibraryPage({ initialViewMode, userId, isPublic, publicP
                                     viewMode={viewMode}
                                     activeCategory={activeCategory}
                                     userId={userId}
+                                    sessionUserId={sessionUserId}
                                     isPublic={isPublic}
+                                    publicName={publicProfile?.name.split(' ')[0] || ''}
                                     onItemClick={handleItemClick}
                                 />
                             ))}

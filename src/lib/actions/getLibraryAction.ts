@@ -15,7 +15,8 @@ export async function getLibraryAction(
     pageParam: string,
     tmdbLang: string = 'en-US',
     genreId?: number | null,
-    year?: string | null
+    year?: string | null,
+    viewerUserId?: string
 ) {
     if (!userId) return { success: false, error: 'Unauthorized' };
 
@@ -103,7 +104,7 @@ export async function getLibraryAction(
                     media: {
                         include: {
                             listItems: {
-                                where: { list: { userId } },
+                                where: { list: { userId: viewerUserId || userId } },
                                 select: { listId: true }
                             }
                         }
@@ -112,23 +113,43 @@ export async function getLibraryAction(
             })
         ]);
 
-        const mappedResults: LibraryResult[] = userMediaList.map(item => ({
-            id: item.media.tmdbId,
-            media_type: item.media.type as 'movie' | 'tv',
-            title: (item.media as any)[titleKey] || item.media.titleEn || '',
-            poster_path: (item.media as any)[posterKey] || item.media.posterEn || null,
-            vote_average: Number(item.media.tmdbRating) || 0,
-            release_date: item.media.releaseDate ? item.media.releaseDate.toISOString().split('T')[0] : '',
-            genre_ids: item.media.genreIds ? item.media.genreIds.split(',').map(Number) : [],
-            user_rating: item.userRating ? Number(item.userRating) : null,
-            watched_date: item.watchedDate ? item.watchedDate.toISOString() : null,
-            initialDbState: {
-                isWatched: item.isWatched,
-                isFavorite: item.isFavorite,
-                isWishlist: item.isWishlist,
-                listIds: item.media.listItems.map(li => li.listId)
-            }
-        }));
+        let viewerMediaEntries: any[] = [];
+        if (viewerUserId && viewerUserId !== userId) {
+            const tmdbIds = userMediaList.map(item => item.media.tmdbId);
+            viewerMediaEntries = await prisma.userMedia.findMany({
+                where: {
+                    userId: viewerUserId,
+                    media: { tmdbId: { in: tmdbIds } }
+                }
+            });
+        }
+
+        const mappedResults: LibraryResult[] = userMediaList.map(item => {
+            const viewerEntry = viewerUserId && viewerUserId !== userId 
+                ? viewerMediaEntries.find(ve => ve.userId === viewerUserId && ve.mediaId === item.mediaId)
+                : item;
+
+            return {
+                id: item.media.tmdbId,
+                media_type: item.media.type as 'movie' | 'tv',
+                title: (item.media as any)[titleKey] || item.media.titleEn || '',
+                poster_path: (item.media as any)[posterKey] || item.media.posterEn || null,
+                vote_average: Number(item.media.tmdbRating) || 0,
+                release_date: item.media.releaseDate ? item.media.releaseDate.toISOString().split('T')[0] : '',
+                genre_ids: item.media.genreIds ? item.media.genreIds.split(',').map(Number) : [],
+                // item.userRating is the OWNER's rating
+                user_rating: item.userRating ? Number(item.userRating) : null,
+                // viewerEntry.userRating is the VIEWER's rating (if viewerEntry exists and is different from item)
+                viewer_rating: (viewerUserId && viewerUserId !== userId && viewerEntry) ? (viewerEntry.userRating ? Number(viewerEntry.userRating) : null) : undefined,
+                watched_date: viewerEntry?.watchedDate ? viewerEntry.watchedDate.toISOString() : null,
+                initialDbState: {
+                    isWatched: !!viewerEntry?.isWatched,
+                    isFavorite: !!viewerEntry?.isFavorite,
+                    isWishlist: !!viewerEntry?.isWishlist,
+                    listIds: item.media.listItems.map(li => li.listId)
+                }
+            };
+        });
 
 
         return {

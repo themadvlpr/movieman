@@ -12,7 +12,9 @@ interface LibraryMediaCardProps {
     viewMode: 'grid' | 'list';
     activeCategory: 'watched' | 'wishlist' | 'favorite' | string;
     userId: string;
+    sessionUserId?: string;
     isPublic?: boolean;
+    publicName: string;
     onItemClick: () => void;
 }
 
@@ -22,7 +24,9 @@ const LibraryMediaCard = ({
     viewMode,
     activeCategory,
     userId,
+    sessionUserId,
     isPublic,
+    publicName,
     onItemClick
 }: LibraryMediaCardProps) => {
     const { t } = useTranslation();
@@ -37,7 +41,10 @@ const LibraryMediaCard = ({
         </div>
     );
 
-    const controls = !isPublic ? (
+    const showControls = !isPublic || !!sessionUserId;
+    const targetUserId = isPublic ? sessionUserId : userId;
+
+    const controls = showControls ? (
         <div className={isGrid
             ? "absolute top-0 inset-0 pointer-events-none z-20 flex flex-col items-center justify-end"
             : "absolute bottom-6 right-6 z-30 pointer-events-none translate-x-4 group-hover:translate-x-0 transition-all duration-300"
@@ -53,7 +60,7 @@ const LibraryMediaCard = ({
                     }}
                     type={item.media_type as 'movie' | 'tv'}
                     detailPage={false}
-                    userId={userId}
+                    userId={targetUserId || ""}
                     initialState={item.initialDbState}
                 />
             </div>
@@ -132,10 +139,18 @@ const LibraryMediaCard = ({
                                     {item.release_date?.slice(0, 4)}
                                 </span>
                                 {item.user_rating != null && item.user_rating > 0 && (
+                                    <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md ${isPublic && item.viewer_rating != null ? 'bg-white/5 text-zinc-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                                        <Star className={`w-3 h-3 ${isPublic && item.viewer_rating != null ? 'fill-zinc-400 text-zinc-400' : 'fill-blue-400 text-blue-400'}`} />
+                                        <span className="text-[10px] font-bold">
+                                            {item.user_rating.toFixed(1)}
+                                        </span>
+                                    </div>
+                                )}
+                                {isPublic && item.viewer_rating != null && item.viewer_rating > 0 && (
                                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
                                         <Star className="w-3 h-3 fill-blue-400 text-blue-400" />
                                         <span className="text-[10px] font-bold">
-                                            {item.user_rating.toFixed(1)}
+                                            {item.viewer_rating.toFixed(1)}
                                         </span>
                                     </div>
                                 )}
@@ -189,10 +204,18 @@ const LibraryMediaCard = ({
                                         </div>
                                     )}
                                     {item.user_rating != null && item.user_rating > 0 && (
+                                        <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-white/10">
+                                            <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400/50 text-blue-400/50" />
+                                            <span className="text-white text-xs sm:text-sm font-bold">
+                                                {isPublic ? publicName : t('common', 'myRating')}: {item.user_rating.toFixed(1)}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {isPublic && item.viewer_rating != null && item.viewer_rating > 0 && (
                                         <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
                                             <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
                                             <span className="text-xs sm:text-sm font-bold">
-                                                {t('common', 'myRating')}: {item.user_rating.toFixed(1)}
+                                                {t('common', 'myRating')}: {item.viewer_rating.toFixed(1)}
                                             </span>
                                         </div>
                                     )}
@@ -229,12 +252,14 @@ export default memo(LibraryMediaCard, (prevProps, nextProps) => {
         prevProps.item.title === nextProps.item.title &&
         prevProps.item.poster_path === nextProps.item.poster_path &&
         prevProps.item.user_rating === nextProps.item.user_rating &&
+        prevProps.item.viewer_rating === nextProps.item.viewer_rating &&
         prevProps.item.watched_date === nextProps.item.watched_date &&
         prevProps.item.initialDbState?.isWatched === nextProps.item.initialDbState?.isWatched &&
         prevProps.item.initialDbState?.isFavorite === nextProps.item.initialDbState?.isFavorite &&
         prevProps.item.initialDbState?.isWishlist === nextProps.item.initialDbState?.isWishlist &&
         prevProps.viewMode === nextProps.viewMode &&
         prevProps.activeCategory === nextProps.activeCategory &&
+        prevProps.sessionUserId === nextProps.sessionUserId &&
         prevProps.idx === nextProps.idx
     );
 });

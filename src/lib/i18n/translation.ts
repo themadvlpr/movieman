@@ -33,6 +33,8 @@ export const translations = {
             theMovieManPhilosophyDescription: "We believe that a movie collection is more than just data. It's a journey through stories that shape us. MovieMan was built to make that journey more organized, beautiful, and accessible.",
             metaMoviesDestiption: "Discover the most popular movies trending right now. Watch trailers and explore cast information on MovieMan.",
             metaTvSeriesDestiption: "Discover the most popular TV series trending right now. Watch trailers and explore cast information on MovieMan.",
+            metaLibraryDestiption: "Your personal collection of movies and TV series. Track watched movies, rate them, and share with friends.",
+            metaShareListDestiption: "Share your movie and TV series collection with friends. Watch trailers and explore cast information on MovieMan.",
         },
         common: {
             tv: 'TV',
@@ -231,6 +233,8 @@ export const translations = {
             theMovieManPhilosophyDescription: "Мы верим, что коллекция фильмов - это больше, чем просто данные. Это путешествие сквозь истории, которые нас формируют. MovieMan был создан, чтобы сделать это путешествие более организованным, красивым и доступным.",
             metaMoviesDestiption: "Откройте для себя самые популярные фильмы прямо сейчас. Смотрите трейлеры и изучайте информацию об актерах на MovieMan.",
             metaTvSeriesDestiption: "Откройте для себя самые популярные сериалы прямо сейчас. Смотрите трейлеры и изучайте информацию об актерах на MovieMan.",
+            metaLibraryDestiption: "Ваша личная коллекция фильмов и сериалов. Отслеживайте просмотренные фильмы, оценивайте их и делитесь с друзьями.",
+            metaShareListDestiption: "Поделитесь своей коллекцией фильмов и сериалов с друзьями. Смотрите трейлеры и изучайте информацию об актерах на MovieMan.",
         },
         categories: {
             popular: 'Популярные',
@@ -435,6 +439,8 @@ export const translations = {
             theMovieManPhilosophyDescription: "Ми віримо, що колекція фільмів - це більше, ніж просто дані. Це подорож крізь історії, які нас формують. MovieMan був створений, щоб зробити цю подорож більш організованою, красивою та доступною.",
             metaMoviesDestiption: "Відкрийте для себе найпопулярніші фільми прямо зараз. Дивіться трейлери та вивчайте інформацію про акторів на MovieMan.",
             metaTvSeriesDestiption: "Відкрийте для себе найпопулярніші серіали прямо зараз. Дивіться трейлери та вивчайте інформацію про акторів на MovieMan.",
+            metaLibraryDestiption: "Ваша особиста колекція фільмів та серіалів. Відстежуйте переглянуті фільми, оцінюйте їх та діліться з друзями.",
+            metaShareListDestiption: "Поділіться своєю колекцією фільмів та серіалів з друзями. Дивіться трейлери та вивчайте інформацію про акторів на MovieMan.",
         },
         categories: {
             popular: 'Популярні',

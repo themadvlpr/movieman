@@ -6,19 +6,21 @@ import { getUserListsAction } from "@/lib/actions/userListsActions";
 import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import { getLocale } from "@/lib/i18n/get-locale";
-import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
+import { translations } from "@/lib/i18n/translation";
 
 
-export const metadata = {
-    title: "My Library | MovieMan",
-    description:
-        "Your personal library of movies and TV series on MovieMan.",
-    openGraph: {
-        title: "My Library | MovieMan",
-        description: "Your personal library of movies and TV series.",
-    },
-};
 
+export async function generateMetadata() {
+
+    const locale = await getLocale();
+
+    const dict = translations[locale] || translations.en;
+
+    return {
+        title: `${dict.nav.library} | MovieMan`,
+        description: dict.about.metaLibraryDestiption,
+    };
+}
 
 export default async function Library({ searchParams }: { searchParams: Promise<{ category?: string, type?: string, sort?: string, order?: string, genre?: string, year?: string }> }) {
     const session = await getAuthSession();
@@ -32,7 +34,6 @@ export default async function Library({ searchParams }: { searchParams: Promise<
     const viewMode = cookieStore.get('libraryViewMode')?.value || 'grid';
 
     const locale = await getLocale();
-    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
 
     const queryClient = new QueryClient();
 
@@ -47,22 +48,23 @@ export default async function Library({ searchParams }: { searchParams: Promise<
         year = 'all'
     } = params;
 
-    const queryKey = ['library-list', category, type, sort, order, locale, genre, year];
+    const queryKey = ['library-list', category, type, sort, order, locale, genre, year, userId];
 
     await queryClient.prefetchInfiniteQuery({
         queryKey,
         queryFn: async () => {
-             const tmdbLang = locale === 'ru' ? 'ru-RU' : locale === 'ua' ? 'uk-UA' : 'en-US';
-             const res = await getLibraryAction(
-                userId, 
-                category, 
-                type as any, 
-                sort as any, 
-                order as any, 
-                "1", 
+            const tmdbLang = locale === 'ru' ? 'ru-RU' : locale === 'ua' ? 'uk-UA' : 'en-US';
+            const res = await getLibraryAction(
+                userId,
+                category,
+                type as any,
+                sort as any,
+                order as any,
+                "1",
                 tmdbLang,
                 genre !== 'all' ? parseInt(genre) : null,
-                year !== 'all' ? year : null
+                year !== 'all' ? year : null,
+                userId
             );
             return res.success ? res.data : null;
         },
@@ -85,7 +87,7 @@ export default async function Library({ searchParams }: { searchParams: Promise<
 
     return (
         <HydrationBoundary state={serverState}>
-            <LibraryPage initialViewMode={viewMode as 'grid' | 'list'} userId={userId} />
+            <LibraryPage initialViewMode={viewMode as 'grid' | 'list'} userId={userId} sessionUserId={userId} />
         </HydrationBoundary>
     );
 }

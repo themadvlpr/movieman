@@ -174,6 +174,7 @@ export interface LibraryResult {
     release_date: string;
     genre_ids?: number[];
     user_rating: number | null;
+    viewer_rating?: number | null;
     watched_date: string | null;
     initialDbState: dbMediaStatus
 }
