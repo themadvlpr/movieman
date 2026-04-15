@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { Grid, List, ChevronLeft } from "lucide-react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
@@ -11,7 +11,6 @@ import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import MoviesPageList from "@/components/movies/MoviesPageList"
 import GenreCard from "@/components/movies/GenreCard"
-import Loader from "../ui/Loader"
 
 // Survives client-side navigation — only resets on full page reload
 let _moviesScrollY = 0
@@ -63,8 +62,6 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         router.push(pathname + '?' + params.toString(), { scroll: false });
     };
 
-
-    const loaderRef = useRef<HTMLDivElement>(null)
 
     const {
         data,
@@ -241,7 +238,6 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                         activeCategory={activeCategory}
                         userId={userId}
                         handleItemClick={handleItemClick}
-                        loaderRef={loaderRef}
                         hasNextPage={hasNextPage}
                         isFetchingNextPage={isFetchingNextPage}
                         fetchNextPage={fetchNextPage}

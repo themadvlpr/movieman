@@ -11,7 +11,6 @@ interface MoviesPageListProps {
     activeCategory: 'popular' | 'topRated' | 'upcoming' | 'genres';
     userId: string;
     handleItemClick: () => void;
-    loaderRef: React.RefObject<HTMLDivElement | null>;
     hasNextPage: boolean;
     isFetchingNextPage: boolean;
     fetchNextPage: () => void;
@@ -26,7 +25,6 @@ export default function MoviesPageList({
     activeCategory,
     userId,
     handleItemClick,
-    loaderRef,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
@@ -64,7 +62,7 @@ export default function MoviesPageList({
             if (parentRef.current) {
                 const rect = parentRef.current.getBoundingClientRect();
                 const absoluteTop = Math.floor(rect.top + window.scrollY);
-                
+
                 // Significant change or first measurement
                 if (Math.abs(absoluteTop - scrollMargin) > 5 || (scrollMargin === 0 && absoluteTop > 0)) {
                     setScrollMargin(absoluteTop);
@@ -75,7 +73,7 @@ export default function MoviesPageList({
         updateMargin();
         window.addEventListener('resize', updateMargin);
         const timers = [200, 1000, 3000].map(t => setTimeout(updateMargin, t));
-        
+
         return () => {
             window.removeEventListener('resize', updateMargin);
             timers.forEach(clearTimeout);
@@ -96,7 +94,7 @@ export default function MoviesPageList({
     const virtualizer = useWindowVirtualizer({
         count: rows.length,
         estimateSize: () => {
-            if (viewMode === 'list') return 180;
+            if (viewMode === 'list') return 250;
             if (columnCount >= 6) return 460;
             if (columnCount >= 4) return 420;
             if (columnCount >= 3) return 380;
@@ -113,10 +111,10 @@ export default function MoviesPageList({
     useEffect(() => {
         // Guard 1: Don't trigger if already loading, finished, or in error
         if (!hasNextPage || isFetchingNextPage || status !== 'success') return;
-        
+
         // Guard 2: Virtual rows must exist
         if (virtualRows.length === 0) return;
-        
+
         const lastItem = virtualRows[virtualRows.length - 1];
         if (!lastItem) return;
 
@@ -124,7 +122,7 @@ export default function MoviesPageList({
         // AND we haven't already requested a fetch for this specific list length.
         // This stops the recursive loop even if the browser is "stuck" at the bottom.
         if (lastItem.index >= rows.length - 4 && rows.length > lastFetchedIndexRef.current) {
-            lastFetchedIndexRef.current = rows.length; 
+            lastFetchedIndexRef.current = rows.length;
             fetchNextPage();
         }
     }, [virtualRows, rows.length, hasNextPage, isFetchingNextPage, status, fetchNextPage]);
@@ -156,10 +154,10 @@ export default function MoviesPageList({
     }
 
     return (
-        <div 
-            ref={parentRef} 
+        <div
+            ref={parentRef}
             className="relative w-full"
-            style={{ 
+            style={{
                 minHeight: '400px',
                 overflowAnchor: 'none', // DISABLE BROWSER SCROLL ANCHORING
             }}
@@ -181,15 +179,15 @@ export default function MoviesPageList({
                         <div
                             key={virtualRow.key}
                             data-index={virtualRow.index}
+                            ref={virtualizer.measureElement}
                             style={{
                                 position: 'absolute',
                                 top: 0,
                                 left: 0,
                                 width: '100%',
-                                height: `${virtualRow.size}px`,
                                 transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
-                                paddingBottom: viewMode === 'grid' 
-                                    ? (columnCount >= 4 ? '24px' : columnCount === 3 ? '16px' : '12px') 
+                                paddingBottom: viewMode === 'grid'
+                                    ? (columnCount >= 4 ? '24px' : columnCount === 3 ? '16px' : '12px')
                                     : '16px',
                                 pointerEvents: 'auto',
                             }}

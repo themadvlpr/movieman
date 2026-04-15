@@ -90,7 +90,6 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
     }, []);
 
 
-    const loaderRef = useRef<HTMLDivElement>(null)
     const hasRestored = useRef(false)
 
     // Restore scroll once the data is confirmed loaded in the DOM.
@@ -136,27 +135,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
         localStorage.setItem('seriesViewMode', viewMode)
     }, [viewMode]);
 
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            const target = entries[0]
-            if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
-                fetchNextPage()
-            }
-        }, {
-            threshold: 0.1,
-            rootMargin: '200px'
-        })
-
-        if (loaderRef.current) {
-            observer.observe(loaderRef.current)
-        }
-
-        return () => {
-            if (loaderRef.current) {
-                observer.unobserve(loaderRef.current)
-            }
-        }
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+    // Infinite scroll is now handled internally by TvSeriesPageList virtualization
 
     const categories = [
         { key: 'popular', label: t('categories', 'popular') },
@@ -235,7 +214,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                 )}
 
                 {/* ─── TV SERIES CONTENT ─── */}
-                {(activeCategory !== 'genres' || isGenreSelected) &&
+                {(activeCategory !== 'genres' || isGenreSelected) && (
                     <TvSeriesPageList
                         status={status}
                         tvData={tvData}
@@ -243,12 +222,13 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                         activeCategory={activeCategory}
                         userId={userId}
                         handleItemClick={handleItemClick}
-                        loaderRef={loaderRef}
                         hasNextPage={hasNextPage}
+                        isFetchingNextPage={isFetchingNextPage}
+                        fetchNextPage={fetchNextPage}
                         t={t}
                         setActiveCategory={setActiveCategory}
                     />
-                }
+                )}
 
 
             </div>
