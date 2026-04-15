@@ -18,6 +18,8 @@ interface LibraryMediaCardProps {
     onItemClick: () => void;
 }
 
+
+
 const LibraryMediaCard = ({
     item,
     idx,

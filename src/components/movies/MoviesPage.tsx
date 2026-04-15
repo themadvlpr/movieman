@@ -88,8 +88,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
             return undefined;
         },
         initialPageParam: 1,
-        staleTime: 1000 * 30, // 30 seconds
-        refetchOnMount: "always",
+        staleTime: 1000 * 60 * 5, // 5 minutes to keep it snappy
+        refetchOnMount: false, // Don't refetch on mount if we have data
     });
 
 
@@ -131,35 +131,14 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         const y = _moviesScrollY
         _moviesScrollY = 0
 
+        // Small delay to ensure virtualization has calculated rows
         setTimeout(() => {
             window.scrollTo({ top: y, behavior: 'instant' })
-        }, 50)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, 10)
     }, [status])
 
 
-    // Intersection Observer for infinite scroll
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            const target = entries[0]
-            if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
-                fetchNextPage()
-            }
-        }, {
-            threshold: 0.1,
-            rootMargin: '200px'
-        })
-
-        if (loaderRef.current) {
-            observer.observe(loaderRef.current)
-        }
-
-        return () => {
-            if (loaderRef.current) {
-                observer.unobserve(loaderRef.current)
-            }
-        }
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+    // Infinite scroll is now handled internally by MoviesPageList virtualization
 
     // Persist preferences
     useEffect(() => {
@@ -264,6 +243,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                         handleItemClick={handleItemClick}
                         loaderRef={loaderRef}
                         hasNextPage={hasNextPage}
+                        isFetchingNextPage={isFetchingNextPage}
+                        fetchNextPage={fetchNextPage}
                         t={t}
                         setActiveCategory={setActiveCategory}
                     />
