@@ -14,6 +14,7 @@ import * as XLSX from "xlsx"
 import { toast } from "sonner"
 import { useTranslation } from "@/providers/LocaleProvider"
 import LibraryMediaCard from "@/components/library/LibraryMediaCard"
+import LibraryPageList from "@/components/library/LibraryPageList"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import {
     Select,
@@ -200,7 +201,7 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
         }
     };
 
-    const loaderRef = useRef<HTMLDivElement>(null)
+    // Infinite scroll is now handled internally by LibraryPageList virtualization
 
     const {
         data,
@@ -280,36 +281,7 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
         }, 50)
     }, [status])
 
-    const hasNextPageRef = useRef<boolean>(false);
-    hasNextPageRef.current = !!hasNextPage;
-
-    const isFetchingNextRef = useRef<boolean>(false);
-    isFetchingNextRef.current = !!isFetchingNextPage;
-
-    // Intersection Observer for infinite scroll
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            const target = entries[0]
-            if (target.isIntersecting && hasNextPageRef.current && !isFetchingNextRef.current) {
-                fetchNextPage()
-            }
-        }, {
-            threshold: 0.1,
-            rootMargin: '200px'
-        })
-
-        const currentLoader = loaderRef.current;
-        if (currentLoader) {
-            observer.observe(currentLoader)
-        }
-
-        return () => {
-            if (currentLoader) {
-                observer.unobserve(currentLoader)
-            }
-            observer.disconnect()
-        }
-    }, [fetchNextPage])
+    // Infinite scroll state trackers
 
 
     const currentCategoryDataCount = (type: 'tv' | 'movie') => {
@@ -722,51 +694,26 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                     )}
                 </AnimatePresence>
 
-                {/* ─── LIBRARY CONTENT ─── */}
-                {status === 'pending' ? (
+                {status === 'pending' && libraryData.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-40">
                         <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
                     </div>
                 ) : libraryData.length > 0 ? (
-                    <div className="flex flex-col gap-10 mt-10">
-                        <div
-                            key={`${activeCategory}-${mediaType}-${sortBy}-${sortOrder}-${viewMode}`}
-                            className={viewMode === 'grid'
-                                ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6"
-                                : "flex flex-col gap-3 sm:gap-4"}
-                            style={{ animation: 'fadeInUp 0.4s ease-out' }}
-                        >
-                            {libraryData.map((item, idx) => (
-                                <LibraryMediaCard
-                                    key={`${item.id}-${idx}`}
-                                    item={item}
-                                    idx={idx}
-                                    viewMode={viewMode}
-                                    activeCategory={activeCategory}
-                                    userId={userId}
-                                    sessionUserId={sessionUserId}
-                                    isPublic={isPublic}
-                                    publicName={publicProfile?.name.split(' ')[0] || ''}
-                                    onItemClick={handleItemClick}
-                                />
-                            ))}
-                        </div>
-
-                        {/* Infinite Scroll Sentinel */}
-                        <div ref={loaderRef} className="flex justify-center py-10">
-                            {hasNextPage ? (
-                                <div className="flex flex-col items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
-                                    <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
-                                </div>
-                            ) : libraryData.length > 0 ? (
-                                <div className="flex flex-col items-center gap-2">
-                                    <div className="h-px w-20 bg-white/10" />
-                                    <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">{t('common', 'endOfList')}</span>
-                                </div>
-                            ) : null}
-                        </div>
-                    </div>
+                    <LibraryPageList
+                        status={status}
+                        libraryData={libraryData}
+                        viewMode={viewMode}
+                        activeCategory={activeCategory}
+                        userId={userId}
+                        sessionUserId={sessionUserId}
+                        isPublic={isPublic}
+                        publicName={publicProfile?.name.split(' ')[0] || ''}
+                        handleItemClick={handleItemClick}
+                        hasNextPage={hasNextPage}
+                        isFetchingNextPage={isFetchingNextPage}
+                        fetchNextPage={fetchNextPage}
+                        t={t}
+                    />
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
                         <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
