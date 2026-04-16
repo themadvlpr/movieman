@@ -16,7 +16,6 @@ interface MoviesPageListProps {
     isFetchingNextPage: boolean;
     fetchNextPage: () => void;
     t: (category: string, key: string) => string;
-    setActiveCategory: (category: 'popular' | 'topRated' | 'upcoming' | 'genres') => void;
 }
 
 export default function MoviesPageList({
@@ -30,7 +29,6 @@ export default function MoviesPageList({
     isFetchingNextPage,
     fetchNextPage,
     t,
-    setActiveCategory
 }: MoviesPageListProps) {
     const router = useRouter();
     const pathname = usePathname();
@@ -40,6 +38,7 @@ export default function MoviesPageList({
     const [columnCount, setColumnCount] = useState(2);
     const [scrollMargin, setScrollMargin] = useState(0);
     const lastFetchedIndexRef = useRef(-1);
+
 
     // Sync column count
     useEffect(() => {

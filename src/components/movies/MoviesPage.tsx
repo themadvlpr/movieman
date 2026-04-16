@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from "react"
-import { Grid, List, ChevronLeft, Loader2 } from "lucide-react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
@@ -10,7 +9,7 @@ import { getGenresAction } from "@/lib/tmdb/getGenres"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import MoviesPageList from "@/components/movies/MoviesPageList"
-import GenreCard from "@/components/ui/GenreCard"
+import MediaPageLayout from "@/components/movie-tv/MediaListPage"
 
 // Survives client-side navigation — only resets on full page reload
 let _moviesScrollY = 0
@@ -27,6 +26,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
     const pathname = usePathname()
     const searchParams = useSearchParams()
     const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
+    const [categoryStyle, setCategoryStyle] = useState<'popular' | 'topRated' | 'upcoming' | 'genres'>(searchParams.get('category') as 'popular' | 'topRated' | 'upcoming' | 'genres' || 'popular');
+
 
     const genreId = searchParams.get('genreId') || "";
     const isGenreSelected = !!genreId;
@@ -39,42 +40,38 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         return 'popular';
     })
 
-    const [categoryStyle, setCategoryStyle] = useState<'popular' | 'topRated' | 'upcoming' | 'genres'>(searchParams.get('category') as 'popular' | 'topRated' | 'upcoming' | 'genres' || 'popular');
+
+    const toggleView = useCallback(async (mode: 'grid' | 'list') => {
+        const newMode = mode === 'grid' ? 'list' : 'grid';
+        setViewMode(newMode);
+        await updateViewMode(newMode, 'movies');
+    }, []);
 
 
-    const toggleView = async (mode: 'grid' | 'list') => {
-        const newMode = mode === 'grid' ? 'list' : 'grid'
-        setViewMode(newMode)
-        await updateViewMode(newMode, 'movies')
-    }
-
-
-    // Sync state with URL if it changes (e.g. back button)
-    useEffect(() => {
-        const urlCategory = searchParams.get('category');
-        let newCategory: 'popular' | 'topRated' | 'upcoming' | 'genres' = 'popular';
-
-        if (urlCategory === 'top_rated' || urlCategory === 'topRated') newCategory = 'topRated';
-        else if (urlCategory === 'upcoming') newCategory = 'upcoming';
-        else if (urlCategory === 'genres') newCategory = 'genres';
-        else newCategory = 'popular';
-
-        if (newCategory !== activeCategory) {
-            setActiveCategory(newCategory);
-        }
-    }, [searchParams, activeCategory]);
-
-    // Update URL when category changes
-    const handleCategoryChange = (key: 'popular' | 'topRated' | 'upcoming' | 'genres') => {
-        //setActiveCategory(key);
+    const handleCategoryChange = useCallback((key: 'popular' | 'topRated' | 'upcoming' | 'genres') => {
         setCategoryStyle(key);
         const params = new URLSearchParams(searchParams.toString());
         params.set('category', key);
         params.delete('genreId');
         router.push(pathname + '?' + params.toString(), { scroll: false });
+    }, [searchParams, pathname, router]);
 
-    };
+    const categories = useMemo(() => [
+        { key: 'popular', label: t('categories', 'popular') },
+        { key: 'topRated', label: t('categories', 'topRated') },
+        { key: 'upcoming', label: t('categories', 'upcoming') },
+        { key: 'genres', label: t('categories', 'genres') },
+    ], [t]);
 
+    const handleGenreSelect = useCallback((id: number) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('genreId', id.toString());
+        router.push(pathname + '?' + params.toString(), { scroll: true });
+    }, [searchParams, pathname, router]);
+
+    const handleItemClick = useCallback(() => {
+        _moviesScrollY = window.scrollY;
+    }, []);
 
     const {
         data,
@@ -102,9 +99,12 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         refetchOnMount: false, // Don't refetch on mount if we have data
     });
 
+    const moviesData = useMemo(() => {
+        return data?.pages.flatMap((page) => page?.results || []) || [];
+    }, [data]);
 
     const { data: genresResponse, isLoading: isLoadingGenres } = useQuery({
-        queryKey: ['genres-list', tmdbLang],
+        queryKey: ['genres-list', tmdbLang, activeCategory],
         queryFn: () => getGenresAction('movie', tmdbLang),
         enabled: activeCategory === 'genres',
         staleTime: 1000 * 60 * 30,
@@ -112,27 +112,6 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
 
     const genres = genresResponse?.data || [];
 
-
-
-
-    const handleGenreSelect = (id: number) => {
-        // setSelectedGenreId(id);
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('genreId', id.toString());
-        router.push(pathname + '?' + params.toString(), { scroll: true });
-    };
-
-
-    //const selectedGenreName = genres.find(g => g.id === selectedGenreId)?.name;
-
-
-    const moviesData = useMemo(() => {
-        return data?.pages.flatMap((page) => page?.results || []) || [];
-    }, [data]);
-
-    const handleItemClick = useCallback(() => {
-        _moviesScrollY = window.scrollY;
-    }, []);
     // setTimeout ensures we fire AFTER Next.js’s own scroll-to-top.
     useEffect(() => {
         if (status !== 'success') return
@@ -147,9 +126,6 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         }, 10)
     }, [status])
 
-
-    // Infinite scroll is now handled internally by MoviesPageList virtualization
-
     // Persist preferences
     useEffect(() => {
         localStorage.setItem('moviesCategory', activeCategory)
@@ -159,115 +135,46 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         localStorage.setItem('moviesViewMode', viewMode)
     }, [viewMode]);
 
-    const categories = [
-        { key: 'popular', label: t('categories', 'popular') },
-        { key: 'topRated', label: t('categories', 'topRated') },
-        { key: 'upcoming', label: t('categories', 'upcoming') },
-        { key: 'genres', label: t('categories', 'genres') },
-    ]
+    // Sync state with URL if it changes (e.g. back button)
+    useEffect(() => {
+        const urlCategory = searchParams.get('category');
+        let newCategory: 'popular' | 'topRated' | 'upcoming' | 'genres' = 'popular';
 
+        if (urlCategory === 'top_rated' || urlCategory === 'topRated') newCategory = 'topRated';
+        else if (urlCategory === 'upcoming') newCategory = 'upcoming';
+        else if (urlCategory === 'genres') newCategory = 'genres';
+        else newCategory = 'popular';
+
+        if (newCategory !== activeCategory) {
+            setActiveCategory(newCategory);
+        }
+    }, [searchParams, activeCategory]);
 
 
     return (
-        <div className="pt-20 min-h-screen">
-            <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
-                <h1 className="text-3xl sm:text-5xl font-bold mb-5">{genreId ? t('common', 'genre') : t('nav', 'movies')}: {genreId ? t('genres', genreId) : t('categories', categoryStyle)}</h1>
-                {isGenreSelected && (
-                    <button
-                        onClick={() => handleCategoryChange('genres')}
-                        className="group mb-2 flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-lg transition-all duration-300 cursor-pointer active:scale-95"
-                    >
-                        <ChevronLeft className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
-                            {t('common', 'backToGenres')}
-                        </span>
-                    </button>
-                )}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 mb-8">
-                    {/* Categories */}
-                    <div className="flex flex-wrap items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
-                        {categories.map(({ key }) => (
-                            <button
-                                key={key}
-                                onClick={() => handleCategoryChange(key as 'popular' | 'topRated' | 'upcoming' | 'genres')}
-                                className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
-                                    ${categoryStyle === key
-                                        ? 'bg-white text-black shadow-lg shadow-white/10'
-                                        : 'text-zinc-400 hover:text-white hover:bg-white/10'
-                                    }`}
-                            >
-                                <span className="relative z-10">{t('categories', key)}</span>
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="flex items-center justify-between gap-3 sm:gap-4">
-                        {/* View Toggles */}
-                        <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
-                            <button
-                                onClick={() => toggleView('list')}
-                                className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
-                            >
-                                <Grid className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => toggleView('grid')}
-                                className={`p-2 rounded-lg transition-all duration-300 cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white'}`}
-                            >
-                                <List className="w-4 h-4" />
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-
-                {activeCategory !== categoryStyle && (
-                    <div className="flex flex-col items-center justify-center py-40">
-                        <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
-                    </div>
-                )}
-
-
-
-                {activeCategory === 'genres' && categoryStyle === 'genres' && !isGenreSelected && (
-                    isLoadingGenres ? (
-                        <div className="flex-1 flex min-h-[300px] flex-col items-center justify-center gap-3">                            <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
-                            <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
-                        </div>
-                    ) : (
-                        /* Genre Grid */
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-20">
-                            {genres.map((genre, idx) => (
-                                <GenreCard
-                                    key={genre.id}
-                                    genreId={genre.id}
-                                    genreName={t('genres', genre.id)}
-                                    genreBackDrop={genre.backdrop_path}
-                                    idx={idx}
-                                    onClick={handleGenreSelect}
-                                />
-                            ))}
-                        </div>
-                    ))}
-
-                {/* ─── MOVIE CONTENT ─── */}
-                {(activeCategory !== 'genres' || isGenreSelected) && (activeCategory === categoryStyle) &&
-                    <MoviesPageList
-                        status={status}
-                        moviesData={moviesData}
-                        viewMode={viewMode}
-                        activeCategory={activeCategory}
-                        userId={userId}
-                        handleItemClick={handleItemClick}
-                        hasNextPage={hasNextPage}
-                        isFetchingNextPage={isFetchingNextPage}
-                        fetchNextPage={fetchNextPage}
-                        t={t}
-                        setActiveCategory={setActiveCategory}
-                    />
-                }
-            </div>
-        </div>
+        <MediaPageLayout
+            type="movies"
+            ListComponent={MoviesPageList}
+            mediaData={moviesData}
+            viewMode={viewMode}
+            activeCategory={activeCategory}
+            genreId={genreId}
+            isGenreSelected={isGenreSelected}
+            isLoadingGenres={isLoadingGenres}
+            genres={genres}
+            categories={categories}
+            status={status}
+            userId={userId}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            t={t}
+            handleCategoryChange={handleCategoryChange}
+            handleGenreSelect={handleGenreSelect}
+            toggleView={toggleView}
+            handleItemClick={handleItemClick}
+            fetchNextPage={fetchNextPage}
+            categoryStyle={categoryStyle}
+        />
     )
 }
 
