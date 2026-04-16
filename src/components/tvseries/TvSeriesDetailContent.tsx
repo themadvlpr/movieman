@@ -277,7 +277,12 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                                 ))}
                             </div>
 
-                            <ShareButton title={series.name} />
+                            <ShareButton
+                                title={series.name}
+                                typeMedia='tv'
+                                buttonText={t('common', 'share') + ' ' + series.name}
+                                currentUrl={typeof window !== 'undefined' ? `${window.location.origin}/tvseries/${series.id}` : ''}
+                            />
 
                             {series.tagline && (
                                 <p className='text-xl italic mt-5 text-zinc-500 bg-zinc-900/10 backdrop-blur-xl border border-white/5 rounded-lg px-2 w-fit font-medium'>

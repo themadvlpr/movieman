@@ -23,6 +23,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import ShareButton from "../ui/ShareButton"
 
 const libraries = [
     { key: 'watched' },
@@ -323,17 +324,23 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                     </h1>
 
                     {!isPublic && (
-                        <button
-                            onClick={() => {
-                                const url = `${window.location.origin}/sharelist/${userId}?category=${activeCategory}`;
-                                navigator.clipboard.writeText(url);
-                                toast.success(t('common', 'linkCopied') || "Link copied to clipboard!");
-                            }}
-                            className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-zinc-900/40 backdrop-blur-lg border border-white/10 hover:border-white/20 text-white rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer shadow-2xl whitespace-nowrap self-start sm:self-auto active:scale-95" title={t('common', 'shareList') || "Share List"}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-share-2"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /><line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></svg>
-                            <span>{activeCategory.startsWith('list_') ? t('common', 'share') + ' ' + userLists.find((list: any) => list.id === activeCategory.slice(5))?.name : t('common', 'shareLibrary')}</span>
-                        </button>
+                        // <button
+                        //     onClick={() => {
+                        //         const url = `${window.location.origin}/sharelist/${userId}?category=${activeCategory}`;
+                        //         navigator.clipboard.writeText(url);
+                        //         toast.success(t('common', 'linkCopied') || "Link copied to clipboard!");
+                        //     }}
+                        //     className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-zinc-900/40 backdrop-blur-lg border border-white/10 hover:border-white/20 text-white rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer shadow-2xl whitespace-nowrap self-start sm:self-auto active:scale-95" title={t('common', 'shareList') || "Share List"}
+                        // >
+                        //     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-share-2"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /><line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></svg>
+                        //     <span>{activeCategory.startsWith('list_') ? t('common', 'share') + ' ' + userLists.find((list: any) => list.id === activeCategory.slice(5))?.name : t('common', 'shareLibrary')}</span>
+                        // </button>
+                        <ShareButton
+                            title={(activeCategory.startsWith('list_') ? userLists.find((list: any) => list.id === activeCategory.slice(5))?.name : t('common', 'shareLibrary')) || ''}
+                            buttonText={(activeCategory.startsWith('list_') ? t('common', 'share') + ' ' + userLists.find((list: any) => list.id === activeCategory.slice(5))?.name : t('common', 'shareLibrary')) || ''}
+                            typeMedia='list'
+                            currentUrl={typeof window !== 'undefined' ? `${window.location.origin}/sharelist/${userId}?category=${activeCategory}` : ''}
+                        />
                     )}
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 mb-5">

@@ -65,7 +65,7 @@ export default function LibraryPageList({
             if (parentRef.current) {
                 const rect = parentRef.current.getBoundingClientRect();
                 const absoluteTop = Math.floor(rect.top + window.scrollY);
-                
+
                 // Significant change or initial non-zero measurement
                 if (Math.abs(absoluteTop - scrollMargin) > 5 || (scrollMargin === 0 && absoluteTop > 0)) {
                     setScrollMargin(absoluteTop);
@@ -76,7 +76,7 @@ export default function LibraryPageList({
         updateMargin();
         window.addEventListener('resize', updateMargin);
         const timers = [200, 1000, 3000].map(t => setTimeout(updateMargin, t));
-        
+
         return () => {
             window.removeEventListener('resize', updateMargin);
             timers.forEach(clearTimeout);
@@ -114,13 +114,13 @@ export default function LibraryPageList({
     useEffect(() => {
         if (!hasNextPage || isFetchingNextPage || status !== 'success') return;
         if (virtualRows.length === 0) return;
-        
+
         const lastItem = virtualRows[virtualRows.length - 1];
         if (!lastItem) return;
 
         // Fetch when approaching local end AND only if data length increased
         if (lastItem.index >= rows.length - 4 && rows.length > lastFetchedIndexRef.current) {
-            lastFetchedIndexRef.current = rows.length; 
+            lastFetchedIndexRef.current = rows.length;
             fetchNextPage();
         }
     }, [virtualRows, rows.length, hasNextPage, isFetchingNextPage, status, fetchNextPage]);
@@ -140,10 +140,10 @@ export default function LibraryPageList({
     }
 
     return (
-        <div 
-            ref={parentRef} 
-            className="relative w-full"
-            style={{ 
+        <div
+            ref={parentRef}
+            className="relative w-full mt-10"
+            style={{
                 minHeight: '400px',
                 overflowAnchor: 'none', // Critical for preventing scroll loops
             }}
@@ -172,8 +172,8 @@ export default function LibraryPageList({
                                 left: 0,
                                 width: '100%',
                                 transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
-                                paddingBottom: viewMode === 'grid' 
-                                    ? (columnCount >= 4 ? '12px' : columnCount === 3 ? '16px' : '12px') 
+                                paddingBottom: viewMode === 'grid'
+                                    ? (columnCount >= 4 ? '12px' : columnCount === 3 ? '16px' : '12px')
                                     : '16px',
                                 pointerEvents: 'auto',
                             }}

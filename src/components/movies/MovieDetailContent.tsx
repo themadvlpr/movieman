@@ -241,7 +241,11 @@ export default function MovieDetailContent({ data, userId }: Props) {
                                 ))}
                             </div>
 
-                            <ShareButton title={movie.title} />
+                            <ShareButton
+                                title={movie.title}
+                                typeMedia='movie'
+                                buttonText={t('common', 'share') + ' ' + movie.title}
+                                currentUrl={typeof window !== 'undefined' ? `${window.location.origin}/movies/${movie.id}` : ''} />
 
                             {movie.tagline && (
                                 <p className='text-xl italic text-zinc-500 font-medium'>

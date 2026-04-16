@@ -94,7 +94,7 @@ const MovieCard = ({
 
                 {/* Info Section */}
                 <div className={isGrid ? "px-0.5 sm:px-1" : "flex flex-col justify-center gap-2 sm:gap-3 min-w-0 pr-0 sm:pr-20"}>
-                    <h3 className={`text-white font-bold transition-colors ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
+                    <h3 className={`text-white font-bold truncate transition-colors ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
                         {movie.title}
                     </h3>
                     {isGrid &&
@@ -143,7 +143,7 @@ const MovieCard = ({
                                     <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
                                         <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
                                         <span className="text-white text-[10px] sm:text-xs font-bold">
-                                            {movie.vote_average.toFixed(1)}
+                                            {t('common', 'tmdbRating')}: {movie.vote_average.toFixed(1)}
                                         </span>
                                     </div>
                                 )}
@@ -153,8 +153,8 @@ const MovieCard = ({
                             {movie.initialDbState?.userRating && movie.initialDbState.userRating > 0 && (
                                 <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
                                     <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
-                                    <span className="text-white text-[10px] font-bold">
-                                        {movie.initialDbState.userRating.toFixed(1)}
+                                    <span className="text-white text-[10px] sm:text-xs font-bold">
+                                        {t('common', 'myRating')}: {movie.initialDbState.userRating.toFixed(1)}
                                     </span>
                                 </div>
                             )}
