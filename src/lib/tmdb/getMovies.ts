@@ -24,7 +24,7 @@ export async function getMoviesAction(
         let endpoint = '/movie/popular';
         let params: TMDBParams = { page, language };
 
-        if (category === 'topRated') {
+        if (category === 'topRated' || category === 'top_rated') {
             endpoint = '/movie/top_rated';
         } else if (category === 'upcoming') {
             endpoint = '/discover/movie';

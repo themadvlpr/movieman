@@ -18,7 +18,7 @@ export async function getTVSeriesAction(
         let endpoint = "/tv/popular";
         let params: any = { page, language };
 
-        if (category === "topRated") {
+        if (category === "topRated" || category === "top_rated") {
             endpoint = "/tv/top_rated";
         }
         else if (category === "genres") {

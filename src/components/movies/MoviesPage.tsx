@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from "react"
-import { Grid, List, ChevronLeft } from "lucide-react"
+import { Grid, List, ChevronLeft, Loader2 } from "lucide-react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
@@ -32,10 +32,14 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
     const isGenreSelected = !!genreId;
 
     const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'upcoming' | 'genres'>(() => {
-        const urlCategory = searchParams.get('category') as 'popular' | 'topRated' | 'upcoming' | 'genres';
-        if (['popular', 'topRated', 'upcoming', 'genres'].includes(urlCategory)) return urlCategory;
+        const urlCategory = searchParams.get('category');
+        if (urlCategory === 'top_rated' || urlCategory === 'topRated') return 'topRated';
+        if (urlCategory === 'upcoming') return 'upcoming';
+        if (urlCategory === 'genres') return 'genres';
         return 'popular';
     })
+
+    const [categoryStyle, setCategoryStyle] = useState<'popular' | 'topRated' | 'upcoming' | 'genres'>(searchParams.get('category') as 'popular' | 'topRated' | 'upcoming' | 'genres' || 'popular');
 
 
     const toggleView = async (mode: 'grid' | 'list') => {
@@ -47,19 +51,28 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
 
     // Sync state with URL if it changes (e.g. back button)
     useEffect(() => {
-        const urlCategory = searchParams.get('category') as 'popular' | 'topRated' | 'upcoming' | 'genres';
-        if (urlCategory && ['popular', 'topRated', 'upcoming', 'genres'].includes(urlCategory) && urlCategory !== activeCategory) {
-            setActiveCategory(urlCategory);
+        const urlCategory = searchParams.get('category');
+        let newCategory: 'popular' | 'topRated' | 'upcoming' | 'genres' = 'popular';
+
+        if (urlCategory === 'top_rated' || urlCategory === 'topRated') newCategory = 'topRated';
+        else if (urlCategory === 'upcoming') newCategory = 'upcoming';
+        else if (urlCategory === 'genres') newCategory = 'genres';
+        else newCategory = 'popular';
+
+        if (newCategory !== activeCategory) {
+            setActiveCategory(newCategory);
         }
-    }, [searchParams]);
+    }, [searchParams, activeCategory]);
 
     // Update URL when category changes
     const handleCategoryChange = (key: 'popular' | 'topRated' | 'upcoming' | 'genres') => {
-        setActiveCategory(key);
+        //setActiveCategory(key);
+        setCategoryStyle(key);
         const params = new URLSearchParams(searchParams.toString());
         params.set('category', key);
         params.delete('genreId');
         router.push(pathname + '?' + params.toString(), { scroll: false });
+
     };
 
 
@@ -153,10 +166,12 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         { key: 'genres', label: t('categories', 'genres') },
     ]
 
+
+
     return (
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
-                <h1 className="text-3xl sm:text-5xl font-bold mb-5">{genreId ? t('common', 'genre') : t('nav', 'movies')}: {genreId ? t('genres', genreId) : t('categories', activeCategory)}</h1>
+                <h1 className="text-3xl sm:text-5xl font-bold mb-5">{genreId ? t('common', 'genre') : t('nav', 'movies')}: {genreId ? t('genres', genreId) : t('categories', categoryStyle)}</h1>
                 {isGenreSelected && (
                     <button
                         onClick={() => handleCategoryChange('genres')}
@@ -176,7 +191,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                                 key={key}
                                 onClick={() => handleCategoryChange(key as 'popular' | 'topRated' | 'upcoming' | 'genres')}
                                 className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
-                                    ${activeCategory === key
+                                    ${categoryStyle === key
                                         ? 'bg-white text-black shadow-lg shadow-white/10'
                                         : 'text-zinc-400 hover:text-white hover:bg-white/10'
                                     }`}
@@ -206,9 +221,15 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                     </div>
                 </div>
 
+                {activeCategory !== categoryStyle && (
+                    <div className="flex flex-col items-center justify-center py-40">
+                        <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
+                    </div>
+                )}
 
 
-                {activeCategory === 'genres' && !isGenreSelected && (
+
+                {activeCategory === 'genres' && categoryStyle === 'genres' && !isGenreSelected && (
                     isLoadingGenres ? (
                         <div className="flex-1 flex min-h-[300px] flex-col items-center justify-center gap-3">                            <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
                             <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
@@ -230,7 +251,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
                     ))}
 
                 {/* ─── MOVIE CONTENT ─── */}
-                {(activeCategory !== 'genres' || isGenreSelected) &&
+                {(activeCategory !== 'genres' || isGenreSelected) && (activeCategory === categoryStyle) &&
                     <MoviesPageList
                         status={status}
                         moviesData={moviesData}

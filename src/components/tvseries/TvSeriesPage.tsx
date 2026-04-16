@@ -30,10 +30,14 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
 
 
     const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'genres'>(() => {
-        const urlCategory = searchParams.get('category') as 'popular' | 'topRated' | 'genres';
-        if (['popular', 'topRated', 'genres'].includes(urlCategory)) return urlCategory;
-        return 'popular'
+        const urlCategory = searchParams.get('category');
+        if (urlCategory === 'top_rated' || urlCategory === 'topRated') return 'topRated';
+        if (urlCategory === 'genres') return 'genres';
+        return 'popular';
     })
+
+    const [categoryStyle, setCategoryStyle] = useState<'popular' | 'topRated' | 'genres'>(searchParams.get('category') as 'popular' | 'topRated' | 'genres' || 'popular');
+
 
     const toggleView = async (mode: 'grid' | 'list') => {
         const newMode = mode === 'grid' ? 'list' : 'grid'
@@ -111,15 +115,21 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
 
     // Sync state with URL
     useEffect(() => {
-        const urlCategory = searchParams.get('category') as 'popular' | 'topRated' | 'genres';
-        if (urlCategory && ['popular', 'topRated', 'genres'].includes(urlCategory) && urlCategory !== activeCategory) {
-            setActiveCategory(urlCategory);
+        const urlCategory = searchParams.get('category');
+        let newCategory: 'popular' | 'topRated' | 'genres' = 'popular';
+
+        if (urlCategory === 'top_rated' || urlCategory === 'topRated') newCategory = 'topRated';
+        else if (urlCategory === 'genres') newCategory = 'genres';
+        else newCategory = 'popular';
+
+        if (newCategory !== activeCategory) {
+            setActiveCategory(newCategory);
         }
-    }, [searchParams]);
+    }, [searchParams, activeCategory]);
 
     // Update URL when category changes
     const handleCategoryChange = (key: 'popular' | 'topRated' | 'genres') => {
-        setActiveCategory(key);
+        setCategoryStyle(key);
         const params = new URLSearchParams(searchParams.toString());
         params.set('category', key);
         params.delete('genreId');
@@ -147,7 +157,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
     return (
         <div className="pt-20 min-h-screen">
             <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
-                <h1 className="text-3xl sm:text-5xl font-bold mb-5">{genreId ? t('common', 'genre') : t('nav', 'tvseries')}: {genreId ? t('genres', genreId) : t('categories', activeCategory)}</h1>
+                <h1 className="text-3xl sm:text-5xl font-bold mb-5">{genreId ? t('common', 'genre') : t('nav', 'tvseries')}: {genreId ? t('genres', genreId) : t('categories', categoryStyle)}</h1>
 
                 {isGenreSelected && (
                     <button
@@ -167,7 +177,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                                 key={key}
                                 onClick={() => handleCategoryChange(key as 'popular' | 'topRated' | 'genres')}
                                 className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
-                                    ${activeCategory === key
+                                    ${categoryStyle === key
                                         ? 'bg-white text-black shadow-lg shadow-white/10'
                                         : 'text-zinc-400 hover:text-white hover:bg-white/10'
                                     }`}
@@ -195,9 +205,14 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                     </div>
                 </div>
 
+                {activeCategory !== categoryStyle && (
+                    <div className="flex flex-col items-center justify-center py-40">
+                        <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
+                    </div>
+                )}
 
 
-                {activeCategory === 'genres' && !isGenreSelected && (
+                {activeCategory === 'genres' && categoryStyle === 'genres' && !isGenreSelected && (
                     /* Genre Grid */
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-20">
                         {genres.map((genre, idx) => (
@@ -214,7 +229,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                 )}
 
                 {/* ─── TV SERIES CONTENT ─── */}
-                {(activeCategory !== 'genres' || isGenreSelected) && (
+                {(activeCategory !== 'genres' || isGenreSelected) && (activeCategory === categoryStyle) && (
                     <TvSeriesPageList
                         status={status}
                         tvData={tvData}

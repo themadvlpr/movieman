@@ -3,6 +3,7 @@ import MovieCard from "@/components/movies/MovieCard";
 import { Filter } from "lucide-react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useMemo, useRef, useEffect, useState, useLayoutEffect } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 interface MoviesPageListProps {
     status: 'pending' | 'success' | 'error';
@@ -31,6 +32,10 @@ export default function MoviesPageList({
     t,
     setActiveCategory
 }: MoviesPageListProps) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
     const parentRef = useRef<HTMLDivElement>(null);
     const [columnCount, setColumnCount] = useState(2);
     const [scrollMargin, setScrollMargin] = useState(0);
@@ -144,7 +149,12 @@ export default function MoviesPageList({
                 <h3 className="text-white text-xl font-bold mb-2">{t('common', 'noResults')}</h3>
                 <p className="text-zinc-500 text-sm max-w-xs">{t('common', 'tryAdjustingYourFilters').slice(0, -5)}</p>
                 <button
-                    onClick={() => { setActiveCategory('popular') }}
+                    onClick={() => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        params.delete('category');
+                        params.delete('genreId');
+                        router.push(pathname + '?' + params.toString(), { scroll: false });
+                    }}
                     className="mt-6 text-white text-sm font-semibold underline underline-offset-4 hover:text-zinc-300 cursor-pointer"
                 >
                     {t('common', 'resetFilters')}
