@@ -9,7 +9,7 @@ export default function StarRating({ text, ratingType }: { text: string, ratingT
     return (
         <div className={`flex w-fit items-center gap-1.5 px-2 py-1 rounded-md ${bgColor}`}>
             <Star className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 ${iconColor}`} />
-            <span className="text-white text-[10px] font-bold">
+            <span className="text-white text-[10px] sm:text-xs font-bold">
                 {text}
             </span>
         </div>
