@@ -16,7 +16,6 @@ interface TvSeriesPageListProps {
     isFetchingNextPage: boolean;
     fetchNextPage: () => void;
     t: (category: string, key: string) => string;
-    setActiveCategory: (category: 'popular' | 'topRated' | 'genres') => void;
 }
 
 export default function TvSeriesPageList({
@@ -30,7 +29,6 @@ export default function TvSeriesPageList({
     isFetchingNextPage,
     fetchNextPage,
     t,
-    setActiveCategory
 }: TvSeriesPageListProps) {
     const router = useRouter();
     const pathname = usePathname();
@@ -190,8 +188,8 @@ export default function TvSeriesPageList({
                                 left: 0,
                                 width: '100%',
                                 transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
-                                paddingBottom: viewMode === 'grid' 
-                                    ? (columnCount >= 4 ? '24px' : columnCount === 3 ? '16px' : '12px') 
+                                paddingBottom: viewMode === 'grid'
+                                    ? (columnCount >= 4 ? '24px' : columnCount === 3 ? '16px' : '12px')
                                     : '16px',
                                 pointerEvents: 'auto',
                             }}

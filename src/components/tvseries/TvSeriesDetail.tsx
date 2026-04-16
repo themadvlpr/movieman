@@ -1,6 +1,5 @@
 'use client'
 
-import Loader from '@/components/ui/Loader'
 import { useQuery } from '@tanstack/react-query'
 import { getTVDetails } from '@/lib/tmdb/getTvSeriesDetails'
 import { dbState } from '@/lib/tmdb/types/db-types'

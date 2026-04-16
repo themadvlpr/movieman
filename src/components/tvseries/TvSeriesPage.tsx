@@ -213,19 +213,24 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
 
 
                 {activeCategory === 'genres' && categoryStyle === 'genres' && !isGenreSelected && (
-                    /* Genre Grid */
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-20">
-                        {genres.map((genre, idx) => (
-                            <GenreCard
-                                key={genre.id}
-                                genreId={genre.id}
-                                genreName={t('genres', genre.id)}
-                                genreBackDrop={genre.backdrop_path}
-                                idx={idx}
-                                onClick={handleGenreSelect}
-                            />
-                        ))}
-                    </div>
+                    isLoadingGenres ? (
+                        <div className="flex-1 flex min-h-[300px] flex-col items-center justify-center gap-3">                            <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
+                            <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
+                        </div>) : (
+                        /* Genre Grid */
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-20">
+                            {genres.map((genre, idx) => (
+                                <GenreCard
+                                    key={genre.id}
+                                    genreId={genre.id}
+                                    genreName={t('genres', genre.id)}
+                                    genreBackDrop={genre.backdrop_path}
+                                    idx={idx}
+                                    onClick={handleGenreSelect}
+                                />
+                            ))}
+                        </div>
+                    )
                 )}
 
                 {/* ─── TV SERIES CONTENT ─── */}
@@ -241,12 +246,11 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
                         isFetchingNextPage={isFetchingNextPage}
                         fetchNextPage={fetchNextPage}
                         t={t}
-                        setActiveCategory={setActiveCategory}
                     />
                 )}
 
 
             </div>
-        </div>
+        </div >
     )
 }
