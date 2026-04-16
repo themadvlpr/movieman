@@ -8,8 +8,7 @@ import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import { getGenresAction } from "@/lib/tmdb/getGenres"
-import MediaPageLayout from "@/components/movie-tv/MediaListPage"
-import TvSeriesPageList from "@/components/tvseries/TvSeriesPageList"
+import MediaPageLayout from "@/components/movie-tv/MediaPageLayoutProps"
 
 
 // Survives client-side navigation — only resets on full page reload
@@ -99,7 +98,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
 
 
     const { data: genresResponse, isLoading: isLoadingGenres } = useQuery({
-        queryKey: ['genres-list', tmdbLang, activeCategory],
+        queryKey: ['genres-list', tmdbLang, activeCategory, 'tv'],
         queryFn: () => getGenresAction('tv', tmdbLang),
         enabled: activeCategory === 'genres',
         staleTime: 1000 * 60 * 30,
@@ -155,8 +154,8 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
 
     return (
         <MediaPageLayout
+            key="tvseries-page"
             type="tvseries"
-            ListComponent={TvSeriesPageList}
             mediaData={tvData}
             viewMode={viewMode}
             activeCategory={activeCategory}

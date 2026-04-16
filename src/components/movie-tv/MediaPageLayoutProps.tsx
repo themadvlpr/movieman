@@ -1,6 +1,9 @@
 import React, { memo } from 'react';
 import { ChevronLeft, Grid, List } from 'lucide-react';
 import GenreCard from '@/components/ui/GenreCard';
+import MediaVirtualList from '@/components/movie-tv/MediaVirtualList';
+import MediaCard from '@/components/movie-tv/MediaCard';
+import { Movie, TvSeries, LibraryResult } from '@/lib/tmdb/types/tmdb-types';
 
 interface MediaPageLayoutProps {
     type: 'movies' | 'tvseries';
@@ -23,7 +26,6 @@ interface MediaPageLayoutProps {
     toggleView: (mode: 'grid' | 'list') => void;
     handleItemClick: (id: string) => void;
     fetchNextPage: () => void;
-    ListComponent: React.ElementType; // MoviesPageList or TvSeriesPageList
 }
 
 const MediaPageLayout = ({
@@ -31,7 +33,7 @@ const MediaPageLayout = ({
     isLoadingGenres, genres, categories, viewMode, status,
     mediaData, userId, hasNextPage, isFetchingNextPage, t,
     handleCategoryChange, handleGenreSelect, toggleView,
-    handleItemClick, fetchNextPage, ListComponent
+    handleItemClick, fetchNextPage
 }: MediaPageLayoutProps) => {
     return (
         <div className="pt-20 min-h-screen">
@@ -109,17 +111,27 @@ const MediaPageLayout = ({
 
                 {/* Main Content List */}
                 {(activeCategory !== 'genres' || isGenreSelected) && (activeCategory === categoryStyle) && (
-                    <ListComponent
+                    <MediaVirtualList
                         status={status}
-                        {...(type === 'movies' ? { moviesData: mediaData } : { tvData: mediaData })}
+                        items={mediaData}
                         viewMode={viewMode}
                         activeCategory={activeCategory}
-                        userId={userId}
-                        handleItemClick={handleItemClick}
                         hasNextPage={hasNextPage}
                         isFetchingNextPage={isFetchingNextPage}
                         fetchNextPage={fetchNextPage}
                         t={t}
+                        renderCard={(movie, index) => (
+                            <MediaCard
+                                key={movie.id + type + index}
+                                item={movie as LibraryResult & Movie & TvSeries}
+                                type={type}
+                                idx={index}
+                                viewMode={viewMode}
+                                activeCategory={activeCategory as 'popular' | 'topRated' | 'upcoming' | 'genres'}
+                                userId={userId}
+                                onItemClick={handleItemClick as () => void}
+                            />
+                        )}
                     />
                 )}
             </div>
@@ -134,6 +146,8 @@ export default memo(MediaPageLayout, (prev, next) => {
         prev.categoryStyle === next.categoryStyle &&
         prev.activeCategory === next.activeCategory &&
         prev.isGenreSelected === next.isGenreSelected &&
+        prev.genreId === next.genreId &&
+        prev.genres === next.genres &&
         prev.mediaData === next.mediaData &&
         prev.status === next.status
     );

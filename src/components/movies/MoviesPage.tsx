@@ -8,8 +8,7 @@ import { getMoviesAction } from "@/lib/tmdb/getMovies"
 import { getGenresAction } from "@/lib/tmdb/getGenres"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
-import MoviesPageList from "@/components/movies/MoviesPageList"
-import MediaPageLayout from "@/components/movie-tv/MediaListPage"
+import MediaPageLayout from "@/components/movie-tv/MediaPageLayoutProps"
 
 // Survives client-side navigation — only resets on full page reload
 let _moviesScrollY = 0
@@ -104,7 +103,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
     }, [data]);
 
     const { data: genresResponse, isLoading: isLoadingGenres } = useQuery({
-        queryKey: ['genres-list', tmdbLang, activeCategory],
+        queryKey: ['genres-list', tmdbLang, activeCategory, 'movie'],
         queryFn: () => getGenresAction('movie', tmdbLang),
         enabled: activeCategory === 'genres',
         staleTime: 1000 * 60 * 30,
@@ -153,8 +152,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
 
     return (
         <MediaPageLayout
+            key="movies-page"
             type="movies"
-            ListComponent={MoviesPageList}
             mediaData={moviesData}
             viewMode={viewMode}
             activeCategory={activeCategory}
