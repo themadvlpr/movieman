@@ -1,10 +1,11 @@
 import { memo } from 'react';
 import Link from 'next/link';
-import { Play, Star, Calendar } from 'lucide-react';
+import { Play, Eye, Calendar } from 'lucide-react';
 import MoviePoster from '@/components/ui/MoviePoster';
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons';
 import { useTranslation } from '@/providers/LocaleProvider';
 import { useRouter } from 'next/navigation';
+import StarRating from '@/components/ui/StarRating';
 
 interface LibraryMediaCardProps {
     item: any;
@@ -129,38 +130,26 @@ const LibraryMediaCard = ({
                         <div className="flex flex-col gap-1.5 mt-1.5">
                             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                 {item.vote_average > 0 && (
-                                    <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
-                                        <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                                        <span className="text-white text-[10px] font-bold">
-                                            {item.vote_average.toFixed(1)}
-                                        </span>
-                                    </div>
+
+                                    <StarRating text={`${item.vote_average.toFixed(1)}`} ratingType="tmdb" />
                                 )}
                                 <span className="text-zinc-400 text-[10px] flex items-center gap-1">
                                     <Calendar className="w-2.5 h-2.5 text-zinc-400" />
                                     {item.release_date?.slice(0, 4)}
                                 </span>
                                 {item.user_rating != null && item.user_rating > 0 && (
-                                    <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md ${isPublic && item.viewer_rating != null ? 'bg-white/5 text-zinc-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                                        <Star className={`w-3 h-3 ${isPublic && item.viewer_rating != null ? 'fill-zinc-400 text-zinc-400' : 'fill-blue-400 text-blue-400'}`} />
-                                        <span className="text-[10px] font-bold">
-                                            {item.user_rating.toFixed(1)}
-                                        </span>
-                                    </div>
+
+                                    <StarRating text={`${isPublic ? publicName : t('common', 'myRating')}: ${item.user_rating.toFixed(1)}`} ratingType="user" />
                                 )}
                                 {isPublic && item.viewer_rating != null && item.viewer_rating > 0 && (
-                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
-                                        <Star className="w-3 h-3 fill-blue-400 text-blue-400" />
-                                        <span className="text-[10px] font-bold">
-                                            {item.viewer_rating.toFixed(1)}
-                                        </span>
-                                    </div>
+
+                                    <StarRating text={`${item.viewer_rating.toFixed(1)}`} ratingType="my" />
                                 )}
 
                             </div>
                             {(activeCategory === 'watched' || activeCategory === 'favorite') && item.watched_date && (
                                 <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 w-fit">
-                                    <Calendar className="w-2.5 h-2.5 text-zinc-400" />
+                                    <Eye className="w-2.5 h-2.5 text-zinc-400" />
                                     <span className="text-zinc-300 text-[9px] font-medium">{item.watched_date.slice(0, 10)}</span>
                                 </div>
                             )}
@@ -198,28 +187,16 @@ const LibraryMediaCard = ({
 
                                 <div className="flex flex-col gap-3">
                                     {item.vote_average > 0 && (
-                                        <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-white/10">
-                                            <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
-                                            <span className="text-white text-xs sm:text-sm font-bold">
-                                                TMDB: {item.vote_average.toFixed(1)}
-                                            </span>
-                                        </div>
+
+                                        <StarRating text={`TMDB: ${item.vote_average.toFixed(1)}`} ratingType="tmdb" />
                                     )}
                                     {item.user_rating != null && item.user_rating > 0 && (
-                                        <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-white/10">
-                                            <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400/50 text-blue-400/50" />
-                                            <span className="text-white text-xs sm:text-sm font-bold">
-                                                {isPublic ? publicName : t('common', 'myRating')}: {item.user_rating.toFixed(1)}
-                                            </span>
-                                        </div>
+
+                                        <StarRating text={`${isPublic ? publicName : t('common', 'myRating')}: ${item.user_rating.toFixed(1)}`} ratingType="user" />
                                     )}
                                     {isPublic && item.viewer_rating != null && item.viewer_rating > 0 && (
-                                        <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
-                                            <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
-                                            <span className="text-xs sm:text-sm font-bold">
-                                                {t('common', 'myRating')}: {item.viewer_rating.toFixed(1)}
-                                            </span>
-                                        </div>
+
+                                        <StarRating text={`${t('common', 'myRating')}: ${item.viewer_rating.toFixed(1)}`} ratingType="my" />
                                     )}
 
                                     {item.watched_date && (

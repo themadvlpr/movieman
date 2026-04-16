@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Clock, Calendar, ChevronRight, Globe, Play } from 'lucide-react'
+import { Clock, Calendar, ChevronRight, Globe, Play } from 'lucide-react'
 import VideoModal from '../ui/VideoModal'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
 import DetailCarousel from '../ui/DetailCarousel'
@@ -16,6 +16,7 @@ import { dbState } from '@/lib/tmdb/types/db-types'
 import { ExpandableMarkdown } from '@/components/ui/UserNote'
 import ShareButton from '@/components/ui/ShareButton'
 import Loader from '../ui/Loader'
+import StarRating from '@/components/ui/StarRating'
 
 
 interface Props {
@@ -199,17 +200,16 @@ export default function MovieDetailContent({ data, userId }: Props) {
                             <div className='flex flex-wrap items-center gap-4 text-sm sm:text-base font-semibold text-zinc-400'>
                                 {movie.vote_average !== 0 && (
                                     <>
-                                        <div className='flex items-center gap-1.5 text-zinc-100'>
-                                            <Star className='w-4 h-4 fill-amber-400 text-amber-400' />
-                                            <span>{movie.vote_average.toFixed(1)}</span>
-                                        </div>
+                                        <StarRating text={`${movie.vote_average?.toFixed(1)}`} ratingType="tmdb" />
                                         <span className='text-zinc-800'>|</span>
                                     </>
                                 )}
-                                <div className='flex items-center gap-1.5 text-zinc-300'>
-                                    <Calendar className='w-4 h-4' />
-                                    <span>{movie.release_date.split('-').reverse().join('.')}</span>
-                                </div>
+                                {movie.release_date && (
+                                    <div className='flex items-center gap-1.5 text-zinc-300'>
+                                        <Calendar className='w-4 h-4' />
+                                        <span>{movie.release_date.split('-').reverse().join('.')}</span>
+                                    </div>
+                                )}
                                 {movie.production_countries && movie.production_countries.length > 0 && (
                                     <>
                                         <span className='text-zinc-800'>|</span>

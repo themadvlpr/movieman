@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, X, Star, Play, User as UserIcon } from 'lucide-react'
+import { Search, X, Play, User as UserIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { MultiSearchResult } from '@/lib/tmdb/types/tmdb-types'
 import { useTranslation } from '@/providers/LocaleProvider'
 import { TMDB_LANGUAGES, Locale } from '@/lib/i18n/languageconfig'
 import Link from 'next/link'
 import Image from 'next/image'
+import StarRating from '@/components/ui/StarRating'
 
 
 export function useDebounce<T>(value: T, delay: number): T {
@@ -181,10 +182,7 @@ export default function SearchBar() {
 																		{t('common', result.media_type)}
 																	</span>
 																	{result.vote_average ? result.vote_average > 0 && (
-																		<div className='flex items-center gap-1'>
-																			<Star className='w-3 h-3 fill-amber-500 text-amber-500' />
-																			<span className='text-[10px] font-black text-zinc-300'>{result.vote_average.toFixed(1)}</span>
-																		</div>
+																		<StarRating text={`${result.vote_average.toFixed(1)}`} ratingType="tmdb" />
 																	) : null}
 																</div>
 																<h4 className='text-lg font-bold text-zinc-200 group-hover:text-white transition-colors truncate'>

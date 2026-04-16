@@ -1,9 +1,10 @@
 import { Actor, Movie, TvSeries } from "@/lib/tmdb/types/tmdb-types"
 import Link from "next/link"
 import Image from "next/image"
-import { User, Star, Play } from "lucide-react"
+import { User, Play, Calendar } from "lucide-react"
 import { MergedCredit } from "@/lib/tmdb/types/tmdb-types"
 import { useTranslation } from "@/providers/LocaleProvider";
+import StarRating from "@/components/ui/StarRating";
 
 interface DetailCarouselProps {
     type: 'cast' | 'similar' | 'person-credits'
@@ -117,16 +118,16 @@ export default function DetailCarousel({ type, items, mediaType }: DetailCarouse
                                 <h4 className='font-bold text-base text-zinc-300 group-hover:text-white transition-colors truncate uppercase tracking-tight'>{mediaTitle}</h4>
                                 <div className='flex flex-col gap-1 mt-1.5'>
                                     <div className='flex items-center gap-3'>
+                                        <div className="flex items-center gap-1">
+                                            <Calendar className="w-3 h-3 text-zinc-500" />
+                                            <span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{year}</span>
+                                        </div>
                                         {voteAverage !== 0 && (
                                             <>
-                                                <div className='flex items-center gap-1.5'>
-                                                    <Star className='w-3 h-3 fill-amber-400 text-amber-400' />
-                                                    <span className='text-[10px] font-black text-zinc-100'>{voteAverage?.toFixed(1)}</span>
-                                                </div>
                                                 <span className='text-zinc-800 font-bold'>|</span>
+                                                <StarRating text={`${voteAverage?.toFixed(1)}`} ratingType="tmdb" />
                                             </>
                                         )}
-                                        <span className='text-[10px] text-zinc-500 font-black uppercase tracking-widest'>{year}</span>
                                     </div>
                                     {type === 'person-credits' && (
                                         <span className='text-[10px] font-bold text-zinc-600 truncate'>

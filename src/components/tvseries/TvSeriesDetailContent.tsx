@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Calendar, ChevronRight, List, Info, Globe, Play } from 'lucide-react'
+import { Calendar, ChevronRight, List, Info, Globe, Play } from 'lucide-react'
 import VideoModal from '@/components/ui/VideoModal'
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons'
 import { CrewMember, TvSeriesDetailProps } from '@/lib/tmdb/types/tmdb-types'
@@ -15,6 +15,7 @@ import { toast } from "sonner"
 import { useTranslation } from '@/providers/LocaleProvider'
 import { ExpandableMarkdown } from '@/components/ui/UserNote'
 import ShareButton from '@/components/ui/ShareButton'
+import StarRating from '@/components/ui/StarRating'
 
 interface Props {
     data: TvSeriesDetailProps & { initialDbState?: dbState };
@@ -216,10 +217,7 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                             <div className='flex mt-7 flex-wrap items-center gap-4 text-sm sm:text-base font-semibold text-zinc-400'>
                                 {series.vote_average !== 0 && (
                                     <>
-                                        <div className='flex items-center gap-1.5 text-zinc-100'>
-                                            <Star className='w-4 h-4 fill-amber-400 text-amber-400' />
-                                            <span>{series.vote_average ? series.vote_average.toFixed(1) : 'N/A'}</span>
-                                        </div>
+                                        <StarRating text={`${series.vote_average?.toFixed(1)}`} ratingType="tmdb" />
                                     </>
                                 )}
 

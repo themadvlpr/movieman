@@ -1,12 +1,13 @@
 import { memo } from 'react';
 import Link from 'next/link';
-import { Play, Star } from 'lucide-react';
+import { Play, Calendar } from 'lucide-react';
 import MoviePoster from '@/components/ui/MoviePoster';
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons';
 import { useTranslation } from '@/providers/LocaleProvider';
 import { Movie } from '@/lib/tmdb/types/tmdb-types';
 import { dbState } from '@/lib/tmdb/types/db-types';
 import { useRouter } from 'next/navigation';
+import StarRating from '@/components/ui/StarRating';
 
 interface MovieCardProps {
     movie: Movie & { initialDbState?: dbState };
@@ -99,23 +100,28 @@ const MovieCard = ({
                     </h3>
                     {isGrid &&
                         <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5">
-                            <span className="text-zinc-400 text-[10px]">{activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}</span>
+                            <span className="text-zinc-400 text-[10px] flex items-center gap-1">
+                                <Calendar className="w-2.5 h-2.5 text-zinc-400" />
+                                {activeCategory === 'upcoming' ? movie.release_date?.split('-').reverse().join('.') : movie.release_date?.slice(0, 4)}
+                            </span>
 
                             {movie.vote_average > 0 && (
-                                <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
-                                    <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                                    <span className="text-white text-[10px] font-bold">
-                                        {movie.vote_average.toFixed(1)}
-                                    </span>
-                                </div>
+                                // <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
+                                //     <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                                //     <span className="text-white text-[10px] font-bold">
+                                //         {movie.vote_average.toFixed(1)}
+                                //     </span>
+                                // </div>
+                                <StarRating text={movie.vote_average.toFixed(1)} ratingType="tmdb" />
                             )}
                             {movie.initialDbState?.userRating && movie.initialDbState.userRating > 0 && (
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
-                                    <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
-                                    <span className="text-white text-[10px] font-bold">
-                                        {movie.initialDbState.userRating.toFixed(1)}
-                                    </span>
-                                </div>
+                                // <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
+                                //     <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
+                                //     <span className="text-white text-[10px] font-bold">
+                                //         {movie.initialDbState.userRating.toFixed(1)}
+                                //     </span>
+                                // </div>
+                                <StarRating text={movie.initialDbState.userRating.toFixed(1)} ratingType="my" />
                             )}
 
                         </div>
@@ -140,23 +146,25 @@ const MovieCard = ({
                             </div>
                             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                 {movie.vote_average > 0 && (
-                                    <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
-                                        <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
-                                        <span className="text-white text-[10px] sm:text-xs font-bold">
-                                            {t('common', 'tmdbRating')}: {movie.vote_average.toFixed(1)}
-                                        </span>
-                                    </div>
+                                    // <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
+                                    //     <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
+                                    //     <span className="text-white text-[10px] sm:text-xs font-bold">
+                                    //         {t('common', 'tmdbRating')}: {movie.vote_average.toFixed(1)}
+                                    //     </span>
+                                    // </div>
+                                    <StarRating text={`${t('common', 'tmdbRating')}: ${movie.vote_average.toFixed(1)}`} ratingType="tmdb" />
                                 )}
 
                             </div>
 
                             {movie.initialDbState?.userRating && movie.initialDbState.userRating > 0 && (
-                                <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
-                                    <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
-                                    <span className="text-white text-[10px] sm:text-xs font-bold">
-                                        {t('common', 'myRating')}: {movie.initialDbState.userRating.toFixed(1)}
-                                    </span>
-                                </div>
+                                // <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
+                                //     <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
+                                //     <span className="text-white text-[10px] sm:text-xs font-bold">
+                                //         {t('common', 'myRating')}: {movie.initialDbState.userRating.toFixed(1)}
+                                //     </span>
+                                // </div>
+                                <StarRating text={`${t('common', 'myRating')}: ${movie.initialDbState.userRating.toFixed(1)}`} ratingType="my" />
                             )}
                             <p className="hidden text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
                                 {movie.overview}

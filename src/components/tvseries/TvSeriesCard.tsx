@@ -1,12 +1,13 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import Link from 'next/link';
-import { Play, Star } from 'lucide-react';
+import { Calendar, Play } from 'lucide-react';
 import MoviePoster from '@/components/ui/MoviePoster';
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons';
 import { useTranslation } from '@/providers/LocaleProvider';
 import { TvSeries } from '@/lib/tmdb/types/tmdb-types';
 import { dbState } from '@/lib/tmdb/types/db-types';
 import { useRouter } from 'next/navigation';
+import StarRating from '@/components/ui/StarRating';
 
 interface TvSeriesCardProps {
     show: TvSeries & { initialDbState?: dbState };
@@ -100,29 +101,25 @@ const TvSeriesCard = ({
                     </h3>
                     {isGrid &&
                         <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5">
-                            {show.vote_average > 0 && (
-                                <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
-                                    <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                                    <span className="text-white text-[10px] font-bold">
-                                        {show.vote_average.toFixed(1)}
-                                    </span>
-                                </div>
+                            <div className="flex items-center gap-1.5">
+                                <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-zinc-400" />
+                                <span className="text-zinc-400 text-[10px]">{show.first_air_date?.slice(0, 4)}</span>
+                            </div>{show.vote_average > 0 && (
+                                <StarRating text={`${show.vote_average?.toFixed(1)}`} ratingType="tmdb" />
                             )}
                             {show.initialDbState?.userRating && show.initialDbState.userRating > 0 && (
-                                <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
-                                    <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
-                                    <span className="text-white text-[10px] font-bold">
-                                        {show.initialDbState.userRating.toFixed(1)}
-                                    </span>
-                                </div>
+                                <StarRating text={`${show.initialDbState.userRating?.toFixed(1)}`} ratingType="my" />
                             )}
-                            <span className="text-zinc-400 text-[10px]">{show.first_air_date?.slice(0, 4)}</span>
+
                         </div>
                     }
 
                     {!isGrid && (
                         <>
-                            <span className="text-zinc-400 text-[10px] sm:text-sm">{show.first_air_date?.slice(0, 4)}</span>
+                            <div className="flex items-center gap-1.5">
+                                <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-zinc-400" />
+                                <span className="text-zinc-400 text-[10px] sm:text-sm">{show.first_air_date?.slice(0, 4)}</span>
+                            </div>
                             <div className="flex flex-wrap gap-1">
                                 {show.genre_ids?.slice(0, 3).map((genreId: number) => (
                                     <span
@@ -140,20 +137,10 @@ const TvSeriesCard = ({
                                 ))}
                             </div>
                             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                                <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-white/10">
-                                    <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-yellow-500 text-yellow-500" />
-                                    <span className="text-white text-[10px] sm:text-xs font-bold">
-                                        {show.vote_average.toFixed(1)}
-                                    </span>
-                                </div>
+                                <StarRating text={`${show.vote_average?.toFixed(1)}`} ratingType="tmdb" />
                             </div>
                             {show.initialDbState?.userRating && show.initialDbState.userRating > 0 && (
-                                <div className="flex w-fit items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/20 text-blue-400">
-                                    <Star className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-blue-400 text-blue-400" />
-                                    <span className="text-white text-[10px] font-bold">
-                                        {show.initialDbState.userRating.toFixed(1)}
-                                    </span>
-                                </div>
+                                <StarRating text={`${show.initialDbState.userRating?.toFixed(1)}`} ratingType="my" />
                             )}
                             <p className="hidden text-zinc-400 text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 max-w-2xl">
                                 {show.overview}

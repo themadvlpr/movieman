@@ -5,7 +5,7 @@ import { Play } from "lucide-react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, Check, Star } from "lucide-react"
+import { ChevronDown, Check } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 import { genresById } from "@/lib/tmdb/types/tmdb-types"
 import Cookies from "js-cookie"
@@ -14,6 +14,7 @@ import Loader from "@/components/ui/Loader"
 import { Movie } from "@/lib/tmdb/types/tmdb-types"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { dbMediaStatus } from "@/lib/tmdb/types/db-types";
+import StarRating from "@/components/ui/StarRating";
 
 
 
@@ -176,10 +177,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                     <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 font-medium text-white/90 drop-shadow-md text-sm sm:text-base cursor-default">
                         {rating > 0 && (
                             <>
-                                <div className='flex items-center gap-1.5 text-zinc-100'>
-                                    <Star className='w-4 h-4 fill-amber-400 text-amber-400' />
-                                    <span>{rating && rating.toFixed(1)}</span>
-                                </div>
+                                <StarRating text={`${rating && rating.toFixed(1)}`} ratingType="tmdb" />
                                 <span className="text-white/40">|</span>
                             </>
                         )}
@@ -187,10 +185,12 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                             {release_date?.slice(0, 4)}
                         </span>
 
-                        {initialDbState.userRating ? initialDbState.userRating > 0 && <><span className="text-white/40">|</span><div className='flex items-center gap-1.5 text-zinc-100'>
-                            <Star className='w-4 h-4 fill-blue-400 text-blue-400' />
-                            <span>{initialDbState.userRating && initialDbState.userRating.toFixed(1)}</span>
-                        </div></> : null}
+                        {initialDbState.userRating ? initialDbState.userRating > 0 &&
+                            <>
+                                <span className="text-white/40">|</span>
+                                <StarRating text={`${initialDbState.userRating && initialDbState.userRating.toFixed(1)}`} ratingType="my" />
+                            </> :
+                            null}
 
                         {country && <>
                             <span className="text-white/40">|</span>
@@ -394,10 +394,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: M
                                 {nextMovie.vote_average > 0 && (
                                     <>
                                         <span>•</span>
-                                        <div className='flex items-center gap-1.5 text-zinc-100'>
-                                            <Star className='w-3 h-3 fill-amber-400 text-amber-400' />
-                                            <span>{nextMovie.vote_average.toFixed(1)}</span>
-                                        </div>
+                                        <StarRating text={`${nextMovie.vote_average.toFixed(1)}`} ratingType="tmdb" />
                                     </>
                                 )}
                             </div>
