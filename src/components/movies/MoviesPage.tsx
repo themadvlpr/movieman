@@ -10,7 +10,7 @@ import { getGenresAction } from "@/lib/tmdb/getGenres"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import MoviesPageList from "@/components/movies/MoviesPageList"
-import GenreCard from "@/components/movies/GenreCard"
+import GenreCard from "@/components/ui/GenreCard"
 
 // Survives client-side navigation — only resets on full page reload
 let _moviesScrollY = 0

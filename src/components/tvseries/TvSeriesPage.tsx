@@ -9,7 +9,7 @@ import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import TvSeriesPageList from "@/components/tvseries/TvSeriesPageList"
-import GenreCard from "@/components/movies/GenreCard"
+import GenreCard from "@/components/ui/GenreCard"
 import { getGenresAction } from "@/lib/tmdb/getGenres"
 
 
