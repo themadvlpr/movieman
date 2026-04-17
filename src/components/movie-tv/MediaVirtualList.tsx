@@ -84,8 +84,8 @@ export default function MediaVirtualList<T extends { id: number | string }>({
             window.removeEventListener('resize', updateMargin);
             clearTimeout(timer);
         }
-    // scrollMargin intentionally NOT in deps — would cause infinite loop
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // scrollMargin intentionally NOT in deps — would cause infinite loop
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeCategory, viewMode, columnCount]);
 
     // 2.1 Logic: Coordinated Scroll Restoration
@@ -183,6 +183,8 @@ export default function MediaVirtualList<T extends { id: number | string }>({
         );
     }
 
+    console.log(hasNextPage, isFetchingNextPage)
+
     return (
         <div ref={parentRef} className="relative w-full" style={{ minHeight: '400px', overflowAnchor: 'none' }}>
             <div style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative', overflowAnchor: 'none', pointerEvents: 'none' }}>
@@ -210,7 +212,7 @@ export default function MediaVirtualList<T extends { id: number | string }>({
                     );
                 })}
             </div>
-            {/* Bottom Loader (те же стили, что у вас) */}
+
             {/* Bottom Loader */}
             <div className="w-full flex justify-center py-20 relative z-10">
                 {hasNextPage && isFetchingNextPage ? (

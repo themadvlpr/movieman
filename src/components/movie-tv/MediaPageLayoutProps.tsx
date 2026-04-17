@@ -45,17 +45,6 @@ const MediaPageLayout = ({
                     {genreId ? t('common', 'genre') : t('nav', type)}: {genreId ? t('genres', genreId) : t('categories', categoryStyle)}
                 </h1>
 
-                {isGenreSelected && (
-                    <button
-                        onClick={() => handleCategoryChange('genres')}
-                        className="group mb-2 flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-lg transition-all duration-300 cursor-pointer active:scale-95"
-                    >
-                        <ChevronLeft className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
-                            {t('common', 'backToGenres')}
-                        </span>
-                    </button>
-                )}
 
                 {/* Filters & Toggles */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 mb-8">
@@ -75,6 +64,7 @@ const MediaPageLayout = ({
                         ))}
                     </div>
 
+
                     <div className="flex items-center justify-between gap-3 sm:gap-4">
                         <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
                             <button onClick={() => toggleView('list')} className={`p-2 cursor-pointer rounded-lg transition-all duration-300 ${viewMode === 'grid' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white hover:bg-none'}`}>
@@ -86,6 +76,18 @@ const MediaPageLayout = ({
                         </div>
                     </div>
                 </div>
+
+                {isGenreSelected && (
+                    <button
+                        onClick={() => handleCategoryChange('genres')}
+                        className="group mb-2 flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-lg transition-all duration-300 cursor-pointer active:scale-95"
+                    >
+                        <ChevronLeft className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
+                            {t('common', 'backToGenres')}
+                        </span>
+                    </button>
+                )}
 
                 {/* Loading State */}
                 {activeCategory !== categoryStyle && (
@@ -110,6 +112,8 @@ const MediaPageLayout = ({
                         </div>
                     )
                 )}
+
+
 
                 {/* Main Content List */}
                 {(activeCategory !== 'genres' || isGenreSelected) && (activeCategory === categoryStyle) && (

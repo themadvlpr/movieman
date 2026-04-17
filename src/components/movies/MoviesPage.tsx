@@ -27,17 +27,14 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
     const [categoryStyle, setCategoryStyle] = useState<'popular' | 'topRated' | 'upcoming' | 'genres'>(searchParams.get('category') as 'popular' | 'topRated' | 'upcoming' | 'genres' || 'popular');
 
-
+    const categoryFromUrl = searchParams.get('category') || 'popular';
     const genreId = searchParams.get('genreId') || "";
     const isGenreSelected = !!genreId;
 
-    const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'upcoming' | 'genres'>(() => {
-        const urlCategory = searchParams.get('category');
-        if (urlCategory === 'top_rated' || urlCategory === 'topRated') return 'topRated';
-        if (urlCategory === 'upcoming') return 'upcoming';
-        if (urlCategory === 'genres') return 'genres';
-        return 'popular';
-    })
+    const activeCategory = useMemo(() => {
+        if (categoryFromUrl === 'top_rated' || categoryFromUrl === 'topRated') return 'topRated';
+        return categoryFromUrl as 'popular' | 'topRated' | 'upcoming' | 'genres';
+    }, [categoryFromUrl]);
 
 
     const toggleView = useCallback(async (mode: 'grid' | 'list') => {
@@ -130,9 +127,7 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         else if (urlCategory === 'genres') newCategory = 'genres';
         else newCategory = 'popular';
 
-        if (newCategory !== activeCategory) {
-            setActiveCategory(newCategory);
-        }
+
     }, [searchParams, activeCategory]);
 
 

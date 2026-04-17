@@ -25,12 +25,12 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
     const genreId = searchParams.get('genreId') || "";
     const isGenreSelected = !!genreId;
 
-    const [activeCategory, setActiveCategory] = useState<'popular' | 'topRated' | 'genres'>(() => {
-        const urlCategory = searchParams.get('category');
-        if (urlCategory === 'top_rated' || urlCategory === 'topRated') return 'topRated';
-        if (urlCategory === 'genres') return 'genres';
-        return 'popular';
-    })
+    const categoryFromUrl = searchParams.get('category') || 'popular';
+
+    const activeCategory = useMemo(() => {
+        if (categoryFromUrl === 'top_rated' || categoryFromUrl === 'topRated') return 'topRated';
+        return categoryFromUrl as 'popular' | 'topRated' | 'genres';
+    }, [categoryFromUrl]);
 
     const [categoryStyle, setCategoryStyle] = useState<'popular' | 'topRated' | 'genres'>(searchParams.get('category') as 'popular' | 'topRated' | 'genres' || 'popular');
 
@@ -105,7 +105,7 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
     });
 
     const genres = genresResponse?.data || [];
-    
+
     // Sync state with URL
 
 
@@ -117,10 +117,6 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
         if (urlCategory === 'top_rated' || urlCategory === 'topRated') newCategory = 'topRated';
         else if (urlCategory === 'genres') newCategory = 'genres';
         else newCategory = 'popular';
-
-        if (newCategory !== activeCategory) {
-            setActiveCategory(newCategory);
-        }
     }, [searchParams, activeCategory]);
 
 

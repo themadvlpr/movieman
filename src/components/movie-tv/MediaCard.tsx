@@ -117,7 +117,7 @@ const MediaCard = ({
                         <>
                             <div className="flex flex-wrap gap-1 mt-1">
                                 {item.genre_ids?.slice(0, 3).map((genreId: number) => (
-                                    <span key={genreId} className='hover:text-white hover:bg-white/10 px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm backdrop-blur-md text-zinc-400'
+                                    <span key={genreId} className='hover:text-white hover:bg-white/10 px-1 py-0.5 bg-white/5 border border-white/10 rounded-lg text-xs sm:text-sm text-zinc-400'
                                         onClick={(e) => {
                                             e.preventDefault();
                                             onItemClick();
