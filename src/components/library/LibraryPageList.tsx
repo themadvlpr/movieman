@@ -1,5 +1,4 @@
-import LibraryMediaCard from "@/components/library/LibraryMediaCard";
-import { Filter } from "lucide-react";
+import MediaCard from "@/components/library/MediaCardLibrary";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useMemo, useRef, useEffect, useState, useLayoutEffect } from "react";
 
@@ -183,12 +182,12 @@ export default function LibraryPageList({
                                 : "flex flex-col gap-3 sm:gap-4"}
                             >
                                 {rowItems.map((item, idx) => (
-                                    <LibraryMediaCard
+                                    <MediaCard
                                         key={`${item.id}-${virtualRow.index * effectiveColumns + idx}`}
                                         item={item}
-                                        idx={virtualRow.index * effectiveColumns + idx}
+                                        idx={idx}
+                                        isLibrary={true}
                                         viewMode={viewMode}
-                                        activeCategory={activeCategory}
                                         userId={userId}
                                         sessionUserId={sessionUserId}
                                         isPublic={isPublic}

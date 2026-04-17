@@ -183,8 +183,6 @@ export default function MediaVirtualList<T extends { id: number | string }>({
         );
     }
 
-    console.log(hasNextPage, isFetchingNextPage)
-
     return (
         <div ref={parentRef} className="relative w-full" style={{ minHeight: '400px', overflowAnchor: 'none' }}>
             <div style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative', overflowAnchor: 'none', pointerEvents: 'none' }}>
