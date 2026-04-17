@@ -15,6 +15,8 @@ interface MediaVirtualListProps<T> {
     fetchNextPage: () => void;
     t: (category: string, key: string) => string;
     renderCard: (item: T, index: number) => React.ReactNode;
+    restoreScrollOffset?: number;
+    onScrollRestored?: () => void;
 }
 
 export default function MediaVirtualList<T extends { id: number | string }>({
@@ -26,7 +28,9 @@ export default function MediaVirtualList<T extends { id: number | string }>({
     isFetchingNextPage,
     fetchNextPage,
     t,
-    renderCard
+    renderCard,
+    restoreScrollOffset = 0,
+    onScrollRestored
 }: MediaVirtualListProps<T>) {
     const router = useRouter();
     const pathname = usePathname();
@@ -57,24 +61,41 @@ export default function MediaVirtualList<T extends { id: number | string }>({
     }, [activeCategory, viewMode]);
 
     // 2. Logic: Scroll Margin
+    const scrollMarginRef = useRef(0);
     useLayoutEffect(() => {
         const updateMargin = () => {
             if (parentRef.current) {
                 const rect = parentRef.current.getBoundingClientRect();
-                const absoluteTop = Math.floor(rect.top + window.scrollY);
-                if (Math.abs(absoluteTop - scrollMargin) > 5 || (scrollMargin === 0 && absoluteTop > 0)) {
+                const absoluteTop = Math.round(rect.top + window.scrollY);
+                // Only update if change is significant — avoid infinite loop by using ref instead of state in deps
+                if (Math.abs(absoluteTop - scrollMarginRef.current) > 2) {
+                    scrollMarginRef.current = absoluteTop;
                     setScrollMargin(absoluteTop);
                 }
             }
         };
+
         updateMargin();
         window.addEventListener('resize', updateMargin);
-        const timers = [200, 1000, 3000].map(t => setTimeout(updateMargin, t));
+
+        // One delayed measurement to catch font/layout shifts after initial render
+        const timer = setTimeout(updateMargin, 300);
         return () => {
             window.removeEventListener('resize', updateMargin);
-            timers.forEach(clearTimeout);
+            clearTimeout(timer);
         }
-    }, [activeCategory, viewMode, columnCount, scrollMargin]);
+    // scrollMargin intentionally NOT in deps — would cause infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeCategory, viewMode, columnCount]);
+
+    // 2.1 Logic: Coordinated Scroll Restoration
+    const restorationFiredRef = useRef(false);
+    useLayoutEffect(() => {
+        // Reset restoration flag when key navigation parameters change
+        restorationFiredRef.current = false;
+    }, [activeCategory, viewMode]);
+
+
 
     const effectiveColumns = viewMode === 'grid' ? columnCount : 1;
 
@@ -93,13 +114,30 @@ export default function MediaVirtualList<T extends { id: number | string }>({
             if (viewMode === 'list') return 250;
             if (columnCount >= 6) return 460;
             if (columnCount >= 4) return 420;
-            if (columnCount >= 3) return 380;
-            return 360;
+            if (columnCount >= 3) return 370; // Refined from 380
+            return 325; // Refined from 360 for mobile grid
         },
-        overscan: 10,
+        overscan: 20, // Increased for smoother high-refresh-rate mobile scrolling
         scrollMargin,
         getItemKey: (index) => `${index}`,
     });
+
+    useEffect(() => {
+        if (restoreScrollOffset <= 0 || restorationFiredRef.current || status !== 'success' || items.length === 0) return;
+        if (scrollMargin === 0) return;
+
+        restorationFiredRef.current = true;
+
+        // If browser's auto scrollRestoration already brought us close — just clean up, don't fight it
+        if (Math.abs(window.scrollY - restoreScrollOffset) < 100) {
+            onScrollRestored?.();
+            return;
+        }
+
+        // Otherwise manually scroll (browser didn't auto-restore, e.g. first load or iOS quirk)
+        onScrollRestored?.();
+        window.scrollTo({ top: restoreScrollOffset, behavior: 'instant' });
+    }, [restoreScrollOffset, status, items.length, scrollMargin, onScrollRestored]);
 
     const virtualRows = virtualizer.getVirtualItems();
 
@@ -156,7 +194,6 @@ export default function MediaVirtualList<T extends { id: number | string }>({
                         <div
                             key={virtualRow.key}
                             data-index={virtualRow.index}
-                            ref={virtualizer.measureElement}
                             style={{
                                 position: 'absolute', top: 0, left: 0, width: '100%',
                                 transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,

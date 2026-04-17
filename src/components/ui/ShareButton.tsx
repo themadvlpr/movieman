@@ -37,7 +37,7 @@ export default function ShareButton({ title, typeMedia, currentUrl, buttonText }
     return (
         <button
             onClick={handleShare}
-            className="group cursor-pointer relative flex items-center gap-2 overflow-hidden rounded-md 
+            className="group w-fit cursor-pointer relative flex items-center gap-2 overflow-hidden rounded-md 
                  bg-white/10 px-6 py-2.5 text-sm font-medium text-slate-900 
                  shadow-[0_0_1px_rgba(0,0,0,0.1)] outline-none ring-1 ring-slate-900/5 
                  transition-all hover:bg-white/20 hover:ring-slate-900/10 

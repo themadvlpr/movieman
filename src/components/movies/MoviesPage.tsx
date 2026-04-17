@@ -111,20 +111,6 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
 
     const genres = genresResponse?.data || [];
 
-    // setTimeout ensures we fire AFTER Next.js’s own scroll-to-top.
-    useEffect(() => {
-        if (status !== 'success') return
-        if (_moviesScrollY <= 0) return
-
-        const y = _moviesScrollY
-        _moviesScrollY = 0
-
-        // Small delay to ensure virtualization has calculated rows
-        setTimeout(() => {
-            window.scrollTo({ top: y, behavior: 'instant' })
-        }, 10)
-    }, [status])
-
     // Persist preferences
     useEffect(() => {
         localStorage.setItem('moviesCategory', activeCategory)
@@ -173,6 +159,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
             handleItemClick={handleItemClick}
             fetchNextPage={fetchNextPage}
             categoryStyle={categoryStyle}
+            restoreScrollOffset={_moviesScrollY}
+            onScrollRestored={() => { _moviesScrollY = 0 }}
         />
     )
 }

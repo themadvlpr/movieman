@@ -26,6 +26,8 @@ interface MediaPageLayoutProps {
     toggleView: (mode: 'grid' | 'list') => void;
     handleItemClick: (id: string) => void;
     fetchNextPage: () => void;
+    restoreScrollOffset?: number;
+    onScrollRestored?: () => void;
 }
 
 const MediaPageLayout = ({
@@ -33,7 +35,7 @@ const MediaPageLayout = ({
     isLoadingGenres, genres, categories, viewMode, status,
     mediaData, userId, hasNextPage, isFetchingNextPage, t,
     handleCategoryChange, handleGenreSelect, toggleView,
-    handleItemClick, fetchNextPage
+    handleItemClick, fetchNextPage, restoreScrollOffset = 0, onScrollRestored
 }: MediaPageLayoutProps) => {
     return (
         <div className="pt-20 min-h-screen">
@@ -132,6 +134,8 @@ const MediaPageLayout = ({
                                 onItemClick={handleItemClick as () => void}
                             />
                         )}
+                        restoreScrollOffset={restoreScrollOffset}
+                        onScrollRestored={onScrollRestored}
                     />
                 )}
             </div>

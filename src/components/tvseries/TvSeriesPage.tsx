@@ -105,23 +105,8 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
     });
 
     const genres = genresResponse?.data || [];
-
-
-
-    // Restore scroll once the data is confirmed loaded in the DOM.
-    // setTimeout ensures we fire AFTER Next.js’s own scroll-to-top.
-    useEffect(() => {
-        if (status !== 'success') return
-        if (_tvScrollY <= 0) return
-
-        const y = _tvScrollY
-        _tvScrollY = 0
-
-        setTimeout(() => {
-            window.scrollTo({ top: y, behavior: 'instant' })
-        }, 50)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [status])
+    
+    // Sync state with URL
 
 
     // Sync state with URL
@@ -175,6 +160,8 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
             handleItemClick={handleItemClick}
             fetchNextPage={fetchNextPage}
             categoryStyle={categoryStyle}
+            restoreScrollOffset={_tvScrollY}
+            onScrollRestored={() => { _tvScrollY = 0 }}
         />
     )
 }
