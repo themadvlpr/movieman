@@ -66,7 +66,7 @@ const MediaCard = ({
     // Media type badge
     const typeBadge = isGrid && (
         <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-black/70 rounded-md text-[9px] font-bold text-white border border-white/10 z-30 uppercase">
-            {isTv ? 'TV' : 'Movie'}
+            {isTv ? t('common', 'tv') : t('common', 'movie')}
         </div>
     );
 
@@ -125,13 +125,13 @@ const MediaCard = ({
             {/* INFORMATION SECTION */}
             <div className={isGrid ? "px-0.5" : "flex flex-col justify-center gap-2 sm:gap-3 min-w-0 flex-1"}>
 
-                <div className="flex flex-col gap-0.5">
+                <div className="flex flex-col gap-0.5 min-w-0">
                     {!isGrid && (
                         <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">
                             {isTv ? t('common', 'tv') : t('common', 'movie')}
                         </span>
                     )}
-                    <Link href={href} onClick={onItemClick} className='w-fit'>
+                    <Link href={href} onClick={onItemClick} className="block max-w-full">
                         <h2 className={`text-white font-bold hover:text-white/80 transition-colors truncate ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
                             {title}
                         </h2>

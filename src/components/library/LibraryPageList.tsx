@@ -53,13 +53,11 @@ export default function LibraryPageList({
     //     return () => window.removeEventListener('resize', updateColumns);
     // }, []);
 
-    // Используем useLayoutEffect, чтобы замер произошел до отрисовки пикселей
     useLayoutEffect(() => {
         const updateColumns = () => {
             if (typeof window === 'undefined') return;
             const width = window.innerWidth;
 
-            // Используем функциональное обновление, чтобы избежать лишних рендеров
             setColumnCount(prev => {
                 let next;
                 if (width >= 1024) next = 6;

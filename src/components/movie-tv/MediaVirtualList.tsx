@@ -111,7 +111,7 @@ export default function MediaVirtualList<T extends { id: number | string }>({
     const virtualizer = useWindowVirtualizer({
         count: rows.length,
         estimateSize: () => {
-            if (viewMode === 'list') return 250;
+            if (viewMode === 'list') return 300;
             if (columnCount >= 6) return 460;
             if (columnCount >= 4) return 420;
             if (columnCount >= 3) return 370; // Refined from 380
@@ -120,6 +120,7 @@ export default function MediaVirtualList<T extends { id: number | string }>({
         overscan: 20, // Increased for smoother high-refresh-rate mobile scrolling
         scrollMargin,
         getItemKey: (index) => `${index}`,
+        measureElement: (el) => el.getBoundingClientRect().height,
     });
 
     useEffect(() => {
@@ -151,6 +152,12 @@ export default function MediaVirtualList<T extends { id: number | string }>({
             fetchNextPage();
         }
     }, [virtualRows, rows.length, hasNextPage, isFetchingNextPage, status, fetchNextPage]);
+
+    useLayoutEffect(() => {
+        requestAnimationFrame(() => {
+            virtualizer.measure();
+        });
+    }, [viewMode, activeCategory, items.length]);
 
     // Empty States
     if (status === 'pending' && items.length === 0) {
@@ -193,6 +200,7 @@ export default function MediaVirtualList<T extends { id: number | string }>({
                     return (
                         <div
                             key={virtualRow.key}
+                            ref={virtualizer.measureElement}
                             data-index={virtualRow.index}
                             style={{
                                 position: 'absolute', top: 0, left: 0, width: '100%',
