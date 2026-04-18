@@ -48,7 +48,9 @@ export default async function Library({ searchParams }: { searchParams: Promise<
         year = 'all'
     } = params;
 
-    const queryKey = ['library-list', category, type, sort, order, locale, genre, year, userId];
+    const isPublic = false;
+
+    const queryKey = ['library-list', category, type, sort, order, locale, genre, year, userId, isPublic];
 
     await queryClient.prefetchInfiniteQuery({
         queryKey,

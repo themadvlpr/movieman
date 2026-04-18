@@ -39,15 +39,37 @@ export default function LibraryPageList({
     const lastFetchedIndexRef = useRef(-1);
 
     // Sync column count based on window width
-    useEffect(() => {
+    // useEffect(() => {
+    //     const updateColumns = () => {
+    //         if (typeof window === 'undefined') return;
+    //         const width = window.innerWidth;
+    //         if (width >= 1024) setColumnCount(6);
+    //         else if (width >= 768) setColumnCount(4);
+    //         else if (width >= 640) setColumnCount(3);
+    //         else setColumnCount(2);
+    //     };
+    //     updateColumns();
+    //     window.addEventListener('resize', updateColumns);
+    //     return () => window.removeEventListener('resize', updateColumns);
+    // }, []);
+
+    // Используем useLayoutEffect, чтобы замер произошел до отрисовки пикселей
+    useLayoutEffect(() => {
         const updateColumns = () => {
             if (typeof window === 'undefined') return;
             const width = window.innerWidth;
-            if (width >= 1024) setColumnCount(6);
-            else if (width >= 768) setColumnCount(4);
-            else if (width >= 640) setColumnCount(3);
-            else setColumnCount(2);
+
+            // Используем функциональное обновление, чтобы избежать лишних рендеров
+            setColumnCount(prev => {
+                let next;
+                if (width >= 1024) next = 6;
+                else if (width >= 768) next = 4;
+                else if (width >= 640) next = 3;
+                else next = 2;
+                return prev === next ? prev : next;
+            });
         };
+
         updateColumns();
         window.addEventListener('resize', updateColumns);
         return () => window.removeEventListener('resize', updateColumns);

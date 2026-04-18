@@ -72,8 +72,10 @@ export default async function SharedLibrary({ params, searchParams }: { params: 
     const session = await getAuthSession();
     const sessionUserId = session?.user?.id;
 
+    const isPublic = true;
+
     await queryClient.prefetchInfiniteQuery({
-        queryKey: ['library-list', category, type, sort, order, locale, genre, year, sessionUserId],
+        queryKey: ['library-list', category, type, sort, order, locale, genre, year, sessionUserId, isPublic],
         queryFn: async ({ pageParam = 1 }) => {
             const tmdbLang = locale === 'ru' ? 'ru-RU' : locale === 'ua' ? 'uk-UA' : 'en-US';
             const res = await getLibraryAction(

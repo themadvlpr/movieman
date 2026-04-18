@@ -30,13 +30,7 @@ const libraries = [
     { key: 'favorite' },
 ]
 
-const sortOptions = [
-    { key: 'title', label: 'name' },
-    { key: 'watchedDate', label: 'watchDate' },
-    { key: 'year', label: 'releaseDate' },
-    { key: 'userRating', label: 'userRating' },
-    { key: 'rating', label: 'tmdbRating' },
-]
+
 
 // Survives client-side navigation
 let _libraryScrollY = 0
@@ -54,6 +48,15 @@ type SortOrder = 'asc' | 'desc';
 type MediaType = 'all' | 'movie' | 'tv';
 
 export default function LibraryPage({ initialViewMode, userId, sessionUserId, isPublic = false, publicProfile }: Props) {
+
+    const sortOptions = [
+        { key: 'title', label: 'name' },
+        ...(isPublic ? [] : [{ key: 'watchedDate', label: 'watchDate' }]),
+        { key: 'year', label: 'releaseDate' },
+        { key: 'userRating', label: 'userRating' },
+        { key: 'rating', label: 'tmdbRating' },
+    ];
+
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -85,8 +88,8 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
 
     const [sortBy, setSortBy] = useState<SortField>(() => {
         const urlSort = searchParams.get('sort') as SortField;
-        if (['title', 'watchedDate', 'year', 'userRating', 'rating'].includes(urlSort)) return urlSort;
-        return 'watchedDate'; // Default sort is usually newest watch date for Watched category
+        if (['title', 'watchedDate', 'year', 'userRating', 'rating'].includes(urlSort)) return isPublic ? 'year' : urlSort;
+        return isPublic ? 'year' : 'watchedDate'; // Default sort is usually newest watch date for Watched category
     });
 
     const [sortOrder, setSortOrder] = useState<SortOrder>(() => {
@@ -209,7 +212,7 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
         isFetchingNextPage,
         status,
     } = useInfiniteQuery({
-        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder, locale, selectedGenre, selectedYear, sessionUserId],
+        queryKey: ['library-list', activeCategory, mediaType, sortBy, sortOrder, locale, selectedGenre, selectedYear, sessionUserId, isPublic],
         queryFn: async ({ pageParam = 1 }) => {
             const result = await getLibraryAction(
                 userId,
@@ -300,8 +303,6 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
         }
     }
 
-    console.log(data);
-
 
     return (
         <div className="pt-20 min-h-screen">
@@ -383,7 +384,7 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                                         value={activeCategory.startsWith('list_') ? activeCategory : ''}
                                         onValueChange={(val) => setActiveCategory(val)}
                                     >
-                                        <SelectTrigger className={`h-full py-2.5 px-2 sm:py-5 sm:px-3 cursor-pointer min-w-[140px] rounded-lg text-xs sm:text-sm font-semibold transition-all focus:ring-0 focus:ring-offset-0 ${activeCategory.startsWith('list_') ? 'bg-white text-black border-white shadow-lg shadow-white/10' : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 backdrop-blur-md border border-white/10'}`}>
+                                        <SelectTrigger className={`h-full py-2.5 px-2 sm:py-5 sm:px-3 cursor-pointer min-w-[140px] rounded-lg text-xs sm:text-sm font-semibold transition-all focus:ring-0 focus:ring-offset-0 ${activeCategory.startsWith('list_') ? 'bg-white text-black border-white shadow-lg shadow-white/10' : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 backdrop-blur-md border border-white/10'}`}>
                                             <SelectValue placeholder={t('common', 'myLists')} />
                                         </SelectTrigger>
                                         <SelectContent className="bg-zinc-900/95 border-white/10 text-white rounded-md shadow-2xl p-1">
@@ -561,7 +562,7 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-zinc-900/95 border-white/10 text-white rounded-xl shadow-2xl p-1">
-                                    {sortOptions.map((opt) => (
+                                    {sortOptions.map((opt) => opt && (
                                         <SelectItem
                                             key={opt.key}
                                             value={opt.key}
