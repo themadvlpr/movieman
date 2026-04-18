@@ -1,4 +1,4 @@
-import MediaCard from "@/components/library/MediaCardLibrary";
+import MediaCard from "@/components/movie-tv/MediaCard";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useMemo, useRef, useEffect, useState, useLayoutEffect } from "react";
 
@@ -109,16 +109,24 @@ export default function LibraryPageList({
 
     const virtualRows = virtualizer.getVirtualItems();
 
-    // STRICT Infinite Scroll Trigger with index-based guard
+    // Infinite Scroll Trigger — fires only when user actually scrolled near the bottom
     useEffect(() => {
         if (!hasNextPage || isFetchingNextPage || status !== 'success') return;
-        if (virtualRows.length === 0) return;
+        if (virtualRows.length === 0 || rows.length === 0) return;
 
         const lastItem = virtualRows[virtualRows.length - 1];
         if (!lastItem) return;
 
-        // Fetch when approaching local end AND only if data length increased
-        if (lastItem.index >= rows.length - 4 && rows.length > lastFetchedIndexRef.current) {
+        // Guard: don't re-fetch for the same rows.length
+        if (rows.length === lastFetchedIndexRef.current) return;
+
+        // Only trigger if the user has actually scrolled near the bottom of the page.
+        // Without this check, the trigger fires immediately on first mount because
+        // lastFetchedIndexRef starts at -1 and all visible rows satisfy the index threshold.
+        const scrolledNearBottom =
+            window.scrollY + window.innerHeight >= document.body.scrollHeight - 600;
+
+        if (lastItem.index >= rows.length - 3 && scrolledNearBottom) {
             lastFetchedIndexRef.current = rows.length;
             fetchNextPage();
         }
@@ -158,6 +166,7 @@ export default function LibraryPageList({
             >
                 {virtualRows.map((virtualRow) => {
                     const rowItems = rows[virtualRow.index];
+
                     if (!rowItems) return null;
 
                     return (
@@ -181,20 +190,23 @@ export default function LibraryPageList({
                                 ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6"
                                 : "flex flex-col gap-3 sm:gap-4"}
                             >
-                                {rowItems.map((item, idx) => (
-                                    <MediaCard
-                                        key={`${item.id}-${virtualRow.index * effectiveColumns + idx}`}
-                                        item={item}
-                                        idx={idx}
-                                        isLibrary={true}
-                                        viewMode={viewMode}
-                                        userId={userId}
-                                        sessionUserId={sessionUserId}
-                                        isPublic={isPublic}
-                                        publicName={publicName}
-                                        onItemClick={handleItemClick}
-                                    />
-                                ))}
+                                {rowItems.map((item, idx) => {
+                                    const globalIndex = virtualRow.index * effectiveColumns + idx;
+                                    return (
+                                        <MediaCard
+                                            key={`${item.id}-${globalIndex}`}
+                                            item={item}
+                                            idx={globalIndex}
+                                            isLibrary={true}
+                                            viewMode={viewMode}
+                                            userId={userId}
+                                            sessionUserId={sessionUserId}
+                                            isPublic={isPublic}
+                                            publicName={publicName}
+                                            onItemClick={handleItemClick}
+                                        />
+                                    )
+                                })}
                             </div>
                         </div>
                     );
@@ -203,7 +215,7 @@ export default function LibraryPageList({
 
             {/* Bottom Loader (Synched with virtualization container) */}
             <div className="w-full flex justify-center py-20 relative z-10">
-                {hasNextPage && (isFetchingNextPage || status === 'pending') ? (
+                {hasNextPage && isFetchingNextPage ? (
                     <div className="flex flex-col items-center gap-3">
                         <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
                         <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
