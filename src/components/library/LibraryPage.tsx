@@ -52,9 +52,8 @@ interface Props {
 type SortField = 'title' | 'watchedDate' | 'year' | 'userRating' | 'rating';
 type SortOrder = 'asc' | 'desc';
 type MediaType = 'all' | 'movie' | 'tv';
-type CategoryType = 'watched' | 'wishlist' | 'favorite';
 
-export default function LibraryPage({ initialViewMode, userId, sessionUserId, isPublic, publicProfile }: Props) {
+export default function LibraryPage({ initialViewMode, userId, sessionUserId, isPublic = false, publicProfile }: Props) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -300,6 +299,9 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
             return type === 'tv' ? data?.pages[0]?.favoriteTvCount : data?.pages[0]?.favoriteMoviesCount;
         }
     }
+
+    console.log(data);
+
 
     return (
         <div className="pt-20 min-h-screen">

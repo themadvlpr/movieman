@@ -40,6 +40,7 @@ const MediaCard = ({
     const router = useRouter();
     const isGrid = viewMode === 'grid';
 
+
     // Media type and links
     const mediaType = type ? (type === 'movies' ? 'movie' : 'tv') : (item.media_type || (item.title ? 'movie' : 'tv'));
     const isTv = mediaType === 'tv';
@@ -130,8 +131,8 @@ const MediaCard = ({
                             {isTv ? t('common', 'tv') : t('common', 'movie')}
                         </span>
                     )}
-                    <Link href={href} onClick={onItemClick}>
-                        <h2 className={`text-white font-bold hover:text-amber-400 transition-colors truncate ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
+                    <Link href={href} onClick={onItemClick} className='w-fit'>
+                        <h2 className={`text-white font-bold hover:text-white/80 transition-colors truncate ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
                             {title}
                         </h2>
                     </Link>
@@ -169,12 +170,21 @@ const MediaCard = ({
                     )}
 
                     {/* USER RATING */}
-                    {(item.user_rating || dbState.userRating) > 0 && (
+                    {item.initialDbState?.userRating > 0 && (
                         <StarRating
-                            text={`${isPublic ? publicName : isGrid ? '' : t('common', 'myRating') + ':'} ${(item.user_rating || dbState.userRating).toFixed(1)}`}
-                            ratingType={isPublic ? "user" : "my"}
+                            text={`${isGrid ? '' : t('common', 'myRating') + ':'} ${(item.initialDbState?.userRating || 0).toFixed(1)}`}
+                            ratingType={"my"}
                         />
                     )}
+
+                    {/* SHARED USER RATING */}
+                    {item.user_rating > 0 && isPublic && (sessionUserId !== userId) && (
+                        <StarRating
+                            text={`${isPublic && publicName ? publicName + ':' : ''} ${(item.user_rating).toFixed(1)}`}
+                            ratingType={"user"}
+                        />
+                    )}
+
 
                     {/* WATCHED DATE (ONLY IN LIST VIEW) */}
                     {!isGrid && item.watched_date && (

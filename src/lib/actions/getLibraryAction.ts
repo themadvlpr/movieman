@@ -35,7 +35,7 @@ export async function getLibraryAction(
     else if (category === 'favorite') whereClause.isFavorite = true;
     else if (isCustomList && listId) {
         whereClause.media = {
-             listItems: { some: { listId } }
+            listItems: { some: { listId } }
         };
     }
 
@@ -100,7 +100,7 @@ export async function getLibraryAction(
                 orderBy: orderByClause,
                 skip: (page - 1) * pageSize,
                 take: pageSize,
-                include: { 
+                include: {
                     media: {
                         include: {
                             listItems: {
@@ -108,7 +108,7 @@ export async function getLibraryAction(
                                 select: { listId: true }
                             }
                         }
-                    } 
+                    }
                 }
             })
         ]);
@@ -125,7 +125,7 @@ export async function getLibraryAction(
         }
 
         const mappedResults: LibraryResult[] = userMediaList.map(item => {
-            const viewerEntry = viewerUserId && viewerUserId !== userId 
+            const viewerEntry = viewerUserId && viewerUserId !== userId
                 ? viewerMediaEntries.find(ve => ve.userId === viewerUserId && ve.mediaId === item.mediaId)
                 : item;
 
@@ -146,6 +146,7 @@ export async function getLibraryAction(
                     isWatched: !!viewerEntry?.isWatched,
                     isFavorite: !!viewerEntry?.isFavorite,
                     isWishlist: !!viewerEntry?.isWishlist,
+                    userRating: viewerEntry?.userRating ? Number(viewerEntry.userRating) : null,
                     listIds: item.media.listItems.map(li => li.listId)
                 }
             };
