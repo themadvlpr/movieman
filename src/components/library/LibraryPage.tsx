@@ -273,18 +273,6 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
         _libraryScrollY = window.scrollY;
     }, []);
 
-    useEffect(() => {
-        if (status !== 'success') return
-        if (_libraryScrollY <= 0) return
-
-        const y = _libraryScrollY
-        _libraryScrollY = 0
-
-        setTimeout(() => {
-            window.scrollTo({ top: y, behavior: 'instant' })
-        }, 50)
-    }, [status])
-
     // Infinite scroll state trackers
 
 
@@ -722,6 +710,8 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                                 onItemClick={handleItemClick}
                             />
                         )}
+                        restoreScrollOffset={_libraryScrollY}
+                        onScrollRestored={() => { _libraryScrollY = 0 }}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 text-center">

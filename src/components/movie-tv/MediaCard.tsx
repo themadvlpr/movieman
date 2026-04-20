@@ -73,7 +73,10 @@ const MediaCard = ({
 
     return (
         <div
-            onClick={() => router.push(href)}
+            onClick={() => {
+                onItemClick();
+                router.push(href);
+            }}
             className={`relative group transition-all duration-300 ${isGrid
                 ? "flex flex-col gap-2 sm:gap-3"
                 : "flex flex-row gap-3 sm:p-4 p-3 rounded-xl cursor-pointer sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20"
@@ -134,7 +137,7 @@ const MediaCard = ({
                             {isTv ? t('common', 'tv') : t('common', 'movie')}
                         </span>
                     )}
-                    <Link href={href} onClick={onItemClick} className="block w-fit">
+                    <Link href={href} onClick={onItemClick} className="block w-full">
                         <h2 className={`text-white font-bold hover:text-white/80 transition-colors truncate ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
                             {title}
                         </h2>

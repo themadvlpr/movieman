@@ -118,14 +118,27 @@ export default function MediaVirtualList<T extends { id: number | string }>({
 
         restorationFiredRef.current = true;
 
+        const attemptScroll = () => {
+            window.scrollTo({ top: restoreScrollOffset, behavior: 'instant' });
+        };
+
         // If the browser handled it itself (native scroll restoration), don't interfere
         if (Math.abs(window.scrollY - restoreScrollOffset) < 50) {
             onScrollRestored?.();
             return;
         }
 
-        onScrollRestored?.();
-        window.scrollTo({ top: restoreScrollOffset, behavior: 'instant' });
+        requestAnimationFrame(() => {
+            attemptScroll();
+            requestAnimationFrame(() => {
+                attemptScroll();
+            });
+            setTimeout(() => {
+                attemptScroll();
+                onScrollRestored?.();
+            }, 100);
+        });
+
     }, [restoreScrollOffset, status, items.length, scrollMargin, onScrollRestored]);
 
     // 6. Infinite Scroll с защитой от ложных срабатываний
@@ -184,7 +197,7 @@ export default function MediaVirtualList<T extends { id: number | string }>({
     }
 
     return (
-        <div ref={parentRef} className={`relative w-full ${className}`} style={{ minHeight: '400px', overflowAnchor: 'none' }}>
+        <div ref={parentRef} className={`relative w-full mt-15 ${className}`} style={{ minHeight: '400px', overflowAnchor: 'none' }}>
             <div style={{
                 height: `${virtualizer.getTotalSize()}px`,
                 width: '100%',
