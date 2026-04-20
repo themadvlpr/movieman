@@ -26,7 +26,6 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
     const searchParams = useSearchParams()
     const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
     const [categoryStyle, setCategoryStyle] = useState<'popular' | 'topRated' | 'upcoming' | 'genres'>(searchParams.get('category') as 'popular' | 'topRated' | 'upcoming' | 'genres' || 'popular');
-    console.log('categoryStyle', categoryStyle);
 
     const categoryFromUrl = searchParams.get('category') || 'popular';
 
@@ -38,6 +37,11 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         return categoryFromUrl as 'popular' | 'topRated' | 'upcoming' | 'genres';
     }, [categoryFromUrl]);
 
+    useEffect(() => {
+        setCategoryStyle(activeCategory);
+    }, [activeCategory]);
+
+
     const toggleView = useCallback(async (mode: 'grid' | 'list') => {
         const newMode = mode === 'grid' ? 'list' : 'grid';
         setViewMode(newMode);
@@ -46,6 +50,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
 
 
     const handleCategoryChange = useCallback((key: 'popular' | 'topRated' | 'upcoming' | 'genres') => {
+        console.log('key', key);
+
         setCategoryStyle(key);
         const params = new URLSearchParams(searchParams.toString());
         params.set('category', key);
