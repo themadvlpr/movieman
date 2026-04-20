@@ -26,8 +26,10 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
     const searchParams = useSearchParams()
     const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
     const [categoryStyle, setCategoryStyle] = useState<'popular' | 'topRated' | 'upcoming' | 'genres'>(searchParams.get('category') as 'popular' | 'topRated' | 'upcoming' | 'genres' || 'popular');
+    console.log('categoryStyle', categoryStyle);
 
     const categoryFromUrl = searchParams.get('category') || 'popular';
+
     const genreId = searchParams.get('genreId') || "";
     const isGenreSelected = !!genreId;
 
@@ -35,7 +37,6 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         if (categoryFromUrl === 'top_rated' || categoryFromUrl === 'topRated') return 'topRated';
         return categoryFromUrl as 'popular' | 'topRated' | 'upcoming' | 'genres';
     }, [categoryFromUrl]);
-
 
     const toggleView = useCallback(async (mode: 'grid' | 'list') => {
         const newMode = mode === 'grid' ? 'list' : 'grid';

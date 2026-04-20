@@ -134,7 +134,7 @@ const MediaCard = ({
                             {isTv ? t('common', 'tv') : t('common', 'movie')}
                         </span>
                     )}
-                    <Link href={href} onClick={onItemClick} className="block max-w-full">
+                    <Link href={href} onClick={onItemClick} className="block w-fit">
                         <h2 className={`text-white font-bold hover:text-white/80 transition-colors truncate ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
                             {title}
                         </h2>
@@ -148,6 +148,7 @@ const MediaCard = ({
                             <span key={genreId}
                                 className='cursor-pointer hover:text-white hover:bg-white/10 px-1.5 py-0.5 bg-white/5 border border-white/10 rounded-lg text-[10px] sm:text-[11px] text-zinc-400 transition-colors'
                                 onClick={(e) => {
+                                    e.stopPropagation();
                                     e.preventDefault();
                                     onItemClick();
                                     router.push(`${genreBaseUrl}?category=genres&genreId=${genreId}`);
