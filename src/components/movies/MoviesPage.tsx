@@ -8,7 +8,7 @@ import { getMoviesAction } from "@/lib/tmdb/getMovies"
 import { getGenresAction } from "@/lib/tmdb/getGenres"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
-import MediaPageLayout from "@/components/movie-tv/MediaPageLayoutProps"
+import MediaPageLayout from "@/components/movie-tv/MediaPageLayout"
 
 // Survives client-side navigation — only resets on full page reload
 let _moviesScrollY = 0

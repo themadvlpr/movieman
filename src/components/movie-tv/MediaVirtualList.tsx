@@ -2,7 +2,7 @@
 
 import { Filter } from "lucide-react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useMemo, useRef, useEffect, useState, useLayoutEffect } from "react";
+import { useMemo, useRef, useEffect, useState, useLayoutEffect, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 interface MediaVirtualListProps<T> {
@@ -17,6 +17,7 @@ interface MediaVirtualListProps<T> {
     renderCard: (item: T, index: number) => React.ReactNode;
     restoreScrollOffset?: number;
     onScrollRestored?: () => void;
+    className?: string;
 }
 
 export default function MediaVirtualList<T extends { id: number | string }>({
@@ -30,7 +31,8 @@ export default function MediaVirtualList<T extends { id: number | string }>({
     t,
     renderCard,
     restoreScrollOffset = 0,
-    onScrollRestored
+    onScrollRestored,
+    className = ""
 }: MediaVirtualListProps<T>) {
     const router = useRouter();
     const pathname = usePathname();
@@ -40,9 +42,10 @@ export default function MediaVirtualList<T extends { id: number | string }>({
     const [columnCount, setColumnCount] = useState(2);
     const [scrollMargin, setScrollMargin] = useState(0);
     const lastFetchedIndexRef = useRef(-1);
+    const restorationFiredRef = useRef(false);
 
-    // 1. Logic: Column Count
-    useEffect(() => {
+    // Adaptive grid (Columns Count)
+    useLayoutEffect(() => {
         const updateColumns = () => {
             if (typeof window === 'undefined') return;
             const width = window.innerWidth;
@@ -56,20 +59,15 @@ export default function MediaVirtualList<T extends { id: number | string }>({
         return () => window.removeEventListener('resize', updateColumns);
     }, []);
 
-    useLayoutEffect(() => {
-        lastFetchedIndexRef.current = -1;
-    }, [activeCategory, viewMode]);
-
-    // 2. Logic: Scroll Margin
-    const scrollMarginRef = useRef(0);
+    // Stabilization of the margin measurement (Scroll Margin)
+    // Important for the correct operation of useWindowVirtualizer when the header is present
     useLayoutEffect(() => {
         const updateMargin = () => {
             if (parentRef.current) {
                 const rect = parentRef.current.getBoundingClientRect();
-                const absoluteTop = Math.round(rect.top + window.scrollY);
-                // Only update if change is significant — avoid infinite loop by using ref instead of state in deps
-                if (Math.abs(absoluteTop - scrollMarginRef.current) > 2) {
-                    scrollMarginRef.current = absoluteTop;
+                const absoluteTop = Math.floor(rect.top + window.scrollY);
+
+                if (Math.abs(absoluteTop - scrollMargin) > 5 || (scrollMargin === 0 && absoluteTop > 0)) {
                     setScrollMargin(absoluteTop);
                 }
             }
@@ -77,29 +75,17 @@ export default function MediaVirtualList<T extends { id: number | string }>({
 
         updateMargin();
         window.addEventListener('resize', updateMargin);
+        // Several checks to compensate for dynamic content above the list
+        const timers = [100, 500, 1500].map(ms => setTimeout(updateMargin, ms));
 
-        // One delayed measurement to catch font/layout shifts after initial render
-        const timer = setTimeout(updateMargin, 300);
         return () => {
             window.removeEventListener('resize', updateMargin);
-            clearTimeout(timer);
-        }
-        // scrollMargin intentionally NOT in deps — would cause infinite loop
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeCategory, viewMode, columnCount]);
+            timers.forEach(clearTimeout);
+        };
+    }, [activeCategory, viewMode, columnCount, scrollMargin]);
 
-    // 2.1 Logic: Coordinated Scroll Restoration
-    const restorationFiredRef = useRef(false);
-    useLayoutEffect(() => {
-        // Reset restoration flag when key navigation parameters change
-        restorationFiredRef.current = false;
-    }, [activeCategory, viewMode]);
-
-
-
+    // Grouping elements into rows
     const effectiveColumns = viewMode === 'grid' ? columnCount : 1;
-
-    // 3. Logic: Rows Grouping
     const rows = useMemo(() => {
         const result = [];
         for (let i = 0; i < items.length; i += effectiveColumns) {
@@ -108,58 +94,65 @@ export default function MediaVirtualList<T extends { id: number | string }>({
         return result;
     }, [items, effectiveColumns]);
 
+    // Initialization of the virtualizer
     const virtualizer = useWindowVirtualizer({
         count: rows.length,
-        estimateSize: () => {
-            if (viewMode === 'list') return 300;
+        estimateSize: useCallback(() => {
+            if (viewMode === 'list') return 280;
             if (columnCount >= 6) return 460;
             if (columnCount >= 4) return 420;
-            if (columnCount >= 3) return 370; // Refined from 380
-            return 325; // Refined from 360 for mobile grid
-        },
-        overscan: 20, // Increased for smoother high-refresh-rate mobile scrolling
+            if (columnCount >= 3) return 380;
+            return 360;
+        }, [viewMode, columnCount]),
+        overscan: 12,
         scrollMargin,
-        getItemKey: (index) => `${index}`,
-        measureElement: (el) => el.getBoundingClientRect().height,
+        getItemKey: (index) => `${activeCategory}-${index}`,
     });
 
+    const virtualRows = virtualizer.getVirtualItems();
+
+    // Logic for restoring scroll
     useEffect(() => {
         if (restoreScrollOffset <= 0 || restorationFiredRef.current || status !== 'success' || items.length === 0) return;
         if (scrollMargin === 0) return;
 
         restorationFiredRef.current = true;
 
-        // If browser's auto scrollRestoration already brought us close — just clean up, don't fight it
-        if (Math.abs(window.scrollY - restoreScrollOffset) < 100) {
+        // If the browser handled it itself (native scroll restoration), don't interfere
+        if (Math.abs(window.scrollY - restoreScrollOffset) < 50) {
             onScrollRestored?.();
             return;
         }
 
-        // Otherwise manually scroll (browser didn't auto-restore, e.g. first load or iOS quirk)
         onScrollRestored?.();
         window.scrollTo({ top: restoreScrollOffset, behavior: 'instant' });
     }, [restoreScrollOffset, status, items.length, scrollMargin, onScrollRestored]);
 
-    const virtualRows = virtualizer.getVirtualItems();
-
-    // 4. Logic: Infinite Scroll
+    // 6. Infinite Scroll с защитой от ложных срабатываний
     useEffect(() => {
         if (!hasNextPage || isFetchingNextPage || status !== 'success') return;
-        if (virtualRows.length === 0) return;
+        if (virtualRows.length === 0 || rows.length === 0) return;
+
         const lastItem = virtualRows[virtualRows.length - 1];
-        if (lastItem && lastItem.index >= rows.length - 4 && rows.length > lastFetchedIndexRef.current) {
+        if (!lastItem || rows.length === lastFetchedIndexRef.current) return;
+
+        // Check: are we really at the bottom of the page
+        const scrolledNearBottom = window.scrollY + window.innerHeight >= document.body.scrollHeight - 800;
+
+        if (lastItem.index >= rows.length - 3 && scrolledNearBottom) {
             lastFetchedIndexRef.current = rows.length;
             fetchNextPage();
         }
     }, [virtualRows, rows.length, hasNextPage, isFetchingNextPage, status, fetchNextPage]);
 
+    // Reset flags when changing category/mode
     useLayoutEffect(() => {
-        requestAnimationFrame(() => {
-            virtualizer.measure();
-        });
-    }, [viewMode, activeCategory, items.length]);
+        lastFetchedIndexRef.current = -1;
+        restorationFiredRef.current = false;
+        virtualizer.measure();
+    }, [activeCategory, viewMode, virtualizer]);
 
-    // Empty States
+    // Loading and empty states
     if (status === 'pending' && items.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-40">
@@ -182,7 +175,7 @@ export default function MediaVirtualList<T extends { id: number | string }>({
                         params.delete('genreId');
                         router.push(pathname + '?' + params.toString(), { scroll: false });
                     }}
-                    className="mt-6 text-white text-sm font-semibold underline underline-offset-4 hover:text-zinc-300 cursor-pointer"
+                    className="mt-6 text-white text-sm font-semibold underline underline-offset-4 hover:text-zinc-300"
                 >
                     {t('common', 'resetFilters')}
                 </button>
@@ -191,8 +184,14 @@ export default function MediaVirtualList<T extends { id: number | string }>({
     }
 
     return (
-        <div ref={parentRef} className="relative w-full" style={{ minHeight: '400px', overflowAnchor: 'none' }}>
-            <div style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative', overflowAnchor: 'none', pointerEvents: 'none' }}>
+        <div ref={parentRef} className={`relative w-full ${className}`} style={{ minHeight: '400px', overflowAnchor: 'none' }}>
+            <div style={{
+                height: `${virtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+                overflowAnchor: 'none',
+                pointerEvents: 'none'
+            }}>
                 {virtualRows.map((virtualRow) => {
                     const rowItems = rows[virtualRow.index];
                     if (!rowItems) return null;
@@ -205,25 +204,27 @@ export default function MediaVirtualList<T extends { id: number | string }>({
                             style={{
                                 position: 'absolute', top: 0, left: 0, width: '100%',
                                 transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
-                                paddingBottom: viewMode === 'grid' ? (columnCount >= 4 ? '24px' : '12px') : '16px',
+                                paddingBottom: viewMode === 'grid' ? '24px' : '16px',
                                 pointerEvents: 'auto',
                             }}
                         >
                             <div className={viewMode === 'grid'
                                 ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6"
                                 : "flex flex-col gap-3 sm:gap-4"}>
-                                {rowItems.map((item, idx) => renderCard(item, virtualRow.index * effectiveColumns + idx))}
+                                {rowItems.map((item, idx) =>
+                                    renderCard(item, virtualRow.index * effectiveColumns + idx)
+                                )}
                             </div>
                         </div>
                     );
                 })}
             </div>
 
-            {/* Bottom Loader */}
+            {/* Loading indicator */}
             <div className="w-full flex justify-center py-20 relative z-10">
                 {hasNextPage && isFetchingNextPage ? (
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin transition-all" />
+                        <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
                         <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
                     </div>
                 ) : !hasNextPage && items.length > 0 ? (

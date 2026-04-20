@@ -13,8 +13,10 @@ import Link from "next/link"
 import * as XLSX from "xlsx"
 import { toast } from "sonner"
 import { useTranslation } from "@/providers/LocaleProvider"
-import LibraryPageList from "@/components/library/LibraryPageList"
+import MediaVirtualList from "@/components/movie-tv/MediaVirtualList"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
+import MediaCard from "@/components/movie-tv/MediaCard"
+import { LibraryResult } from "@/lib/tmdb/types/tmdb-types"
 import {
     Select,
     SelectContent,
@@ -697,20 +699,29 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                         <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
                     </div>
                 ) : libraryData.length > 0 ? (
-                    <LibraryPageList
+                    <MediaVirtualList<LibraryResult>
                         status={status}
-                        libraryData={libraryData}
+                        items={libraryData}
                         viewMode={viewMode}
                         activeCategory={activeCategory}
-                        userId={userId}
-                        sessionUserId={sessionUserId}
-                        isPublic={isPublic}
-                        publicName={publicProfile?.name.split(' ')[0] || ''}
-                        handleItemClick={handleItemClick}
                         hasNextPage={hasNextPage}
                         isFetchingNextPage={isFetchingNextPage}
                         fetchNextPage={fetchNextPage}
                         t={t}
+                        renderCard={(item, globalIndex) => (
+                            <MediaCard
+                                key={`${item.id}-${globalIndex}`}
+                                item={item}
+                                idx={globalIndex}
+                                isLibrary={true}
+                                viewMode={viewMode}
+                                userId={userId}
+                                sessionUserId={sessionUserId}
+                                isPublic={isPublic}
+                                publicName={publicProfile?.name.split(' ')[0] || ''}
+                                onItemClick={handleItemClick}
+                            />
+                        )}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 text-center">

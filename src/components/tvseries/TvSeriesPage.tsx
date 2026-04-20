@@ -8,7 +8,7 @@ import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
 import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import { getGenresAction } from "@/lib/tmdb/getGenres"
-import MediaPageLayout from "@/components/movie-tv/MediaPageLayoutProps"
+import MediaPageLayout from "@/components/movie-tv/MediaPageLayout"
 
 
 // Survives client-side navigation — only resets on full page reload

@@ -70,11 +70,14 @@ const MediaCard = ({
         </div>
     );
 
+
     return (
-        <div className={`relative group transition-all duration-300 ${isGrid
-            ? "flex flex-col gap-2 sm:gap-3"
-            : "flex flex-row gap-3 sm:p-4 p-3 rounded-xl sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20"
-            }`}>
+        <div
+            onClick={() => router.push(href)}
+            className={`relative group transition-all duration-300 ${isGrid
+                ? "flex flex-col gap-2 sm:gap-3"
+                : "flex flex-row gap-3 sm:p-4 p-3 rounded-xl cursor-pointer sm:rounded-2xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/20"
+                }`}>
 
             {/* POSTER SECTION */}
             <div className={isGrid
@@ -169,8 +172,9 @@ const MediaCard = ({
                         <StarRating text={`${isGrid ? '' : t('common', 'tmdbRating') + ':'} ${item.vote_average.toFixed(1)}`} ratingType="tmdb" />
                     )}
 
+
                     {/* USER RATING */}
-                    {item.initialDbState?.userRating > 0 && (
+                    {(!isLibrary || sessionUserId !== undefined) && item.initialDbState?.userRating > 0 && (
                         <StarRating
                             text={`${isGrid ? '' : t('common', 'myRating') + ':'} ${(item.initialDbState?.userRating || 0).toFixed(1)}`}
                             ratingType={"my"}
