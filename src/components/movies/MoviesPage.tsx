@@ -11,8 +11,8 @@ import { useTranslation } from "@/providers/LocaleProvider"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import MediaPageLayout from "@/components/movie-tv/MediaPageLayout"
 
-// Survives client-side navigation — only resets on full page reload
-let _moviesScrollY = 0
+// Contextual scroll state to handle "Back" vs "New" navigation
+let _moviesScrollState = { offset: 0, params: "" };
 
 interface Props {
     initialViewMode: 'grid' | 'list';
@@ -74,8 +74,11 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
     }, [searchParams, pathname, router]);
 
     const handleItemClick = useCallback(() => {
-        _moviesScrollY = window.scrollY;
-    }, []);
+        _moviesScrollState = {
+            offset: window.scrollY,
+            params: searchParams.toString()
+        };
+    }, [searchParams]);
 
     const {
         data,
@@ -162,8 +165,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
             handleItemClick={handleItemClick}
             fetchNextPage={fetchNextPage}
             categoryStyle={categoryStyle}
-            restoreScrollOffset={_moviesScrollY}
-            onScrollRestored={() => { _moviesScrollY = 0 }}
+            restoreScrollOffset={_moviesScrollState.params === searchParams.toString() ? _moviesScrollState.offset : 0}
+            onScrollRestored={() => { _moviesScrollState = { offset: 0, params: "" } }}
         />
     )
 }

@@ -12,8 +12,8 @@ import { getGenresAction } from "@/lib/tmdb/getGenres"
 import MediaPageLayout from "@/components/movie-tv/MediaPageLayout"
 
 
-// Survives client-side navigation — only resets on full page reload
-let _tvScrollY = 0
+// Contextual scroll state to handle "Back" vs "New" navigation
+let _tvScrollState = { offset: 0, params: "" }
 
 export default function TvSeriesPage({ initialViewMode, userId }: { initialViewMode: 'grid' | 'list', userId: string }) {
     const { t, locale } = useTranslation();
@@ -66,8 +66,11 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
     }, [searchParams, pathname, router]);
 
     const handleItemClick = useCallback(() => {
-        _tvScrollY = window.scrollY;
-    }, []);
+        _tvScrollState = {
+            offset: window.scrollY,
+            params: searchParams.toString()
+        };
+    }, [searchParams]);
 
     const {
         data,
@@ -157,8 +160,8 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
             handleItemClick={handleItemClick}
             fetchNextPage={fetchNextPage}
             categoryStyle={categoryStyle}
-            restoreScrollOffset={_tvScrollY}
-            onScrollRestored={() => { _tvScrollY = 0 }}
+            restoreScrollOffset={_tvScrollState.params === searchParams.toString() ? _tvScrollState.offset : 0}
+            onScrollRestored={() => { _tvScrollState = { offset: 0, params: "" } }}
         />
     )
 }

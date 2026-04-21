@@ -36,8 +36,8 @@ const libraries = [
 
 
 
-// Survives client-side navigation
-let _libraryScrollY = 0
+// Contextual scroll state to handle "Back" vs "New" navigation
+let _libraryScrollState = { offset: 0, params: "" }
 
 interface Props {
     initialViewMode: 'grid' | 'list';
@@ -272,8 +272,11 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
     }, []);
 
     const handleItemClick = useCallback(() => {
-        _libraryScrollY = window.scrollY;
-    }, []);
+        _libraryScrollState = {
+            offset: window.scrollY,
+            params: searchParams.toString()
+        };
+    }, [searchParams]);
 
     // Infinite scroll state trackers
 
@@ -711,8 +714,8 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                                 onItemClick={handleItemClick}
                             />
                         )}
-                        restoreScrollOffset={_libraryScrollY}
-                        onScrollRestored={() => { _libraryScrollY = 0 }}
+                        restoreScrollOffset={_libraryScrollState.params === searchParams.toString() ? _libraryScrollState.offset : 0}
+                        onScrollRestored={() => { _libraryScrollState = { offset: 0, params: "" } }}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
