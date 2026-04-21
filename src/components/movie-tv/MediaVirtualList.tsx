@@ -141,7 +141,7 @@ export default function MediaVirtualList<T extends { id: number | string }>({
 
     }, [restoreScrollOffset, status, items.length, scrollMargin, onScrollRestored]);
 
-    // 6. Infinite Scroll с защитой от ложных срабатываний
+    // 6. Infinite Scroll 
     useEffect(() => {
         if (!hasNextPage || isFetchingNextPage || status !== 'success') return;
         if (virtualRows.length === 0 || rows.length === 0) return;

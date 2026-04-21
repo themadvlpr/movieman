@@ -35,6 +35,8 @@ export const translations = {
             metaTvSeriesDestiption: "Discover the most popular TV series trending right now. Watch trailers and explore cast information on MovieMan.",
             metaLibraryDestiption: "Your personal collection of movies and TV series. Track watched movies, rate them, and share with friends.",
             metaShareListDestiption: "Share your movie and TV series collection with friends. Watch trailers and explore cast information on MovieMan.",
+            libraryNotFound: "This library does not exist.",
+            notFound: "Not Found",
         },
         common: {
             tv: 'TV',
@@ -235,6 +237,8 @@ export const translations = {
             metaTvSeriesDestiption: "Откройте для себя самые популярные сериалы прямо сейчас. Смотрите трейлеры и изучайте информацию об актерах на MovieMan.",
             metaLibraryDestiption: "Ваша личная коллекция фильмов и сериалов. Отслеживайте просмотренные фильмы, оценивайте их и делитесь с друзьями.",
             metaShareListDestiption: "Поделитесь своей коллекцией фильмов и сериалов с друзьями. Смотрите трейлеры и изучайте информацию об актерах на MovieMan.",
+            libraryNotFound: "Библиотека не найдена.",
+            notFound: "Не найдено",
         },
         categories: {
             popular: 'Популярные',
@@ -441,6 +445,8 @@ export const translations = {
             metaTvSeriesDestiption: "Відкрийте для себе найпопулярніші серіали прямо зараз. Дивіться трейлери та вивчайте інформацію про акторів на MovieMan.",
             metaLibraryDestiption: "Ваша особиста колекція фільмів та серіалів. Відстежуйте переглянуті фільми, оцінюйте їх та діліться з друзями.",
             metaShareListDestiption: "Поділіться своєю колекцією фільмів та серіалів з друзями. Дивіться трейлери та вивчайте інформацію про акторів на MovieMan.",
+            libraryNotFound: "Бібліотека не знайдена.",
+            notFound: "Не знайдено",
         },
         categories: {
             popular: 'Популярні',
