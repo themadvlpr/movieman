@@ -37,18 +37,17 @@ export const metadata: Metadata = {
 	manifest: '/icons/site.webmanifest',
 }
 
+
 export default async function RootLayout({
 	children,
 	params,
 }: Readonly<{
 	children: React.ReactNode;
-	params: { locale: Locale };
+	params: Promise<{ locale: Locale }>;
 }>) {
 
-
+	const { locale } = await params;
 	const session = await getAuthSession();
-	// Await params if using Next.js 15 (just in case)
-	const { locale } = params;
 
 	return (
 		<html lang={locale || 'en'} className={cn("font-sans", geist.variable)}>
