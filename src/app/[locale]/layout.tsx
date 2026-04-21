@@ -11,9 +11,10 @@ import { Suspense } from 'react'
 import Loader from '@/components/ui/Loader'
 import { getAuthSession } from '@/lib/auth-sessions'
 import { Toaster } from 'sonner';
+import { Locale } from "@/lib/i18n/languageconfig";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const montserrat = Montserrat({
 	variable: '--font-montserrat',
@@ -41,13 +42,13 @@ export default async function RootLayout({
 	params,
 }: Readonly<{
 	children: React.ReactNode;
-	params: { locale: string };
+	params: { locale: Locale };
 }>) {
 
 
 	const session = await getAuthSession();
-    // Await params if using Next.js 15 (just in case)
-    const { locale } = await params;
+	// Await params if using Next.js 15 (just in case)
+	const { locale } = params;
 
 	return (
 		<html lang={locale || 'en'} className={cn("font-sans", geist.variable)}>
