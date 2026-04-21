@@ -5,12 +5,12 @@ import { getLibraryAction } from "@/lib/actions/getLibraryAction";
 import { getUserListsAction } from "@/lib/actions/userListsActions";
 import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
-import { getLocale } from "@/lib/i18n/get-locale";
 import { translations } from "@/lib/i18n/translation";
+import { Locale } from "@/lib/i18n/languageconfig";
 
 
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }) {
     const { locale } = await params;
 
     const dict = translations[locale] || translations.en;

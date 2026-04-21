@@ -3,7 +3,6 @@ import { cookies } from 'next/headers';
 import { getAuthSession } from "@/lib/auth-sessions";
 import { getMoviesAction } from "@/lib/tmdb/getMovies";
 import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tanstack/react-query";
-import { getLocale } from "@/lib/i18n/get-locale";
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 import { Metadata } from "next";
 import { translations } from "@/lib/i18n/translation";
@@ -25,7 +24,7 @@ export async function generateMetadata({
     params,
     searchParams
 }: {
-    params: Promise<{ locale: string }>
+    params: Promise<{ locale: Locale }>
     searchParams: Promise<{ category?: string, genreId?: string }>
 }): Promise<Metadata> {
     const [{ category, genreId }, { locale }] = await Promise.all([searchParams, params]);

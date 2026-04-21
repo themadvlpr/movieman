@@ -3,14 +3,14 @@ import { cookies } from 'next/headers';
 import { getLibraryAction } from "@/lib/actions/getLibraryAction";
 import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
-import { getLocale } from "@/lib/i18n/get-locale";
 import prisma from "@/lib/prisma";
 import { getAuthSession } from "@/lib/auth-sessions";
 import { translations } from "@/lib/i18n/translation";
+import { Locale } from "@/lib/i18n/languageconfig";
 
-export async function generateMetadata({ params }: { params: Promise<{ userId: string, locale: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ userId: string, locale: Locale }> }) {
     const { userId, locale } = await params;
-    const dict = translations[locale as Locale] || translations.en;
+    const dict = translations[locale] || translations.en;
 
     const user = await prisma.user.findUnique({
         where: { id: userId },
