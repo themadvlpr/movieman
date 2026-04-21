@@ -2,7 +2,7 @@ import { Share2, Link as LinkIcon } from 'lucide-react';
 import { useTranslation } from '@/providers/LocaleProvider';
 import { toast } from 'sonner';
 
-export default function ShareButton({ title, typeMedia, currentUrl, buttonText }: { title: string, typeMedia: 'movie' | 'tv' | 'list', currentUrl: string, buttonText: string }) {
+export default function ShareButton({ title, currentUrl, buttonText }: { title: string, currentUrl: string, buttonText: string }) {
     const { t } = useTranslation();
 
 

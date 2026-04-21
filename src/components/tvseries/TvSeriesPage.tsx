@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useSearchParams, usePathname  } from 'next/navigation';
+import { useLocalizedRouter as useRouter } from '@/components/navigation/useRouter';
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
 import { useTranslation } from "@/providers/LocaleProvider"

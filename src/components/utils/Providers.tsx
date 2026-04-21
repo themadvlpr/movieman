@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { LocaleProvider } from '@/providers/LocaleProvider'
 import { broadcastQueryClient } from '@tanstack/query-broadcast-client-experimental'
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({ children, locale }: { children: React.ReactNode, locale?: string }) {
     const [queryClient] = useState(() => new QueryClient({
         defaultOptions: {
             queries: {
@@ -29,7 +29,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <LocaleProvider>
+            <LocaleProvider initialLocale={locale as any}>
                 {children}
             </LocaleProvider>
             <ReactQueryDevtools initialIsOpen={false} />

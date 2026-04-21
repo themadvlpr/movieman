@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, ChevronRight, List, Info, Globe, Play } from 'lucide-react'
 import VideoModal from '@/components/ui/VideoModal'
@@ -13,6 +13,7 @@ import { dbState } from '@/lib/tmdb/types/db-types'
 import { updateMediaDetailsAction } from '@/lib/actions/updateMediaDetailsAction'
 import { toast } from "sonner"
 import { useTranslation } from '@/providers/LocaleProvider'
+import { getLocalizedUrl } from '@/lib/i18n/url-utils'
 import { ExpandableMarkdown } from '@/components/ui/UserNote'
 import ShareButton from '@/components/ui/ShareButton'
 import StarRating from '@/components/ui/StarRating'
@@ -31,7 +32,7 @@ interface MainTvCrewItem {
 export default function TvSeriesDetailContent({ data, userId }: Props) {
     const [imageLoading, setImageLoading] = useState(true);
     const [showFullDate, setShowFullDate] = useState(false);
-    const { t } = useTranslation();
+    const { t, locale } = useTranslation();
     const { series, credits, similarSeries, initialDbState } = data
 
     const [watchDate, setWatchDate] = useState(
@@ -277,9 +278,8 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
 
                             <ShareButton
                                 title={series.name}
-                                typeMedia='tv'
-                                buttonText={t('common', 'share') + ' ' + series.name}
-                                currentUrl={typeof window !== 'undefined' ? `${window.location.origin}/tvseries/${series.id}` : ''}
+                                buttonText={t('common', 'share')}
+                                currentUrl={getLocalizedUrl(`/tvseries/${series.id}`, locale)}
                             />
 
                             {series.tagline && (

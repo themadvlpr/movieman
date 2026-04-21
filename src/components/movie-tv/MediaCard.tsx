@@ -1,9 +1,9 @@
 'use client';
 
 import { memo } from 'react';
-import Link from 'next/link';
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { Play, Eye, Calendar } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useLocalizedRouter as useRouter } from '@/components/navigation/useRouter';
 import MoviePoster from '@/components/ui/MoviePoster';
 import LibraryControlsButtons from '@/components/ui/LibraryControlsButtons';
 import StarRating from '@/components/ui/StarRating';

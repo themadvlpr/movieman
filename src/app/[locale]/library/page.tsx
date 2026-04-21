@@ -10,9 +10,8 @@ import { translations } from "@/lib/i18n/translation";
 
 
 
-export async function generateMetadata() {
-
-    const locale = await getLocale();
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
 
     const dict = translations[locale] || translations.en;
 
@@ -22,7 +21,7 @@ export async function generateMetadata() {
     };
 }
 
-export default async function Library({ searchParams }: { searchParams: Promise<{ category?: string, type?: string, sort?: string, order?: string, genre?: string, year?: string }> }) {
+export default async function Library({ params, searchParams }: { params: Promise<{ locale: string }>, searchParams: Promise<{ category?: string, type?: string, sort?: string, order?: string, genre?: string, year?: string }> }) {
     const session = await getAuthSession();
     const userId = session?.user?.id;
 
@@ -33,12 +32,12 @@ export default async function Library({ searchParams }: { searchParams: Promise<
     const cookieStore = await cookies();
     const viewMode = cookieStore.get('libraryViewMode')?.value || 'grid';
 
-    const locale = await getLocale();
+    const { locale } = await params;
 
     const queryClient = new QueryClient();
 
     // page.tsx
-    const params = await searchParams;
+    const searchParameters = await searchParams;
     const {
         category = 'watched',
         type = 'all',
@@ -46,7 +45,7 @@ export default async function Library({ searchParams }: { searchParams: Promise<
         order = 'desc',
         genre = 'all',
         year = 'all'
-    } = params;
+    } = searchParameters;
 
     const isPublic = false;
 

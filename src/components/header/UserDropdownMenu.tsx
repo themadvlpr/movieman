@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import Link from 'next/link'
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { motion, AnimatePresence } from 'framer-motion'
 import { LogOut, Library } from 'lucide-react'
 import { useAuthActions } from '@/hooks/useAuthActions'

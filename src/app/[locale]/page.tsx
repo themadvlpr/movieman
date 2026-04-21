@@ -8,26 +8,29 @@ import { getLocale } from '@/lib/i18n/get-locale';
 import { TMDB_LANGUAGES, Locale } from '@/lib/i18n/languageconfig';
 
 export default async function Home({
+    params,
     searchParams,
 }: {
+    params: Promise<{ locale: string }>;
     searchParams: Promise<{ genre?: string }>;
 }) {
     return (
         <Suspense fallback={<Loader />}>
-            <MainContent fetchParams={searchParams} />
+            <MainContent params={params} fetchParams={searchParams} />
         </Suspense>
     );
 }
 
-async function MainContent({ fetchParams }: { fetchParams: Promise<{ genre?: string }> }) {
-    const [resolvedParams, cookieStore, session, locale] = await Promise.all([
+async function MainContent({ params, fetchParams }: { params: Promise<{ locale: string }>, fetchParams: Promise<{ genre?: string }> }) {
+    const [resolvedParams, resolvedParamsObj, cookieStore, session] = await Promise.all([
         fetchParams,
+        params,
         cookies(),
         getAuthSession(),
-        getLocale()
     ]);
-
-    const tmdbLang = TMDB_LANGUAGES[locale as Locale];
+    
+    const locale = resolvedParamsObj.locale as Locale;
+    const tmdbLang = TMDB_LANGUAGES[locale];
 
     const genreStr = resolvedParams.genre || cookieStore.get('selectedGenreId')?.value || "28";
     const genreId = parseInt(genreStr, 10);

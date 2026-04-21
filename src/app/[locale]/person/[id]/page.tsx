@@ -9,11 +9,11 @@ import { getLocale } from "@/lib/i18n/get-locale";
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 
 interface PersonPageProps {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string; locale: string }>;
 }
 
 export async function generateMetadata({ params }: PersonPageProps): Promise<Metadata> {
-    const [{ id }, locale] = await Promise.all([params, getLocale()]);
+    const { id, locale } = await params;
     const tmdbLang = TMDB_LANGUAGES[locale as Locale];
     const person = await tmdbFetch(`/person/${id}`, { language: tmdbLang }, CacheConfig.DETAILS);
 
@@ -30,8 +30,7 @@ export async function generateMetadata({ params }: PersonPageProps): Promise<Met
 }
 
 export default async function PersonPage({ params }: PersonPageProps) {
-    const { id } = await params
-    const locale = await getLocale();
+    const { id, locale } = await params
     const tmdbLang = TMDB_LANGUAGES[locale as Locale];
     const queryClient = new QueryClient()
 

@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 import { MultiSearchResult } from '@/lib/tmdb/types/tmdb-types'
 import { useTranslation } from '@/providers/LocaleProvider'
 import { TMDB_LANGUAGES, Locale } from '@/lib/i18n/languageconfig'
-import Link from 'next/link'
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import Image from 'next/image'
 import StarRating from '@/components/ui/StarRating'
 

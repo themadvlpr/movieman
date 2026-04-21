@@ -1,5 +1,5 @@
 import { Actor, Movie, TvSeries } from "@/lib/tmdb/types/tmdb-types"
-import Link from "next/link"
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import Image from "next/image"
 import { User, Play, Calendar } from "lucide-react"
 import { MergedCredit } from "@/lib/tmdb/types/tmdb-types"

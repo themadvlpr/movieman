@@ -8,10 +8,9 @@ import prisma from "@/lib/prisma";
 import { getAuthSession } from "@/lib/auth-sessions";
 import { translations } from "@/lib/i18n/translation";
 
-export async function generateMetadata({ params }: { params: Promise<{ userId: string }> }) {
-    const { userId } = await params;
-    const locale = await getLocale();
-    const dict = translations[locale] || translations.en;
+export async function generateMetadata({ params }: { params: Promise<{ userId: string, locale: string }> }) {
+    const { userId, locale } = await params;
+    const dict = translations[locale as Locale] || translations.en;
 
     const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -30,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
     };
 }
 
-export default async function SharedLibrary({ params, searchParams }: { params: Promise<{ userId: string }>, searchParams: Promise<{ category?: string, type?: string, sort?: string, order?: string, genre?: string, year?: string }> }) {
+export default async function SharedLibrary({ params, searchParams }: { params: Promise<{ userId: string, locale: string }>, searchParams: Promise<{ category?: string, type?: string, sort?: string, order?: string, genre?: string, year?: string }> }) {
     const { userId } = await params;
 
     const user = await prisma.user.findUnique({
@@ -44,7 +43,7 @@ export default async function SharedLibrary({ params, searchParams }: { params: 
 
     const cookieStore = await cookies();
     const viewMode = cookieStore.get('libraryViewMode')?.value || 'grid';
-    const locale = await getLocale();
+    const { locale } = await params;
 
     const searchParameters = await searchParams;
     const {

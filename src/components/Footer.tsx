@@ -2,14 +2,15 @@
 
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { useTranslation } from '@/providers/LocaleProvider'
+import { isActiveRoute } from '@/lib/i18n/url-utils'
 
 export default function Footer() {
 	const pathname = usePathname()
-	const { t } = useTranslation()
+	const { t, locale } = useTranslation()
 
-	if (pathname === '/') return null
+	if (pathname === '/' || pathname === `/${locale}`) return null
 
 	return (
 		<motion.footer
@@ -25,13 +26,13 @@ export default function Footer() {
 			<div className='w-full'>
 				<ul className='flex justify-center flex-wrap items-center gap-5'>
 					<li className={`transition-all duration-500 hover:scale-115 
-              ${pathname === '/' ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-zinc-400 hover:text-amber-50'}`}><Link href="/">{t('nav', 'home')}</Link></li>
+              ${isActiveRoute(pathname, '/', locale) ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-zinc-400 hover:text-amber-50'}`}><Link href="/">{t('nav', 'home')}</Link></li>
 					<li className={`transition-all duration-500 hover:scale-115 
-              ${pathname === '/movies' ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-zinc-400 hover:text-amber-50'}`}><Link href="/movies">{t('nav', 'movies')}</Link></li>
+              ${isActiveRoute(pathname, '/movies', locale) ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-zinc-400 hover:text-amber-50'}`}><Link href="/movies">{t('nav', 'movies')}</Link></li>
 					<li className={`transition-all duration-500 hover:scale-115 
-              ${pathname === '/tvseries' ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-zinc-400 hover:text-amber-50'}`}><Link href="/tvseries">{t('nav', 'tvseries')}</Link></li>
+              ${isActiveRoute(pathname, '/tvseries', locale) ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-zinc-400 hover:text-amber-50'}`}><Link href="/tvseries">{t('nav', 'tvseries')}</Link></li>
 					<li className={`transition-all duration-500 hover:scale-115 
-              ${pathname === '/about' ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-zinc-400 hover:text-amber-50'}`}><Link href="/about">{t('nav', 'about')}</Link></li>
+              ${isActiveRoute(pathname, '/about', locale) ? 'text-zinc-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-zinc-400 hover:text-amber-50'}`}><Link href="/about">{t('nav', 'about')}</Link></li>
 				</ul>
 			</div>
 			<div className="w-full max-w-xs h-px my-2 bg-white/10"></div>

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import HeaderAuthControlsButton from '@/components/header/HeaderAuthControlsButton'
 import SearchBar from './SearchBar'
 import MobileMenu from './MobileMenu'

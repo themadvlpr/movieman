@@ -11,11 +11,11 @@ import { getLocale } from "@/lib/i18n/get-locale";
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig";
 
 interface MoviePageProps {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string; locale: string }>;
 }
 
 export async function generateMetadata({ params }: MoviePageProps): Promise<Metadata> {
-    const [{ id }, locale] = await Promise.all([params, getLocale()]);
+    const { id, locale } = await params;
     const tmdbLang = TMDB_LANGUAGES[locale as Locale];
     const movie = await tmdbFetch(`/movie/${id}`, { language: tmdbLang }, CacheConfig.DETAILS);
 
@@ -32,10 +32,9 @@ export async function generateMetadata({ params }: MoviePageProps): Promise<Meta
 }
 
 export default async function MoviePage({ params }: MoviePageProps) {
-    const { id } = await params
+    const { id, locale } = await params
     const session = await getAuthSession();
     const userId = session?.user?.id;
-    const locale = await getLocale();
     const tmdbLang = TMDB_LANGUAGES[locale as Locale];
 
     const queryClient = new QueryClient()

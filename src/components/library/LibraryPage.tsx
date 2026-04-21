@@ -4,15 +4,17 @@ import { useState, useEffect, useMemo, useCallback } from "react"
 import { Grid, List, Filter, ArrowUp, ArrowDown, Download, Loader2, X, Pencil, Trash2, Check } from "lucide-react"
 import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useSearchParams, usePathname } from 'next/navigation';
+import { useLocalizedRouter as useRouter } from '@/components/navigation/useRouter';
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getLibraryAction } from "@/lib/actions/getLibraryAction"
 import { exportAllUserMediaAction } from "@/lib/actions/exportAllUserMediaAction"
 import { getUserListsAction, renameUserListAction, deleteUserListAction } from "@/lib/actions/userListsActions"
-import Link from "next/link"
+import { LocalizedLink as Link } from '@/components/navigation/Link'
 import * as XLSX from "xlsx"
 import { toast } from "sonner"
 import { useTranslation } from "@/providers/LocaleProvider"
+import { getLocalizedUrl } from "@/lib/i18n/url-utils"
 import MediaVirtualList from "@/components/movie-tv/MediaVirtualList"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import MediaCard from "@/components/movie-tv/MediaCard"
@@ -24,7 +26,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import ShareButton from "../ui/ShareButton"
+import ShareButton from "@/components/ui/ShareButton"
 
 const libraries = [
     { key: 'watched' },
@@ -319,8 +321,7 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                         <ShareButton
                             title={(activeCategory.startsWith('list_') ? userLists.find((list: any) => list.id === activeCategory.slice(5))?.name : t('common', 'shareLibrary')) || ''}
                             buttonText={(activeCategory.startsWith('list_') ? t('common', 'share') + ' ' + userLists.find((list: any) => list.id === activeCategory.slice(5))?.name : t('common', 'shareLibrary')) || ''}
-                            typeMedia='list'
-                            currentUrl={typeof window !== 'undefined' ? `${window.location.origin}/sharelist/${userId}?category=${activeCategory}` : ''}
+                            currentUrl={getLocalizedUrl(`/sharelist/${userId}?category=${activeCategory}`, locale)}
                         />
                     )}
                 </div>

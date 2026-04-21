@@ -1,7 +1,7 @@
 // app/layout.tsx
 import type { Metadata } from 'next'
 import { Montserrat, Geist } from 'next/font/google'
-import './globals.css'
+import '../globals.css'
 import Header from '@/components/header/Header'
 import Footer from '@/components/Footer'
 import PageTransition from '@/components/utils/PageTransition'
@@ -38,20 +38,24 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
 	children,
+	params,
 }: Readonly<{
-	children: React.ReactNode
+	children: React.ReactNode;
+	params: { locale: string };
 }>) {
 
 
 	const session = await getAuthSession();
+    // Await params if using Next.js 15 (just in case)
+    const { locale } = await params;
 
 	return (
-		<html lang='en' className={cn("font-sans", geist.variable)}>
+		<html lang={locale || 'en'} className={cn("font-sans", geist.variable)}>
 			<body
 				className={`${montserrat.className} antialiased bg-zinc-950 text-zinc-100 selection:bg-white selection:text-black overflow-x-hidden transition-colors duration-500`}
 				suppressHydrationWarning
 			>
-				<Providers>
+				<Providers locale={locale}>
 					<div className='flex flex-col min-h-dvh'>
 						<Header userSession={session} />
 						<main className='flex-1 flex flex-col'>

@@ -3,7 +3,8 @@
 import { Filter } from "lucide-react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useMemo, useRef, useEffect, useState, useLayoutEffect, useCallback } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams  } from 'next/navigation';
+import { useLocalizedRouter as useRouter } from '@/components/navigation/useRouter';;
 
 interface MediaVirtualListProps<T> {
     status: string;

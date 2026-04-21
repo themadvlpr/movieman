@@ -1,6 +1,6 @@
 'use client'
 
-import Link from "next/link"
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { Play } from "lucide-react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -9,7 +9,8 @@ import { ChevronDown, Check } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 import { genresById } from "@/lib/tmdb/types/tmdb-types"
 import Cookies from "js-cookie"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useSearchParams, usePathname  } from 'next/navigation';
+import { useLocalizedRouter as useRouter } from '@/components/navigation/useRouter';
 import Loader from "@/components/ui/Loader"
 import { Movie } from "@/lib/tmdb/types/tmdb-types"
 import { useTranslation } from "@/providers/LocaleProvider"

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clock, Calendar, ChevronRight, Globe, Play } from 'lucide-react'
 import VideoModal from '../ui/VideoModal'
@@ -11,11 +11,12 @@ import DetailCarousel from '../ui/DetailCarousel'
 import { updateMediaDetailsAction } from '@/lib/actions/updateMediaDetailsAction'
 import { toast } from "sonner"
 import { useTranslation } from '@/providers/LocaleProvider'
+import { getLocalizedUrl } from '@/lib/i18n/url-utils'
 import { MovieDetailProps } from '@/lib/tmdb/types/tmdb-types'
 import { dbState } from '@/lib/tmdb/types/db-types'
 import { ExpandableMarkdown } from '@/components/ui/UserNote'
 import ShareButton from '@/components/ui/ShareButton'
-import Loader from '../ui/Loader'
+import Loader from '@/components/ui/Loader'
 import StarRating from '@/components/ui/StarRating'
 
 
@@ -25,7 +26,7 @@ interface Props {
 }
 
 export default function MovieDetailContent({ data, userId }: Props) {
-    const { t } = useTranslation();
+    const { t, locale } = useTranslation();
     const [imageLoading, setImageLoading] = useState(true);
     const { movie, credits, similarMovies, initialDbState } = data;
 
@@ -243,9 +244,8 @@ export default function MovieDetailContent({ data, userId }: Props) {
 
                             <ShareButton
                                 title={movie.title}
-                                typeMedia='movie'
-                                buttonText={t('common', 'share') + ' ' + movie.title}
-                                currentUrl={typeof window !== 'undefined' ? `${window.location.origin}/movies/${movie.id}` : ''} />
+                                buttonText={t('common', 'share')}
+                                currentUrl={getLocalizedUrl(`/movies/${movie.id}`, locale)} />
 
                             {movie.tagline && (
                                 <p className='text-xl italic text-zinc-500 font-medium'>
