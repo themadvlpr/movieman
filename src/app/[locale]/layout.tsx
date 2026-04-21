@@ -38,15 +38,18 @@ export const metadata: Metadata = {
 }
 
 
+// app/[locale]/layout.tsx
+
 export default async function RootLayout({
 	children,
 	params,
 }: Readonly<{
 	children: React.ReactNode;
-	params: Promise<{ locale: Locale }>;
+	params: Promise<{ locale: string }>;
 }>) {
 
-	const { locale } = await params;
+	const { locale } = (await params) as { locale: Locale };
+
 	const session = await getAuthSession();
 
 	return (
