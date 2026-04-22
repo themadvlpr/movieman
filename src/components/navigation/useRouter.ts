@@ -12,7 +12,12 @@ export function useLocalizedRouter() {
         let localizedHref = href;
         if (typeof href === 'string' && href.startsWith('/')) {
             const isDefault = locale === DEFAULT_LOCALE;
-            if (!href.startsWith(`/${locale}/`) && href !== `/${locale}`) {
+            const isAlreadyLocalized = href === `/${locale}` || 
+                                     href.startsWith(`/${locale}/`) || 
+                                     href.startsWith(`/${locale}?`) || 
+                                     href.startsWith(`/${locale}#`);
+
+            if (!isAlreadyLocalized) {
                 localizedHref = isDefault ? href : `/${locale}${href === '/' ? '' : href}`;
             }
         }
@@ -23,7 +28,12 @@ export function useLocalizedRouter() {
         let localizedHref = href;
         if (typeof href === 'string' && href.startsWith('/')) {
             const isDefault = locale === DEFAULT_LOCALE;
-            if (!href.startsWith(`/${locale}/`) && href !== `/${locale}`) {
+            const isAlreadyLocalized = href === `/${locale}` || 
+                                     href.startsWith(`/${locale}/`) || 
+                                     href.startsWith(`/${locale}?`) || 
+                                     href.startsWith(`/${locale}#`);
+
+            if (!isAlreadyLocalized) {
                 localizedHref = isDefault ? href : `/${locale}${href === '/' ? '' : href}`;
             }
         }

@@ -128,7 +128,6 @@ export default function MovieDetailContent({ data, userId }: Props) {
 
     if (!movie) return <Loader />
 
-
     return (
         <div className='flex-1 relative bg-black text-white min-h-screen'>
             <div className='absolute inset-0 h-[35vh] sm:h-[45vh] lg:h-screen w-full overflow-hidden pointer-events-none'>

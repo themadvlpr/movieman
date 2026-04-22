@@ -12,8 +12,12 @@ export const LocalizedLink = forwardRef<HTMLAnchorElement, ComponentProps<typeof
         
         if (typeof href === 'string' && href.startsWith('/')) {
             const isDefault = locale === DEFAULT_LOCALE;
-            // Only prepend if it doesn't already have it (just a safety check, usually not needed)
-            if (!href.startsWith(`/${locale}/`) && href !== `/${locale}`) {
+            const isAlreadyLocalized = href === `/${locale}` || 
+                                     href.startsWith(`/${locale}/`) || 
+                                     href.startsWith(`/${locale}?`) || 
+                                     href.startsWith(`/${locale}#`);
+
+            if (!isAlreadyLocalized) {
                 localizedHref = isDefault ? href : `/${locale}${href === '/' ? '' : href}`;
             }
         }
