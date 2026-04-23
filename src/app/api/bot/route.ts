@@ -16,5 +16,9 @@ import { bot } from "@/bot/core";
 export const dynamic = 'force-dynamic';
 
 export const POST = async (req: Request) => {
+    if (!process.env.TELEGRAM_BOT_TOKEN) {
+        return new Response("Bot token is missing", { status: 500 });
+    }
+
     return webhookCallback(bot, "std/http")(req);
 };
