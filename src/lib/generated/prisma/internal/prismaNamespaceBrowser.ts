@@ -83,6 +83,8 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  telegramId: 'telegramId',
+  language: 'language',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -174,7 +176,6 @@ export const UserListScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   name: 'name',
-  description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

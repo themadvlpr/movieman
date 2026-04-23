@@ -28,7 +28,6 @@ export type UserListMinAggregateOutputType = {
   id: string | null
   userId: string | null
   name: string | null
-  description: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -37,7 +36,6 @@ export type UserListMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   name: string | null
-  description: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -46,7 +44,6 @@ export type UserListCountAggregateOutputType = {
   id: number
   userId: number
   name: number
-  description: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -57,7 +54,6 @@ export type UserListMinAggregateInputType = {
   id?: true
   userId?: true
   name?: true
-  description?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -66,7 +62,6 @@ export type UserListMaxAggregateInputType = {
   id?: true
   userId?: true
   name?: true
-  description?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -75,7 +70,6 @@ export type UserListCountAggregateInputType = {
   id?: true
   userId?: true
   name?: true
-  description?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -157,7 +151,6 @@ export type UserListGroupByOutputType = {
   id: string
   userId: string
   name: string
-  description: string | null
   createdAt: Date
   updatedAt: Date
   _count: UserListCountAggregateOutputType | null
@@ -187,7 +180,6 @@ export type UserListWhereInput = {
   id?: Prisma.StringFilter<"UserList"> | string
   userId?: Prisma.StringFilter<"UserList"> | string
   name?: Prisma.StringFilter<"UserList"> | string
-  description?: Prisma.StringNullableFilter<"UserList"> | string | null
   createdAt?: Prisma.DateTimeFilter<"UserList"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserList"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -198,7 +190,6 @@ export type UserListOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -213,7 +204,6 @@ export type UserListWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserListWhereInput | Prisma.UserListWhereInput[]
   userId?: Prisma.StringFilter<"UserList"> | string
   name?: Prisma.StringFilter<"UserList"> | string
-  description?: Prisma.StringNullableFilter<"UserList"> | string | null
   createdAt?: Prisma.DateTimeFilter<"UserList"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserList"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -224,7 +214,6 @@ export type UserListOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserListCountOrderByAggregateInput
@@ -239,7 +228,6 @@ export type UserListScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"UserList"> | string
   userId?: Prisma.StringWithAggregatesFilter<"UserList"> | string
   name?: Prisma.StringWithAggregatesFilter<"UserList"> | string
-  description?: Prisma.StringNullableWithAggregatesFilter<"UserList"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"UserList"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"UserList"> | Date | string
 }
@@ -247,7 +235,6 @@ export type UserListScalarWhereWithAggregatesInput = {
 export type UserListCreateInput = {
   id?: string
   name: string
-  description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutListsInput
@@ -258,7 +245,6 @@ export type UserListUncheckedCreateInput = {
   id?: string
   userId: string
   name: string
-  description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.UserListItemUncheckedCreateNestedManyWithoutListInput
@@ -267,7 +253,6 @@ export type UserListUncheckedCreateInput = {
 export type UserListUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutListsNestedInput
@@ -278,7 +263,6 @@ export type UserListUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.UserListItemUncheckedUpdateManyWithoutListNestedInput
@@ -288,7 +272,6 @@ export type UserListCreateManyInput = {
   id?: string
   userId: string
   name: string
-  description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -296,7 +279,6 @@ export type UserListCreateManyInput = {
 export type UserListUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -305,7 +287,6 @@ export type UserListUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -329,7 +310,6 @@ export type UserListCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -338,7 +318,6 @@ export type UserListMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -347,7 +326,6 @@ export type UserListMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -416,7 +394,6 @@ export type UserListUpdateOneRequiredWithoutItemsNestedInput = {
 export type UserListCreateWithoutUserInput = {
   id?: string
   name: string
-  description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.UserListItemCreateNestedManyWithoutListInput
@@ -425,7 +402,6 @@ export type UserListCreateWithoutUserInput = {
 export type UserListUncheckedCreateWithoutUserInput = {
   id?: string
   name: string
-  description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.UserListItemUncheckedCreateNestedManyWithoutListInput
@@ -464,7 +440,6 @@ export type UserListScalarWhereInput = {
   id?: Prisma.StringFilter<"UserList"> | string
   userId?: Prisma.StringFilter<"UserList"> | string
   name?: Prisma.StringFilter<"UserList"> | string
-  description?: Prisma.StringNullableFilter<"UserList"> | string | null
   createdAt?: Prisma.DateTimeFilter<"UserList"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserList"> | Date | string
 }
@@ -472,7 +447,6 @@ export type UserListScalarWhereInput = {
 export type UserListCreateWithoutItemsInput = {
   id?: string
   name: string
-  description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutListsInput
@@ -482,7 +456,6 @@ export type UserListUncheckedCreateWithoutItemsInput = {
   id?: string
   userId: string
   name: string
-  description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -506,7 +479,6 @@ export type UserListUpdateToOneWithWhereWithoutItemsInput = {
 export type UserListUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutListsNestedInput
@@ -516,7 +488,6 @@ export type UserListUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -524,7 +495,6 @@ export type UserListUncheckedUpdateWithoutItemsInput = {
 export type UserListCreateManyUserInput = {
   id?: string
   name: string
-  description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -532,7 +502,6 @@ export type UserListCreateManyUserInput = {
 export type UserListUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.UserListItemUpdateManyWithoutListNestedInput
@@ -541,7 +510,6 @@ export type UserListUpdateWithoutUserInput = {
 export type UserListUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.UserListItemUncheckedUpdateManyWithoutListNestedInput
@@ -550,7 +518,6 @@ export type UserListUncheckedUpdateWithoutUserInput = {
 export type UserListUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -590,7 +557,6 @@ export type UserListSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   userId?: boolean
   name?: boolean
-  description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -602,7 +568,6 @@ export type UserListSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   userId?: boolean
   name?: boolean
-  description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -612,7 +577,6 @@ export type UserListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   userId?: boolean
   name?: boolean
-  description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -622,12 +586,11 @@ export type UserListSelectScalar = {
   id?: boolean
   userId?: boolean
   name?: boolean
-  description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["userList"]>
+export type UserListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["userList"]>
 export type UserListInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.UserList$itemsArgs<ExtArgs>
@@ -650,7 +613,6 @@ export type $UserListPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     id: string
     userId: string
     name: string
-    description: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["userList"]>
@@ -1081,7 +1043,6 @@ export interface UserListFieldRefs {
   readonly id: Prisma.FieldRef<"UserList", 'String'>
   readonly userId: Prisma.FieldRef<"UserList", 'String'>
   readonly name: Prisma.FieldRef<"UserList", 'String'>
-  readonly description: Prisma.FieldRef<"UserList", 'String'>
   readonly createdAt: Prisma.FieldRef<"UserList", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"UserList", 'DateTime'>
 }

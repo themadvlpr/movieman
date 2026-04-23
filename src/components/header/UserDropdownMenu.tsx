@@ -3,15 +3,17 @@
 import { useState, useRef, useEffect } from 'react'
 import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { motion, AnimatePresence } from 'framer-motion'
-import { LogOut, Library } from 'lucide-react'
+import { LogOut, Library, Bot } from 'lucide-react'
 import { useAuthActions } from '@/hooks/useAuthActions'
 import { useTranslation } from '@/providers/LocaleProvider'
+import { getBotLink } from '@/lib/actions/getTgbotLink';
 
 interface UserDropdownMenuProps {
 	user: {
 		name: string | null
 		email: string | null
 		image?: string | null
+		id: string
 	}
 }
 
@@ -103,6 +105,14 @@ export default function UserDropdownMenu({ user }: UserDropdownMenuProps) {
 
 						{/* Menu Items */}
 						<div className='p-1.5 flex flex-col'>
+							<button onClick={async () => {
+								const link = await getBotLink(user.id);
+								window.location.href = link;
+							}} className='flex cursor-pointer items-center gap-3 px-3 py-2.5 text-sm text-zinc-400 hover:text-white hover:bg-white/5 rounded-md transition-colors group'>
+								<Bot className='w-4 h-4 text-zinc-500 group-hover:text-zinc-300 transition-colors' />
+								Telegram bot
+							</button>
+
 							<Link
 								href='/library'
 								onClick={() => setIsOpen(false)}
@@ -114,10 +124,12 @@ export default function UserDropdownMenu({ user }: UserDropdownMenuProps) {
 
 							<div className='h-px bg-white/5 my-1 mx-1' />
 
+
+
 							<button
 								onClick={signOut}
 								disabled={loadingType === 'logout'}
-								className='flex items-center gap-3 px-3 py-2.5 text-sm w-full text-left text-red-500/80 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors group'
+								className='flex cursor-pointer items-center gap-3 px-3 py-2.5 text-sm w-full text-left text-red-500/80 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors group'
 							>
 								<LogOut className='w-4 h-4 text-red-500/60 group-hover:text-red-400 transition-colors' />
 								{t('auth', 'logout')}
