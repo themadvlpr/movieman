@@ -18,13 +18,15 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
     });
 
     if (!user) return { title: dict.about.notFound, description: dict.about.libraryNotFound };
+    const userName = user.name || "User";
+    const name = userName.split(' ')[0];
 
     return {
-        title: `${(user.name).split(' ')[0]}: ${(dict.nav.library).split(' ')[1].toLowerCase()} | MovieMan`,
-        description: `${dict.about.metaShareListDestiption} ${user.name.split(' ')[0]} | MovieMan`,
+        title: `${name}: ${(dict.nav.library).split(' ')[1].toLowerCase()} | MovieMan`,
+        description: `${dict.about.metaShareListDestiption} ${name} | MovieMan`,
         openGraph: {
-            title: `${user.name.split(' ')[0]} ${(dict.nav.library).split(' ')[1].toLowerCase()} | MovieMan`,
-            description: `${dict.about.metaShareListDestiption} ${user.name.split(' ')[0]} | MovieMan`,
+            title: `${name} ${(dict.nav.library).split(' ')[1].toLowerCase()} | MovieMan`,
+            description: `${dict.about.metaShareListDestiption} ${name} | MovieMan`,
         },
     };
 }
@@ -37,7 +39,7 @@ export default async function SharedLibrary({ params, searchParams }: { params: 
         select: { name: true, image: true }
     });
 
-    if (!user) {
+    if (!user || !user.name) {
         notFound();
     }
 
