@@ -12,12 +12,24 @@ function isPhotoMessage(ctx: MyContext) {
     return !!ctx.callbackQuery?.message?.photo;
 }
 
+function truncate(str: string, limit: number) {
+    const chars = [...str];
+    if (chars.length <= limit) return str;
+    return chars.slice(0, limit - 3).join("") + "...";
+}
+
 async function sendOrEditText(ctx: MyContext, text: string, extra: any) {
     if (isPhotoMessage(ctx)) {
         try { await ctx.deleteMessage(); } catch { /* ignore */ }
         await ctx.reply(text, extra);
     } else if (ctx.callbackQuery) {
-        await ctx.editMessageText(text, extra);
+        try {
+            await ctx.editMessageText(text, extra);
+        } catch (err: any) {
+            if (!err.message?.includes("message is not modified")) {
+                throw err;
+            }
+        }
     } else {
         await ctx.reply(text, extra);
     }
@@ -147,10 +159,16 @@ export async function showDiscoveryResults(
 
     try {
         if (isPhotoMessage(ctx)) {
-            await ctx.editMessageMedia(
-                { type: "photo", media: photo, caption, parse_mode: "Markdown" },
-                { reply_markup: keyboard }
-            );
+            try {
+                await ctx.editMessageMedia(
+                    { type: "photo", media: photo, caption, parse_mode: "Markdown" },
+                    { reply_markup: keyboard }
+                );
+            } catch (err: any) {
+                if (!err.message?.includes("message is not modified")) {
+                    throw err;
+                }
+            }
         } else {
             if (ctx.callbackQuery) {
                 try { await ctx.deleteMessage(); } catch { /* ignore */ }
@@ -208,7 +226,7 @@ export async function showListView(
     data.results.forEach((item: any, i: number) => {
         const num = (page - 1) * 20 + i + 1;
         const year = item.release_year || "—";
-        const label = `${num}. ${item.title} (${year})`;
+        const label = truncate(`${num}. ${item.title} (${year})`, 40);
         keyboard.text(label, `disc_r_${type}_${genreId}_${page}_${i}`).row();
     });
 

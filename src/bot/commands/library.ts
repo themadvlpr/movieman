@@ -24,6 +24,12 @@ function isPhoto(ctx: MyContext) {
     return !!ctx.callbackQuery?.message?.photo;
 }
 
+function truncate(str: string, limit: number) {
+    const chars = [...str];
+    if (chars.length <= limit) return str;
+    return chars.slice(0, limit - 3).join("") + "...";
+}
+
 async function editOrReply(ctx: MyContext, text: string, extra: any) {
     if (isPhoto(ctx)) {
         try {
@@ -31,7 +37,13 @@ async function editOrReply(ctx: MyContext, text: string, extra: any) {
         } catch {}
         await ctx.reply(text, extra);
     } else if (ctx.callbackQuery) {
-        await ctx.editMessageText(text, extra);
+        try {
+            await ctx.editMessageText(text, extra);
+        } catch (err: any) {
+            if (!err.message?.includes("message is not modified")) {
+                throw err;
+            }
+        }
     } else {
         await ctx.reply(text, extra);
     }
@@ -139,7 +151,8 @@ export async function showLibraryListView(ctx: MyContext, cat: LibCat, page: num
         const year = item.media.releaseDate ? new Date(item.media.releaseDate).getFullYear() : "—";
         const icon = item.media.type === "movie" ? "🎬" : "📺";
         // Button labels don't need markdown escaping
-        kb.text(`${(page - 1) * PER_PAGE + i + 1}. ${title} (${year}) ${icon}`.slice(0, 40), `lib_c_${cat}_${page}_${i}`).row();
+        const label = truncate(`${(page - 1) * PER_PAGE + i + 1}. ${title} (${year}) ${icon}`, 40);
+        kb.text(label, `lib_c_${cat}_${page}_${i}`).row();
     });
 
     kb.text(`🃏 ${t.card_view}`, `lib_c_${cat}_${page}_0`).row();
@@ -228,10 +241,16 @@ export async function showLibraryCard(ctx: MyContext, cat: LibCat, page: number,
 
     try {
         if (isPhoto(ctx)) {
-            await ctx.editMessageMedia(
-                { type: "photo", media: photo, caption, parse_mode: "Markdown" },
-                { reply_markup: kb }
-            );
+            try {
+                await ctx.editMessageMedia(
+                    { type: "photo", media: photo, caption, parse_mode: "Markdown" },
+                    { reply_markup: kb }
+                );
+            } catch (err: any) {
+                if (!err.message?.includes("message is not modified")) {
+                    throw err;
+                }
+            }
         } else {
             if (ctx.callbackQuery) {
                 try { await ctx.deleteMessage(); } catch {}
