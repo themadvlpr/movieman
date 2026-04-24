@@ -1,7 +1,7 @@
 export const locales = {
     ru: {
         welcome_back: "🎬 С возвращением, {name}! Рад тебя видеть.",
-        welcome_new: "🎬 Привет! Чтобы я увидел твою коллекцию, привяжи аккаунт на сайте.",
+        welcome_new: "🎬 Привет, {name}! Чтобы я увидел твою коллекцию, привяжи аккаунт на сайте.",
         link_success: "✅ Готово, {name}! Теперь мы одна команда. Попкорн за мой счет! 🍿",
         choose_lang: "Выберите язык интерфейса и контента (TMDB):",
         lang_updated: "✅ Язык изменен на Русский",
@@ -20,7 +20,7 @@ export const locales = {
     },
     en: {
         welcome_back: "🎬 Welcome back, {name}! Good to see you.",
-        welcome_new: "🎬 Hello! To see your collection, link your account on the website.",
+        welcome_new: "🎬 Hello, {name}! To see your collection, link your account on the website.",
         link_success: "✅ Done, {name}! Your account is linked. Popcorn's on me! 🍿",
         choose_lang: "Choose your interface and content language (TMDB):",
         lang_updated: "✅ Language updated to English",
@@ -40,7 +40,7 @@ export const locales = {
     },
     uk: {
         welcome_back: "🎬 З поверненням, {name}! Радий тебе бачити.",
-        welcome_new: "🎬 Привіт! Щоб я побачив твою колекцію, прив'яжи акаунт на сайті.",
+        welcome_new: "🎬 Привіт, {name}! Щоб я побачив твою колекцію, прив'яжи акаунт на сайті.",
         link_success: "✅ Готово, {name}! Тепер ми одна команда. Попкорн за мій рахунок! 🍿",
         choose_lang: "Оберіть мову інтерфейсу та контенту (TMDB):",
         lang_updated: "✅ Мову змінено на Українську",

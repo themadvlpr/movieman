@@ -2,6 +2,7 @@ import { Bot, Context } from "grammy";
 import { authMiddleware } from "@/bot/middleware/auth";
 import { startCommand } from "@/bot/commands/start";
 import { discoverCommand } from "@/bot/commands/discover";
+import { discoverOldCommand } from "@/bot/commands/discover_old";
 import { languageCommand } from "@/bot/commands/language";
 import { libraryCommand } from "@/bot/commands/library";
 import { User } from "@/lib/generated/prisma/client";
@@ -22,12 +23,16 @@ bot.use(authMiddleware);
 
 // register commands
 bot.command("start", startCommand);
-bot.command("discover", discoverCommand);
 bot.command("language", languageCommand);
 bot.command("library", libraryCommand);
+bot.command("discover", discoverCommand);
 
 
-// src/bot/core.ts
+bot.command("discover_old", discoverOldCommand);
+
+bot.callbackQuery(/^discold_/, async (ctx: MyContext) => {
+    await discoverOldCommand(ctx);
+});
 
 bot.callbackQuery(/set_lang_(.+)/, async (ctx: MyContext) => {
     const newLang = ctx?.match?.[1] as Language;
@@ -53,6 +58,26 @@ bot.callbackQuery(/set_lang_(.+)/, async (ctx: MyContext) => {
     }
 });
 
+// Type handler
+bot.callbackQuery(/^disc_type_(.+)/, async (ctx: MyContext) => {
+    const type = ctx.match?.[1]; // 'movie' или 'tv'
+    const lang = (ctx.language || "en") as Language;
+    const keyboard = new InlineKeyboard()
+        .text("🔥 Action", `disc_genre_${type}_28`)
+        .text("🤣 Comedy", `disc_genre_${type}_35`)
+        .row()
+        .text("🔙 Back", "discover_start");
+
+    await ctx.editMessageText("Select Genre:", { reply_markup: keyboard });
+});
+
+
+bot.callbackQuery("discover_start", async (ctx: MyContext) => {
+    const keyboard = new InlineKeyboard()
+        .text("🎬 Movies", "disc_type_movie")
+        .text("📺 TV Shows", "disc_type_tv");
+    await ctx.editMessageText("Discover:", { reply_markup: keyboard });
+});
 
 bot.callbackQuery("lib_main", async (ctx: MyContext) => {
     await ctx.answerCallbackQuery();

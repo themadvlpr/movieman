@@ -173,8 +173,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type UserGroupByOutputType = {
   id: string
-  name: string
-  email: string
+  name: string | null
+  email: string | null
   emailVerified: boolean
   image: string | null
   telegramId: string | null
@@ -206,8 +206,8 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.StringFilter<"User"> | string
-  name?: Prisma.StringFilter<"User"> | string
-  email?: Prisma.StringFilter<"User"> | string
+  name?: Prisma.StringNullableFilter<"User"> | string | null
+  email?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
   telegramId?: Prisma.StringNullableFilter<"User"> | string | null
@@ -222,8 +222,8 @@ export type UserWhereInput = {
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  email?: Prisma.SortOrder
+  name?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   telegramId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -243,7 +243,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
-  name?: Prisma.StringFilter<"User"> | string
+  name?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
   language?: Prisma.StringFilter<"User"> | string
@@ -253,12 +253,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   accounts?: Prisma.AccountListRelationFilter
   userMedia?: Prisma.UserMediaListRelationFilter
   lists?: Prisma.UserListListRelationFilter
-}, "id" | "telegramId" | "email">
+}, "id" | "email" | "telegramId">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  email?: Prisma.SortOrder
+  name?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   telegramId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -275,8 +275,8 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"User"> | string
-  name?: Prisma.StringWithAggregatesFilter<"User"> | string
-  email?: Prisma.StringWithAggregatesFilter<"User"> | string
+  name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  email?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   telegramId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -286,9 +286,9 @@ export type UserScalarWhereWithAggregatesInput = {
 }
 
 export type UserCreateInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -302,9 +302,9 @@ export type UserCreateInput = {
 }
 
 export type UserUncheckedCreateInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -319,8 +319,8 @@ export type UserUncheckedCreateInput = {
 
 export type UserUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -335,8 +335,8 @@ export type UserUpdateInput = {
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -350,9 +350,9 @@ export type UserUncheckedUpdateInput = {
 }
 
 export type UserCreateManyInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -363,8 +363,8 @@ export type UserCreateManyInput = {
 
 export type UserUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -375,8 +375,8 @@ export type UserUpdateManyMutationInput = {
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -430,12 +430,12 @@ export type StringFieldUpdateOperationsInput = {
   set?: string
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -499,9 +499,9 @@ export type UserUpdateOneRequiredWithoutListsNestedInput = {
 }
 
 export type UserCreateWithoutSessionsInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -514,9 +514,9 @@ export type UserCreateWithoutSessionsInput = {
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -546,8 +546,8 @@ export type UserUpdateToOneWithWhereWithoutSessionsInput = {
 
 export type UserUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -561,8 +561,8 @@ export type UserUpdateWithoutSessionsInput = {
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -575,9 +575,9 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
 }
 
 export type UserCreateWithoutAccountsInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -590,9 +590,9 @@ export type UserCreateWithoutAccountsInput = {
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -622,8 +622,8 @@ export type UserUpdateToOneWithWhereWithoutAccountsInput = {
 
 export type UserUpdateWithoutAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -637,8 +637,8 @@ export type UserUpdateWithoutAccountsInput = {
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -651,9 +651,9 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
 }
 
 export type UserCreateWithoutUserMediaInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -666,9 +666,9 @@ export type UserCreateWithoutUserMediaInput = {
 }
 
 export type UserUncheckedCreateWithoutUserMediaInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -698,8 +698,8 @@ export type UserUpdateToOneWithWhereWithoutUserMediaInput = {
 
 export type UserUpdateWithoutUserMediaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -713,8 +713,8 @@ export type UserUpdateWithoutUserMediaInput = {
 
 export type UserUncheckedUpdateWithoutUserMediaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -727,9 +727,9 @@ export type UserUncheckedUpdateWithoutUserMediaInput = {
 }
 
 export type UserCreateWithoutListsInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -742,9 +742,9 @@ export type UserCreateWithoutListsInput = {
 }
 
 export type UserUncheckedCreateWithoutListsInput = {
-  id: string
-  name: string
-  email: string
+  id?: string
+  name?: string | null
+  email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
@@ -774,8 +774,8 @@ export type UserUpdateToOneWithWhereWithoutListsInput = {
 
 export type UserUpdateWithoutListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -789,8 +789,8 @@ export type UserUpdateWithoutListsInput = {
 
 export type UserUncheckedUpdateWithoutListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -934,8 +934,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    name: string
-    email: string
+    name: string | null
+    email: string | null
     emailVerified: boolean
     image: string | null
     telegramId: string | null

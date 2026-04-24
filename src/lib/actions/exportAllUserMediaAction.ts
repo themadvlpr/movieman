@@ -34,6 +34,7 @@ export async function exportAllUserMediaAction(userId: string, tmdbLang: string 
                 : '';
 
             return {
+                "Media ID": item.media.tmdbId,
                 "Title": (item.media as any)[titleKey] || item.media.titleEn || '',
                 "Type": item.media.type === 'tv' ? 'TV Series' : 'Movie',
                 "Genres": genres,

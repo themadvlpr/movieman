@@ -9,9 +9,9 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
   emailVerified Boolean   @default(false)
   image         String?
   telegramId    String?   @unique
@@ -23,7 +23,6 @@ model User {
   userMedia     UserMedia[]
   lists         UserList[]
 
-  @@unique([email])
   @@map("user")
 }
 
