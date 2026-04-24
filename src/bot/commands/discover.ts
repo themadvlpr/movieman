@@ -133,14 +133,15 @@ export async function showDiscoveryResults(
     }
 
     // Status buttons (reflect current state)
-    const st = item.initialDbState;
-    keyboard
-        .row()
-        .text(st.isWatched ? `✅ ${t.watched}` : `☐ ${t.watched}`, `${actBase}_w`)
-        .row()
-        .text(st.isWishlist ? `📌 ${t.wishlist}` : `➕ ${t.wishlist}`, `${actBase}_wl`)
-        .text(st.isFavorite ? `⭐ ${t.favorite}` : `☆ ${t.favorite}`, `${actBase}_fav`);
-
+    if (ctx.user?.email) {
+        const st = item.initialDbState;
+        keyboard
+            .row()
+            .text(st.isWatched ? `✅ ${t.watched}` : `👀 ${t.watched}`, `${actBase}_w`)
+            .row()
+            .text(st.isWishlist ? `📌 ${t.wishlist}` : `➕ ${t.wishlist}`, `${actBase}_wl`)
+            .text(st.isFavorite ? `⭐ ${t.favorite}` : `☆ ${t.favorite}`, `${actBase}_fav`);
+    }
     // Back to genre list
     keyboard.row().text(t.Back, `disc_type_${type}`);
 
