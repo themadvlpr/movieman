@@ -8,16 +8,10 @@ function tmdbLang(lang: string) {
     return lang === "ru" ? "ru-RU" : lang === "uk" ? "uk-UA" : "en-US";
 }
 
-/** Returns true if the current callback message contains a photo */
 function isPhotoMessage(ctx: MyContext) {
     return !!ctx.callbackQuery?.message?.photo;
 }
 
-/**
- * Smart edit/reply helper:
- * - If current message is a photo → delete it, then send new text
- * - Otherwise → edit the text in-place
- */
 async function sendOrEditText(ctx: MyContext, text: string, extra: any) {
     if (isPhotoMessage(ctx)) {
         try { await ctx.deleteMessage(); } catch { /* ignore */ }
@@ -28,6 +22,12 @@ async function sendOrEditText(ctx: MyContext, text: string, extra: any) {
         await ctx.reply(text, extra);
     }
 }
+
+function escapeMarkdown(text: string) {
+    return text.replace(/[_*`[\]]/g, "\\$&");
+}
+
+// ─── DISCOVER COMMAND ──────────────────────────────────────────────────────
 
 export async function discoverCommand(ctx: MyContext) {
     const lang = (ctx.language || "en") as Language;
@@ -40,10 +40,8 @@ export async function discoverCommand(ctx: MyContext) {
     await sendOrEditText(ctx, t.discover_title, { reply_markup: keyboard });
 }
 
-/**
- * Fetch genres from TMDB and display them as an inline keyboard.
- * Handles both text and photo message contexts (Back button from results).
- */
+// ─── GENRE LIST ────────────────────────────────────────────────────────────
+
 export async function showGenres(ctx: MyContext, type: "movie" | "tv") {
     const lang = (ctx.language || "en") as Language;
     const t = locales[lang];
@@ -67,10 +65,8 @@ export async function showGenres(ctx: MyContext, type: "movie" | "tv") {
     await sendOrEditText(ctx, t.select_genre, { reply_markup: keyboard });
 }
 
-/**
- * Fetch and display a single media item (with poster photo).
- * Navigation: ⬅️ ➡️   Actions: Watched / Wishlist / Favorite
- */
+// ─── CARD VIEW ─────────────────────────────────────────────────────────────
+
 export async function showDiscoveryResults(
     ctx: MyContext,
     type: "movie" | "tv",
@@ -115,7 +111,7 @@ export async function showDiscoveryResults(
     const navBase = `disc_r_${type}_${genreId}`;
     const actBase = `disc_a_${type}_${genreId}_${page}_${safeIndex}`;
 
-    // Navigation
+    // Navigation row
     const hasPrev = safeIndex > 0 || page > 1;
     const hasNext = safeIndex < total - 1 || (data.total_pages ?? 1) > page;
 
@@ -132,16 +128,18 @@ export async function showDiscoveryResults(
         keyboard.text("➡️", nextCb);
     }
 
-    // Status buttons (reflect current state)
+    // Status buttons (only for linked accounts)
     if (ctx.user?.email) {
         const st = item.initialDbState;
         keyboard
             .row()
-            .text(st.isWatched ? `✅ ${t.watched}` : `👀 ${t.watched}`, `${actBase}_w`)
-            .row()
-            .text(st.isWishlist ? `📌 ${t.wishlist}` : `➕ ${t.wishlist}`, `${actBase}_wl`)
-            .text(st.isFavorite ? `⭐ ${t.favorite}` : `☆ ${t.favorite}`, `${actBase}_fav`);
+            .text(st.isWatched ? `✅ ${t.watched}` : `👀`, `${actBase}_w`)
+            .text(st.isWishlist ? `📌 ${t.wishlist}` : `➕`, `${actBase}_wl`)
+            .text(st.isFavorite ? `❤️ ${t.favorite}` : `🤍 `, `${actBase}_fav`);
     }
+
+    // Toggle to list view  (disc_lv = list view)
+    keyboard.row().text(`📋 ${t.list_view}`, `disc_lv_${type}_${genreId}_${page}`);
     // Back to genre list
     keyboard.row().text(t.Back, `disc_type_${type}`);
 
@@ -149,13 +147,11 @@ export async function showDiscoveryResults(
 
     try {
         if (isPhotoMessage(ctx)) {
-            // Already a photo → edit media in-place (fastest, no flicker)
             await ctx.editMessageMedia(
                 { type: "photo", media: photo, caption, parse_mode: "Markdown" },
                 { reply_markup: keyboard }
             );
         } else {
-            // Text message → delete and send a new photo message
             if (ctx.callbackQuery) {
                 try { await ctx.deleteMessage(); } catch { /* ignore */ }
             }
@@ -170,6 +166,62 @@ export async function showDiscoveryResults(
     }
 }
 
-function escapeMarkdown(text: string) {
-    return text.replace(/[_*`[\]]/g, "\\$&");
+// ─── LIST VIEW ─────────────────────────────────────────────────────────────
+
+export async function showListView(
+    ctx: MyContext,
+    type: "movie" | "tv",
+    genreId: string,
+    page = 1
+) {
+    const lang = (ctx.language || "en") as Language;
+    const t = locales[lang];
+    const tLang = tmdbLang(lang);
+    const userId = ctx.user?.id;
+
+    const data = await getDiscoverMedia(type, genreId, userId, String(page), tLang);
+
+    if (!data.results?.length) {
+        await ctx.reply(t.empty_results);
+        return;
+    }
+
+    const totalPages = data.total_pages ?? 1;
+
+    // ── Plain Markdown list (no MarkdownV2 — avoids escaping issues with titles) ──
+    // const lines = data.results.map((item: any, i: number) => {
+    //     const num = (page - 1) * 10 + i + 1;
+    //     const year = item.release_year || "";
+    //     // escapeMarkdown only escapes _ * ` [ ] for safe Markdown v1
+    //     return `${num}. *${escapeMarkdown(item.title)}* (${year})`;
+    // });
+
+    const icon = type === "movie" ? "🎬" : "📺";
+    const header = `${icon} *${t.list_view} ${type === "movie" ?
+        t.genre_movies : t.genre_tv_shows}*\n${t.genre}: ${t[genreId as keyof typeof t]}\n\n${t.page} ${page}/${totalPages}`;
+    // const listText = header + lines.join("\n");
+    const listText = header;
+
+    // ── Keyboard: each item taps to card view ──────────────────────────────
+    const keyboard = new InlineKeyboard();
+
+    data.results.forEach((item: any, i: number) => {
+        const num = (page - 1) * 20 + i + 1;
+        const year = item.release_year || "—";
+        const label = `${num}. ${item.title} (${year})`;
+        keyboard.text(label, `disc_r_${type}_${genreId}_${page}_${i}`).row();
+    });
+
+    // Toggle to card view + page navigation
+    keyboard.text(`🃏 ${t.card_view}`, `disc_r_${type}_${genreId}_${page}_0`).row();
+
+    if (page > 1) keyboard.text("⬅️", `disc_lv_${type}_${genreId}_${page - 1}`);
+    if (totalPages > page) keyboard.text("➡️", `disc_lv_${type}_${genreId}_${page + 1}`);
+
+    keyboard.row().text(t.Back, `disc_type_${type}`);
+
+    await sendOrEditText(ctx, listText, {
+        parse_mode: "Markdown",
+        reply_markup: keyboard,
+    });
 }
