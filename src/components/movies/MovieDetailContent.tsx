@@ -65,31 +65,31 @@ export default function MovieDetailContent({ data, userId }: Props) {
         }
     }
 
-    useEffect(() => {
-        if (!movie.id) return;
+    // useEffect(() => {
+    //     if (!movie.id) return;
 
-        const currentNote = note.trim();
-        const savedNote = initialDbState?.userComment || '';
+    //     const currentNote = note.trim();
+    //     const savedNote = initialDbState?.userComment || '';
 
-        const timer = setTimeout(async () => {
-            if (initialDbState?.isWatched && currentNote !== savedNote) {
+    //     const timer = setTimeout(async () => {
+    //         if (initialDbState?.isWatched && currentNote !== savedNote) {
 
-                const toastId = toast.loading(t('common', 'savingComment'));
+    //             const toastId = toast.loading(t('common', 'savingComment'));
 
-                const result = await updateMediaDetailsAction(movie.id, 'movie', {
-                    userComment: currentNote
-                });
+    //             const result = await updateMediaDetailsAction(movie.id, 'movie', {
+    //                 userComment: currentNote
+    //             });
 
-                if (result.success) {
-                    toast.success(t('common', 'commentUpdated'), { id: toastId });
-                } else {
-                    toast.error(result.error || "Something went wrong", { id: toastId });
-                }
-            }
-        }, 1000);
+    //             if (result.success) {
+    //                 toast.success(t('common', 'commentUpdated'), { id: toastId });
+    //             } else {
+    //                 toast.error(result.error || "Something went wrong", { id: toastId });
+    //             }
+    //         }
+    //     }, 1000);
 
-        return () => clearTimeout(timer);
-    }, [note, movie.id, initialDbState]);
+    //     return () => clearTimeout(timer);
+    // }, [note, movie.id, initialDbState]);
 
     const handleSaveNote = async () => {
         setEditNote(false);

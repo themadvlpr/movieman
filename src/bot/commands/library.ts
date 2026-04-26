@@ -34,7 +34,7 @@ async function editOrReply(ctx: MyContext, text: string, extra: any) {
     if (isPhoto(ctx)) {
         try {
             await ctx.deleteMessage();
-        } catch {}
+        } catch { }
         await ctx.reply(text, extra);
     } else if (ctx.callbackQuery) {
         try {
@@ -60,8 +60,8 @@ function getPoster(media: any, lang: string) {
         lang === "ru"
             ? media.posterRu || media.posterEn
             : lang === "uk"
-            ? media.posterUk || media.posterEn
-            : media.posterEn || media.posterRu || media.posterUk;
+                ? media.posterUk || media.posterEn
+                : media.posterEn || media.posterRu || media.posterUk;
     return path ? `${TMDB_IMG}${path}` : null;
 }
 
@@ -95,16 +95,20 @@ export async function libraryCommand(ctx: MyContext) {
     const labelWatched = em(t.library_watched);
     const labelPlan = em(t.library_plan);
     const labelFavs = em(t.library_favs);
-    
+
     // Extract "Total count" label from locales if possible, or use a default
     const totalLabel = lang === "ru" ? "Общее количество" : lang === "uk" ? "Загальна кількість" : "Total items";
 
+    const linkUrl = `${process.env.BETTER_AUTH_URL}/${lang === 'uk' ? 'ua' : lang}/library`
+    const linkText = `🔗 [${t.view_on_site || "View on Website"}](${linkUrl})`;
+
     const text =
-        `📂 *${userName}*\n\n` +
+        `📂 _${em(t.library)}_: *${userName}*\n\n` +
         `📊 *${em(totalLabel)}:* ${totalUnique}\n\n` +
-        `${labelWatched}: ${watched}\n` +
-        `${labelPlan}: ${wishlist}\n` +
-        `${labelFavs}: ${favs}`;
+        `*${labelWatched}:* ${watched}\n` +
+        `*${labelPlan}:* ${wishlist}\n` +
+        `*${labelFavs}:* ${favs} \n\n` +
+        `${linkText}`;
 
     const kb = new InlineKeyboard()
         .text(`${t.library_watched} (${watched})`, "lib_cat_w_1")
@@ -143,8 +147,12 @@ export async function showLibraryListView(ctx: MyContext, cat: LibCat, page: num
         });
     }
 
-    const header = `*${em(catLabel)}* — ${em(t.page)} ${page}/${totalPages}`;
-    
+    const header = `*${em(catLabel)}* – _(${em(t.page)} ${page}/${totalPages})_`;
+    const linkUrl = `${process.env.BETTER_AUTH_URL}/${lang === 'uk' ? 'ua' : lang}/library?category=${cat === 'w' ? 'watched' : cat === 'wl' ? 'wishlist' : 'favorites'}`;
+
+    const linkText = `🔗 [${t.view_on_site || "View on Website"}](${linkUrl})`;
+    const text = header + "\n\n" + linkText;
+
     const kb = new InlineKeyboard();
     items.forEach((item, i) => {
         const title = getTitle(item.media, lang);
@@ -156,13 +164,13 @@ export async function showLibraryListView(ctx: MyContext, cat: LibCat, page: num
     });
 
     kb.text(`🃏 ${t.card_view}`, `lib_c_${cat}_${page}_0`).row();
-    
+
     if (page > 1) kb.text("⬅️", `lib_cat_${cat}_${page - 1}`);
     if (totalPages > page) kb.text("➡️", `lib_cat_${cat}_${page + 1}`);
-    
+
     kb.row().text(t.Back, "lib_main");
 
-    await editOrReply(ctx, header, { parse_mode: "Markdown", reply_markup: kb });
+    await editOrReply(ctx, text, { parse_mode: "Markdown", reply_markup: kb });
 }
 
 // ── Card view ───────────────────────────────────────────────────────────────
@@ -202,11 +210,17 @@ export async function showLibraryCard(ctx: MyContext, cat: LibCat, page: number,
     const userRating = entry.userRating ? `\n🎯 *${em(t.rating)}:* ${entry.userRating}/10` : "";
     const globalNum = (page - 1) * PER_PAGE + safeIdx + 1;
 
+
+    const linkUrl = `${process.env.BETTER_AUTH_URL}/${lang === 'uk' ? 'ua' : lang}/${media.type === "movie" ? "movies" : "tvseries"}/${media.tmdbId}`;
+
+    const linkText = `🔗 [${t.view_on_site || "View on Website"}](${linkUrl})`;
+
     const caption =
         `${typeIcon} *${em(title)}* (${year})\n\n` +
         `📊 *TMDB:* ${rating}` +
         userRating +
-        `\n\n_(${globalNum}/${totalCount})_`;
+        `\n_(${globalNum}/${totalCount})_` +
+        `\n\n${linkText}`;
 
     const kb = new InlineKeyboard();
     const navBase = `lib_c_${cat}`;
@@ -253,7 +267,7 @@ export async function showLibraryCard(ctx: MyContext, cat: LibCat, page: number,
             }
         } else {
             if (ctx.callbackQuery) {
-                try { await ctx.deleteMessage(); } catch {}
+                try { await ctx.deleteMessage(); } catch { }
             }
             await ctx.replyWithPhoto(photo, { caption, parse_mode: "Markdown", reply_markup: kb });
         }
@@ -294,7 +308,7 @@ export async function libraryToggleAction(
     const action = actionMap[actionCode];
 
     await toggleMediaStatus(uid, entry.media.tmdbId, action, entry.media.type);
-    
+
     // After toggle, the item might no longer belong to the current category (e.g. removed from favorites)
     // However, for UX we usually keep showing it or refresh.
     // Let's just refresh the card.

@@ -110,13 +110,19 @@ export async function showDiscoveryResults(
     const userRating = item.initialDbState.userRating
         ? `\n🎯 *${t.rating}:* ${item.initialDbState.userRating}/10`
         : "";
+    const linkUrl = `${process.env.BETTER_AUTH_URL}/${lang === 'uk' ? 'ua' : lang}/${type === "movie" ? "movies" : "tvseries"}/${item.id}`;
+
+    const linkText = `🔗 [${t.view_on_site || "View on Website"}](${linkUrl})`;
+
+    console.log("linkText ", linkText);
 
     const caption =
         `*${escapeMarkdown(item.title)}* (${year})${taglineStr}\n\n` +
         `🎭 *${t.genres}:* ${genresStr}\n` +
         `📊 *TMDB:* ${rating}` +
         userRating +
-        `\n\n_(${safeIndex + 1}/${total})_`;
+        `\n_(${safeIndex + 1}/${total})_` +
+        `\n\n${linkText}`;
 
     // ── Keyboard ───────────────────────────────────────────────────────────
     const keyboard = new InlineKeyboard();
@@ -146,7 +152,7 @@ export async function showDiscoveryResults(
         keyboard
             .row()
             .text(st.isWatched ? `✅ ${t.watched}` : `👀`, `${actBase}_w`)
-            .text(st.isWishlist ? `📌 ${t.wishlist}` : `➕`, `${actBase}_wl`)
+            .text(st.isWishlist ? `📌 ${t.wishlist}` : `✍️`, `${actBase}_wl`)
             .text(st.isFavorite ? `❤️ ${t.favorite}` : `🤍 `, `${actBase}_fav`);
     }
 
@@ -215,10 +221,17 @@ export async function showListView(
     // });
 
     const icon = type === "movie" ? "🎬" : "📺";
-    const header = `${icon} *${t.list_view} ${type === "movie" ?
-        t.genre_movies : t.genre_tv_shows}*\n${t.genre}: ${t[genreId as keyof typeof t]}\n\n${t.page} ${page}/${totalPages}`;
-    // const listText = header + lines.join("\n");
-    const listText = header;
+    const genreName = t[genreId as keyof typeof t] || genreId;
+
+    const header = `${icon} *${t.list_view} ${type === "movie" ? t.genre_movies : t.genre_tv_shows}*\n` +
+        `${t.genre}: ${genreName}\n` +
+        `_${t.page} (${page}/${totalPages})_`;
+
+    const linkUrl = `${process.env.BETTER_AUTH_URL}/${lang === 'uk' ? 'ua' : lang}/${type === "movie" ? "movies" : "tvseries"}?category=genres&genreId=${genreId}`;
+
+    const linkText = `🔗 [${t.view_on_site || "View on Website"}](${linkUrl})`;
+    const listText = `${header}\n\n${linkText}`;
+
 
     // ── Keyboard: each item taps to card view ──────────────────────────────
     const keyboard = new InlineKeyboard();

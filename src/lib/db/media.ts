@@ -82,8 +82,8 @@ export async function toggleMediaStatus(
         },
     });
 
-    // Upsert UserMedia
-    await prisma.userMedia.upsert({
+
+    const updatedUserMedia = await prisma.userMedia.upsert({
         where: { userId_mediaId: { userId, mediaId: media.id } },
         create: {
             userId,
@@ -96,6 +96,19 @@ export async function toggleMediaStatus(
             ...(action === "isWatched" && { watchedDate: newStatus ? new Date() : null }),
         },
     });
+
+    if (
+        !updatedUserMedia.isWatched &&
+        !updatedUserMedia.isFavorite &&
+        !updatedUserMedia.isWishlist &&
+        !updatedUserMedia.userRating &&
+        (!updatedUserMedia.userComment || updatedUserMedia.userComment === "")
+    ) {
+        await prisma.userMedia.delete({
+            where: { id: updatedUserMedia.id }
+        });
+        console.log(`🗑 Deleted empty UserMedia for user ${userId}`);
+    }
 
     return newStatus;
 }
