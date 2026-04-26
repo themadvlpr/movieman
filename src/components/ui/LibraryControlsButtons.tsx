@@ -92,7 +92,7 @@ export default function LibraryControlsButtons({
 
             <button
                 type="button"
-                onClick={() => toggleAction('isFavorite', mediaData)}
+                onClick={(e) => { e.stopPropagation(); toggleAction('isFavorite', mediaData) }}
                 className={getButtonClass(states.favorite)}
             >
                 <Heart className={cn(iconClass, states.favorite && "fill-current")} strokeWidth={2.5} />
@@ -100,7 +100,7 @@ export default function LibraryControlsButtons({
 
             <button
                 type="button"
-                onClick={() => toggleAction('isWishlist', mediaData)}
+                onClick={(e) => { e.stopPropagation(); toggleAction('isWishlist', mediaData) }}
                 className={getButtonClass(states.wishlist)}
             >
                 <Bookmark className={cn(iconClass, states.wishlist && "fill-current")} strokeWidth={2.5} />
@@ -108,7 +108,7 @@ export default function LibraryControlsButtons({
 
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                    <button type="button" className={getButtonClass(false) + " relative"}>
+                    <button type="button" onClick={(e) => e.stopPropagation()} className={getButtonClass(false) + " relative"}>
                         <Plus className={iconClass} strokeWidth={2.5} />
                         {userLists.filter(list => list.isActive).length > 0 && <span className="absolute bottom-0 right-0 text-blue-500 text-[8px] rounded-full px-1">{userLists.filter(list => list.isActive).length}</span>}
                     </button>

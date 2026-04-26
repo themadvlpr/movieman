@@ -117,30 +117,47 @@ export default function MediaVirtualList<T extends { id: number | string }>({
         if (restoreScrollOffset <= 0 || restorationFiredRef.current || status !== 'success' || items.length === 0) return;
         if (scrollMargin === 0) return;
 
-        restorationFiredRef.current = true;
+        // Start restoration process
+        const startTime = Date.now();
+        const timeout = 2000; // 2 seconds max for restoration
 
-        const attemptScroll = () => {
-            window.scrollTo({ top: restoreScrollOffset, behavior: 'instant' });
-        };
+        const timer = setInterval(() => {
+            const currentScroll = window.scrollY;
+            const targetScroll = restoreScrollOffset;
+            const currentHeight = document.body.scrollHeight;
+            const viewportHeight = window.innerHeight;
 
-        // If the browser handled it itself (native scroll restoration), don't interfere
-        if (Math.abs(window.scrollY - restoreScrollOffset) < 50) {
-            onScrollRestored?.();
-            return;
-        }
-
-        requestAnimationFrame(() => {
-            attemptScroll();
-            requestAnimationFrame(() => {
-                attemptScroll();
-            });
-            setTimeout(() => {
-                attemptScroll();
+            // 1. Check if we reached the target
+            if (Math.abs(currentScroll - targetScroll) < 10) {
+                restorationFiredRef.current = true;
+                clearInterval(timer);
                 onScrollRestored?.();
-            }, 100);
-        });
+                return;
+            }
 
-    }, [restoreScrollOffset, status, items.length, scrollMargin, onScrollRestored]);
+            // 2. Check if we timed out
+            if (Date.now() - startTime > timeout) {
+                restorationFiredRef.current = true;
+                clearInterval(timer);
+                onScrollRestored?.();
+                return;
+            }
+
+            // 3. If height is insufficient, try to fetch more and scroll to bottom in the meantime
+            if (currentHeight < targetScroll + (viewportHeight / 2)) {
+                if (hasNextPage && !isFetchingNextPage) {
+                    fetchNextPage();
+                }
+                window.scrollTo({ top: targetScroll, behavior: 'instant' });
+            } else {
+                // 4. Height is sufficient, scroll to target
+                window.scrollTo({ top: targetScroll, behavior: 'instant' });
+            }
+        }, 60);
+
+        return () => clearInterval(timer);
+
+    }, [restoreScrollOffset, status, items.length, scrollMargin, onScrollRestored, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     // 6. Infinite Scroll 
     useEffect(() => {

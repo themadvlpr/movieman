@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
-import { useSearchParams, usePathname  } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { useLocalizedRouter as useRouter } from '@/components/navigation/useRouter';
 import { updateViewMode } from "@/lib/tmdb/cookies-actions"
 import { getTVSeriesAction } from "@/lib/tmdb/getTvSeries"
@@ -32,6 +32,10 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
         if (categoryFromUrl === 'top_rated' || categoryFromUrl === 'topRated') return 'topRated';
         return categoryFromUrl as 'popular' | 'topRated' | 'genres';
     }, [categoryFromUrl]);
+
+    useEffect(() => {
+        setCategoryStyle(activeCategory);
+    }, [activeCategory]);
 
     const [categoryStyle, setCategoryStyle] = useState<'popular' | 'topRated' | 'genres'>(searchParams.get('category') as 'popular' | 'topRated' | 'genres' || 'popular');
 

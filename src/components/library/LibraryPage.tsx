@@ -243,6 +243,7 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
         },
         initialPageParam: 1,
         staleTime: 1000 * 60 * 5, // 5 minutes
+        refetchOnMount: false, // Ensure we use cache immediately when going back
     });
 
     const libraryData = useMemo(() => {

@@ -87,7 +87,7 @@ const MediaCard = ({
                 ? "relative aspect-2/3 rounded-xl overflow-hidden bg-zinc-900 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500"
                 : "relative w-25 sm:w-35 h-fit aspect-2/3 rounded-lg sm:rounded-xl overflow-hidden shrink-0"
             }>
-                <Link href={href} onClick={onItemClick} className="relative z-10 block w-full h-full">
+                <Link href={href} onClick={(e) => { e.stopPropagation(); onItemClick(); }} className="relative z-10 block w-full h-full">
                     <MoviePoster
                         src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
                         alt={title}
@@ -137,7 +137,7 @@ const MediaCard = ({
                             {isTv ? t('common', 'tv') : t('common', 'movie')}
                         </span>
                     )}
-                    <Link href={href} onClick={onItemClick} className="block w-full">
+                    <Link href={href} onClick={(e) => { e.stopPropagation(); onItemClick(); }} className="block w-full">
                         <h2 className={`text-white font-bold hover:text-white/80 transition-colors truncate ${isGrid ? 'text-xs sm:text-sm' : 'text-sm sm:text-xl'}`}>
                             {title}
                         </h2>
@@ -214,7 +214,7 @@ const MediaCard = ({
                 {/* DISCOVER BUTTON IN LIST VIEW */}
                 {!isGrid && (
                     <div className="hidden sm:flex items-center gap-4 mt-2 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
-                        <Link href={href} onClick={onItemClick} className="flex items-center gap-2 text-[#414141] text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:text-zinc-300 transition-colors">
+                        <Link href={href} onClick={(e) => { e.stopPropagation(); onItemClick(); }} className="flex items-center gap-2 text-[#414141] text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:text-zinc-300 transition-colors">
                             <span>{t('common', 'discover')}</span>
                             <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current" />
                         </Link>

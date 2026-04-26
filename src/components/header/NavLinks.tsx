@@ -7,12 +7,12 @@ import { useTranslation } from '@/providers/LocaleProvider'
 
 const NavLinks = () => {
 	const pathname = usePathname()
-	const { t } = useTranslation()
+	const { t, locale } = useTranslation()
 
 	const navItems = [
-		{ name: t('nav', 'movies'), href: '/movies' },
-		{ name: t('nav', 'tvseries'), href: '/tvseries' },
-		{ name: t('nav', 'about'), href: '/about' },
+		{ name: t('nav', 'movies'), href: locale === 'en' ? '/movies' : '/' + locale + '/movies' },
+		{ name: t('nav', 'tvseries'), href: locale === 'en' ? '/tvseries' : '/' + locale + '/tvseries' },
+		{ name: t('nav', 'about'), href: locale === 'en' ? '/about' : '/' + locale + '/about' },
 	]
 
 	return (
