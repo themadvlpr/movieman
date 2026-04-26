@@ -8,6 +8,9 @@ const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 const PER_PAGE = 10;
 
 export type LibCat = "w" | "wl" | "fav";
+
+const sortOrder = { watchedDate: "desc" } as const;
+
 const CAT_FIELD: Record<LibCat, "isWatched" | "isWishlist" | "isFavorite"> = {
     w: "isWatched",
     wl: "isWishlist",
@@ -134,9 +137,12 @@ export async function showLibraryListView(ctx: MyContext, cat: LibCat, page: num
             include: { media: true },
             skip: (page - 1) * PER_PAGE,
             take: PER_PAGE,
-            orderBy: { updatedAt: "desc" },
+            orderBy: sortOrder,
         }),
     ]);
+
+    console.log(' ITEMS: ', items);
+
 
     const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
     const catLabel = cat === "w" ? t.library_watched : cat === "wl" ? t.library_plan : t.library_favs;
@@ -188,7 +194,7 @@ export async function showLibraryCard(ctx: MyContext, cat: LibCat, page: number,
             include: { media: true },
             skip: (page - 1) * PER_PAGE,
             take: PER_PAGE,
-            orderBy: { updatedAt: "desc" },
+            orderBy: sortOrder,
         }),
     ]);
 
@@ -293,7 +299,7 @@ export async function libraryToggleAction(
         include: { media: true },
         skip: (page - 1) * PER_PAGE,
         take: PER_PAGE,
-        orderBy: { updatedAt: "desc" },
+        orderBy: sortOrder,
     });
 
     const safeIdx = Math.max(0, Math.min(index, items.length - 1));
