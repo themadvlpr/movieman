@@ -255,11 +255,11 @@ export default function MovieDetailContent({ data, userId }: Props) {
                             <motion.div layout className="max-w-2xl">
                                 <motion.p
                                     layout
-                                    className={`text-zinc-300 leading-relaxed text-lg font-medium ${!isOverviewExpanded ? 'line-clamp-4' : ''}`}
+                                    className={`text-zinc-300 leading-relaxed text-lg font-medium ${!isOverviewExpanded ? 'line-clamp-3' : ''}`}
                                 >
                                     {movie.overview}
                                 </motion.p>
-                                {movie.overview && movie.overview.length > 250 && (
+                                {movie.overview && movie.overview.length > 150 && (
                                     <motion.button
                                         layout
                                         onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}

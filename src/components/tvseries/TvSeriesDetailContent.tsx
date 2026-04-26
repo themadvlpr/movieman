@@ -72,31 +72,31 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
         }
     }
 
-    useEffect(() => {
-        if (!series.id) return;
+    // useEffect(() => {
+    //     if (!series.id) return;
 
-        const currentNote = note.trim();
-        const savedNote = initialDbState?.userComment || '';
+    //     const currentNote = note.trim();
+    //     const savedNote = initialDbState?.userComment || '';
 
-        const timer = setTimeout(async () => {
-            if (initialDbState?.isWatched && currentNote !== savedNote) {
+    //     const timer = setTimeout(async () => {
+    //         if (initialDbState?.isWatched && currentNote !== savedNote) {
 
-                const toastId = toast.loading(t('common', 'savingComment'));
+    //             const toastId = toast.loading(t('common', 'savingComment'));
 
-                const result = await updateMediaDetailsAction(series.id, 'tv', {
-                    userComment: currentNote
-                });
+    //             const result = await updateMediaDetailsAction(series.id, 'tv', {
+    //                 userComment: currentNote
+    //             });
 
-                if (result.success) {
-                    toast.success(t('common', 'commentUpdated'), { id: toastId });
-                } else {
-                    toast.error(result.error || "Something went wrong", { id: toastId });
-                }
-            }
-        }, 3000);
+    //             if (result.success) {
+    //                 toast.success(t('common', 'commentUpdated'), { id: toastId });
+    //             } else {
+    //                 toast.error(result.error || "Something went wrong", { id: toastId });
+    //             }
+    //         }
+    //     }, 3000);
 
-        return () => clearTimeout(timer);
-    }, [note, series.id, initialDbState]);
+    //     return () => clearTimeout(timer);
+    // }, [note, series.id, initialDbState]);
 
     const handleSaveNote = async () => {
         setEditNote(false);
@@ -291,11 +291,11 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                             <motion.div layout className="max-w-2xl mt-5">
                                 <motion.p
                                     layout
-                                    className={`text-zinc-300 leading-relaxed text-lg font-medium ${!isOverviewExpanded ? 'line-clamp-4' : ''}`}
+                                    className={`text-zinc-300 leading-relaxed text-lg font-medium ${!isOverviewExpanded ? 'line-clamp-3' : ''}`}
                                 >
                                     {series.overview}
                                 </motion.p>
-                                {series.overview && series.overview.length > 280 && (
+                                {series.overview && series.overview.length > 100 && (
                                     <motion.button
                                         layout
                                         onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
