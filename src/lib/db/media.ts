@@ -83,6 +83,11 @@ export async function toggleMediaStatus(
     });
 
 
+
+
+    console.log('watchedDate from existing1', existing?.watchedDate);
+
+
     const updatedUserMedia = await prisma.userMedia.upsert({
         where: { userId_mediaId: { userId, mediaId: media.id } },
         create: {
@@ -93,7 +98,9 @@ export async function toggleMediaStatus(
         },
         update: {
             [action]: newStatus,
-            ...(action === "isWatched" && { watchedDate: newStatus ? new Date() : null }),
+            ...(action === "isWatched" && {
+                watchedDate: newStatus ? (existing?.watchedDate ?? new Date()) : existing?.watchedDate
+            }),
         },
     });
 

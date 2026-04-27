@@ -18,6 +18,21 @@ export const locales = {
         total_count: "📊 *Твоя статистика:*\n\nОбщее количество фильмов в базе: {total}",
         Back: "🔙 Назад",
         library: "Библиотека",
+        default_reply: "В моем сценарии такой фразы не было!🤓\nМогу предложить вместо этого найти крутой фильм. Используй команду /search 🍿, чтобы пополнить свою библиотеку. \n\nПолный список команд — /help 🧠",
+        help_command:
+            "<b>🎬 Кино-гид MovieMan: Управление коллекцией</b>\n\n" +
+            "Я помогу тебе не забыть, что ты смотрел, и найти, что глянуть вечером. Вот мой пульт управления:\n\n" +
+            "<b>🔍 Поиск и подбор:</b>\n" +
+            "/search — Найди любой фильм или сериал по названию. Просто напиши и выбирай!\n" +
+            "/discover — Подборки по жанрам. Если не знаешь, чего хочется, я подскажу.\n\n" +
+            "<b>📂 Твоя коллекция:</b>\n" +
+            "/library — Вход в твой личный архив. Просмотренное, планы и любимое в одном месте.\n" +
+            "<i>Кстати, статистика тоже там!</i> 📊\n\n" +
+            "<b>⚙️ Настройки:</b>\n" +
+            "/language — Смена языка (RU/EN). Я подстрою и меню, и данные о фильмах.\n" +
+            "/start — Перезагрузка и проверка привязки аккаунта.\n\n" +
+            "--- \n" +
+            "🍿 <b>Совет:</b> Просто отправь мне название фильма без команд, если включен режим поиска!",
         // Discover
         discover_title: "🎬 Что хотите посмотреть?",
         movies: "🎬 Фильмы",
@@ -64,7 +79,10 @@ export const locales = {
         10766: "Мыльные оперы",
         10767: "Ток-шоу",
         10768: "Военные и политические",
-        view_on_site: "Просмотреть на сайте"
+        view_on_site: "Просмотреть на сайте",
+        search: "🔍 Поиск",
+        search_query_empty: "Введите название фильма или сериала для поиска 🔎🍿:",
+        search_title: "🔍 Результаты поиска: {query}",
     },
     en: {
         welcome_back: "🎬 Welcome back, {name}! Good to see you.",
@@ -85,6 +103,21 @@ export const locales = {
         total_count: "📊 *Your Stats:*\n\nTotal movies and tv shows in DB: {total}",
         Back: "🔙 Back",
         library: "Library",
+        default_reply: "This phrase was not in my script!🤓\nInstead, I can help you find a great movie. Use the /search 🍿🎬 command to add to your library. \n\nFull list of commands — /help 🧠",
+        help_command:
+            "<b>🎬 MovieMan Movie Guide: Collection Management</b>\n\n" +
+            "I'll help you remember what you've watched and find something to watch tonight. Here's my control panel:\n\n" +
+            "<b>🔍 Search and Discovery:</b>\n" +
+            "/search — Find any movie or TV show by name. Just type and choose!\n" +
+            "/discover — Curated selections by genre. If you don't know what you want, I'll suggest something.\n\n" +
+            "<b>📂 Your Collection:</b>\n" +
+            "/library — Access your personal archive. Watched, planned, and favorites all in one place.\n" +
+            "<i>By the way, stats are there too!</i> 📊\n\n" +
+            "<b>⚙️ Settings:</b>\n" +
+            "/language — Change the interface and content language (RU/EN). I'll adjust both the menus and the movie data.\n" +
+            "/start — Restart and verify account linking.\n\n" +
+            "--- \n" +
+            "🍿 <b>Tip:</b> Just send me a movie title without commands if search mode is enabled!",
         // Discover
         discover_title: "🎬 What do you want to watch?",
         movies: "🎬 Movies",
@@ -131,7 +164,10 @@ export const locales = {
         10766: "Soap",
         10767: "Talk",
         10768: "War & Politics",
-        view_on_site: "View on website"
+        view_on_site: "View on website",
+        search: "🔍 Search",
+        search_query_empty: "Enter movie or TV show title to search 🔎🍿:",
+        search_title: "🔍 Search results for: {query}",
     },
     uk: {
         welcome_back: "🎬 З поверненням, {name}! Радий тебе бачити.",
@@ -152,6 +188,21 @@ export const locales = {
         total_count: "📊 *Твоя статистика:*\n\nЗагальна кількість фільмів і серіалів у базі: {total}",
         Back: "🔙 Назад",
         library: "Бібліотека",
+        default_reply: "В моєму сценарії такої фрази не було!🤓\nМожу запропонувати замість цього знайти крутий фільм. Використовуй команду /search 🍿🎬, щоб поповнити свою бібліотеку. \n\nПовний список команд — /help 🧠",
+        help_command:
+            "<b>🎬 Кіно-гід MovieMan: Управління колекцією</b>\n\n" +
+            "Я допоможу тобі не забути, що ти дивився, і знайти, що глянути ввечері. Ось мій пульт управління:\n\n" +
+            "<b>🔍 Пошук та підбір:</b>\n" +
+            "/search — Знайди будь-який фільм чи серіал за назвою. Просто напиши і обирай!\n" +
+            "/discover — Добірки за жанрами. Якщо не знаєш, чого хочеш, я підкажу.\n\n" +
+            "<b>📂 Твоя колекція:</b>\n" +
+            "/library — Вхід до твого особистого архіву. Переглянуте, плани та улюблене в одному місці.\n" +
+            "<i>До речі, статистика теж там!</i> 📊\n\n" +
+            "<b>⚙️ Налаштування:</b>\n" +
+            "/language — Зміна мови (RU/EN). Я підстрою і меню, і дані про фільми.\n" +
+            "/start — Перезапуск та перевірка прив'язки акаунта.\n\n" +
+            "--- \n" +
+            "🍿 <b>Порада:</b> Просто надішли мені назву фільму без команд, якщо увімкнено режим пошуку!",
         // Discover
         discover_title: "🎬 Що хочете подивитися?",
         movies: "🎬 Фільми",
@@ -198,7 +249,10 @@ export const locales = {
         10766: "Мильні опери",
         10767: "Ток-шоу",
         10768: "Військові та політичні",
-        view_on_site: "Переглянути на сайті"
+        view_on_site: "Переглянути на сайті",
+        search: "🔍 Пошук",
+        search_query_empty: "Введіть назву фільму або серіалу для пошуку 🔎🍿:",
+        search_title: "🔍 Результати пошуку: {query}",
     },
 };
 

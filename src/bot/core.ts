@@ -1,24 +1,35 @@
-import { Bot, Context } from "grammy";
+import { Bot, Context, session, SessionFlavor } from "grammy";
 import { authMiddleware } from "@/bot/middleware/auth";
 import { startCommand } from "@/bot/commands/start";
 import { discoverCommand, showGenres, showDiscoveryResults, showListView } from "@/bot/commands/discover";
+import { searchCommand, showSearchResults, showSearchListView } from "@/bot/commands/search";
 import { discoverOldCommand } from "@/bot/commands/discover_old";
 import { languageCommand } from "@/bot/commands/language";
 import { libraryCommand, showLibraryListView, showLibraryCard, libraryToggleAction, LibCat } from "@/bot/commands/library";
+import { helpCommand } from "@/bot/commands/help";
 import { User } from "@/lib/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { locales, Language } from "@/bot/locales";
 import { toggleMediaStatus } from "@/lib/db/media";
 import { getDiscoverMedia } from "@/lib/tmdb/getDiscoverMedia";
+import { searchMedia } from "@/lib/tmdb/searchMedia";
 
 
-const token = process.env.TELEGRAM_BOT_TOKEN!;
-export const bot = new Bot<Context>(token);
+interface SessionData {
+    step: 'idle' | 'searching';
+}
 
-export type MyContext = Context & {
+export type MyContext = Context & SessionFlavor<SessionData> & {
     user?: User;
     language?: string;
 };
+
+const token = process.env.TELEGRAM_BOT_TOKEN!;
+export const bot = new Bot<MyContext>(token);
+
+bot.use(session({
+    initial: (): SessionData => ({ step: 'idle' })
+}));
 
 // apply middleware
 bot.use(authMiddleware);
@@ -28,6 +39,8 @@ bot.command("start", startCommand);
 bot.command("language", languageCommand);
 bot.command("library", libraryCommand);
 bot.command("discover", discoverCommand);
+bot.command("search", searchCommand);
+bot.command("help", helpCommand);
 bot.command("discover_old", discoverOldCommand);
 
 // ─── Helper: answer immediately to avoid Telegram's 10s timeout ────────────
@@ -144,6 +157,67 @@ bot.callbackQuery(/^disc_a_(movie|tv)_(\d+)_(\d+)_(\d+)_(w|wl|fav)$/, async (ctx
     }
 });
 
+// ─── SEARCH FLOW ───────────────────────────────────────────────────────────
+
+// srch_r_{queryB64}_{page}_{index} → navigate card search results
+bot.callbackQuery(/^srch_r_([^_]+)_(\d+)_(\d+)$/, async (ctx: MyContext) => {
+    const queryB64 = ctx.match![1];
+    const page = parseInt(ctx.match![2]);
+    const index = parseInt(ctx.match![3]);
+    const query = Buffer.from(queryB64, "base64").toString("utf-8");
+    ack(ctx);
+    await showSearchResults(ctx, query, page, index);
+});
+
+// srch_lv_{queryB64}_{page} → search list view
+bot.callbackQuery(/^srch_lv_([^_]+)_(\d+)$/, async (ctx: MyContext) => {
+    const queryB64 = ctx.match![1];
+    const page = parseInt(ctx.match![2]);
+    const query = Buffer.from(queryB64, "base64").toString("utf-8");
+    ack(ctx);
+    await showSearchListView(ctx, query, page);
+});
+
+// srch_a_{queryB64}_{page}_{index}_{action} → toggle status for search item
+bot.callbackQuery(/^srch_a_([^_]+)_(\d+)_(\d+)_(w|wl|fav)$/, async (ctx: MyContext) => {
+    const queryB64 = ctx.match![1];
+    const page = parseInt(ctx.match![2]);
+    const index = parseInt(ctx.match![3]);
+    const actionCode = ctx.match![4];
+    const query = Buffer.from(queryB64, "base64").toString("utf-8");
+    const userId = ctx.user?.id;
+
+    if (!userId) {
+        return ack(ctx, "⚠️ Link your account first");
+    }
+
+    const actionMap: Record<string, string> = {
+        w: "isWatched",
+        wl: "isWishlist",
+        fav: "isFavorite",
+    };
+    const action = actionMap[actionCode];
+
+    ack(ctx, "⏳");
+
+    try {
+        const tLang = ctx.language === "ru" ? "ru-RU" : ctx.language === "uk" ? "uk-UA" : "en-US";
+        const data = await searchMedia(query, userId, String(page), tLang);
+        const item = data.results?.[index];
+
+        if (!item) return;
+
+        await toggleMediaStatus(userId, item.id, action, item.type);
+
+        // Refresh the message
+        await showSearchResults(ctx, query, page, index);
+    } catch (err) {
+        console.error("Search action error:", err);
+    }
+});
+
+// ─── LIBRARY FLOW ──────────────────────────────────────────────────────────
+
 bot.callbackQuery("lib_main", async (ctx: MyContext) => {
     ack(ctx);
     await libraryCommand(ctx);
@@ -177,7 +251,25 @@ bot.callbackQuery(/^lib_a_(w|wl|fav)_(\d+)_(\d+)_(w|wl|fav)$/, async (ctx: MyCon
 });
 
 // ─── Fallback ──────────────────────────────────────────────────────────────
-bot.on("message:text", (ctx) => {
-    if (ctx.message.text === "kek") return ctx.reply("kekiwe");
-    ctx.reply(`You wrote: ${ctx.message.text}`);
+bot.on("message:text", async (ctx: MyContext) => {
+
+    const text = ctx.message?.text;
+    if (!text) return;
+
+    const lang = (ctx.user?.language || ctx.language) as Language || "en";
+    const t = locales[lang];
+
+
+    console.log("session step: ", ctx.session?.step);
+
+    if (!text.startsWith("/") && ctx.session.step === 'searching') {
+        console.log("search query: ", text);
+
+        let query = text.trim();
+        if (query.length > 30) query = query.substring(0, 30);
+
+        await showSearchResults(ctx, query, 1, 0);
+    } else {
+        await ctx.reply(t.default_reply);
+    }
 });

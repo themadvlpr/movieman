@@ -1,8 +1,7 @@
 import { InlineKeyboard } from "grammy";
 import { MyContext } from "@/bot/core";
 import { locales, Language } from "@/bot/locales";
-import { tmdbFetch, CacheConfig } from "@/lib/tmdb/tmdb-api";
-import { getDiscoverMedia } from "@/lib/tmdb/getDiscoverMedia";
+import { searchMedia } from "@/lib/tmdb/searchMedia";
 
 function tmdbLang(lang: string) {
     return lang === "ru" ? "ru-RU" : lang === "uk" ? "uk-UA" : "en-US";
@@ -39,53 +38,35 @@ function escapeMarkdown(text: string) {
     return text.replace(/[_*`[\]]/g, "\\$&");
 }
 
-// ─── DISCOVER COMMAND ──────────────────────────────────────────────────────
+// ─── SEARCH COMMAND ──────────────────────────────────────────────────────────
 
-export async function discoverCommand(ctx: MyContext) {
-
-    ctx.session.step = 'idle';
+export async function searchCommand(ctx: MyContext) {
+    ctx.session.step = 'searching';
 
     const lang = (ctx.language || "en") as Language;
     const t = locales[lang];
 
-    const keyboard = new InlineKeyboard()
-        .text(t.movies, "disc_type_movie")
-        .text(t.tv_shows, "disc_type_tv");
+    // Get query from command arguments
+    let query = (ctx.match as string)?.trim(); // get parameter after /search 
 
-    await sendOrEditText(ctx, t.discover_title, { reply_markup: keyboard });
-}
-
-// ─── GENRE LIST ────────────────────────────────────────────────────────────
-
-export async function showGenres(ctx: MyContext, type: "movie" | "tv") {
-    const lang = (ctx.language || "en") as Language;
-    const t = locales[lang];
-    const tLang = tmdbLang(lang);
-
-    const genreEndpoint = type === "movie" ? "/genre/movie/list" : "/genre/tv/list";
-    const data = await tmdbFetch(genreEndpoint, { language: tLang }, CacheConfig.STATIC);
-
-    if (!data?.genres?.length) {
-        await ctx.reply(t.error);
+    if (!query || query.length === 0) {
+        await ctx.reply(t.search_query_empty, { parse_mode: "Markdown" });
         return;
     }
 
-    const keyboard = new InlineKeyboard();
-    data.genres.forEach((genre: { id: number; name: string }, i: number) => {
-        keyboard.text(genre.name, `disc_g_${type}_${genre.id}`);
-        if ((i + 1) % 2 === 0) keyboard.row();
-    });
-    keyboard.row().text(t.Back, "disc_start");
+    // Truncate query to 30 chars to ensure it fits in Telegram's 64-byte callback data limit
+    if (query.length > 30) {
+        query = query.substring(0, 30);
+    }
 
-    await sendOrEditText(ctx, t.select_genre, { reply_markup: keyboard });
+    await showSearchResults(ctx, query, 1, 0);
 }
 
 // ─── CARD VIEW ─────────────────────────────────────────────────────────────
 
-export async function showDiscoveryResults(
+export async function showSearchResults(
     ctx: MyContext,
-    type: "movie" | "tv",
-    genreId: string,
+    query: string,
     page = 1,
     index = 0
 ) {
@@ -94,10 +75,10 @@ export async function showDiscoveryResults(
     const tLang = tmdbLang(lang);
     const userId = ctx.user?.id;
 
-    const data = await getDiscoverMedia(type, genreId, userId, String(page), tLang);
+    const data = await searchMedia(query, userId, String(page), tLang);
 
     if (!data.results?.length) {
-        await ctx.reply(t.empty_results);
+        await sendOrEditText(ctx, t.empty_results, {});
         return;
     }
 
@@ -113,24 +94,27 @@ export async function showDiscoveryResults(
     const userRating = item.initialDbState.userRating
         ? `\n🎯 *${t.rating}:* ${item.initialDbState.userRating}/10`
         : "";
-    const linkUrl = `${process.env.BETTER_AUTH_URL}/${lang === 'uk' ? 'ua' : lang}/${type === "movie" ? "movies" : "tvseries"}/${item.id}`;
 
+    const typePath = item.type === "movie" ? "movies" : "tvseries";
+    const linkUrl = `${process.env.BETTER_AUTH_URL}/${lang === 'uk' ? 'ua' : lang}/${typePath}/${item.id}`;
     const linkText = `🔗 [${t.view_on_site || "View on Website"}](${linkUrl})`;
 
-    console.log("linkText ", linkText);
+    const titlePrefix = item.type === "movie" ? "🎬" : "📺";
 
     const caption =
-        `*${escapeMarkdown(item.title)}* (${year})${taglineStr}\n\n` +
-        `🎭 *${t.genres}:* ${genresStr}\n` +
-        `📊 *TMDB:* ${rating}` +
+        `${titlePrefix} *${escapeMarkdown(item.title)}* (${year})${taglineStr}\n\n` +
+        `${genresStr && genresStr !== "—" ? `🎭 *${t.genres}:* ${genresStr}` : ""}\n` +
+        `${rating && rating !== "N/A" ? `📊 *TMDB:* ${rating}` : ""}` +
         userRating +
         `\n_(${safeIndex + 1}/${total})_` +
         `\n\n${linkText}`;
 
     // ── Keyboard ───────────────────────────────────────────────────────────
     const keyboard = new InlineKeyboard();
-    const navBase = `disc_r_${type}_${genreId}`;
-    const actBase = `disc_a_${type}_${genreId}_${page}_${safeIndex}`;
+    // Use base64 for query to avoid issues with special characters in callback data
+    const queryB64 = Buffer.from(query).toString("base64");
+    const navBase = `srch_r_${queryB64}`;
+    const actBase = `srch_a_${queryB64}_${page}_${safeIndex}`;
 
     // Navigation row
     const hasPrev = safeIndex > 0 || page > 1;
@@ -159,12 +143,15 @@ export async function showDiscoveryResults(
             .text(st.isFavorite ? `❤️ ${t.favorite}` : `🤍 `, `${actBase}_fav`);
     }
 
-    // Toggle to list view  (disc_lv = list view)
-    keyboard.row().text(`📋 ${t.list_view}`, `disc_lv_${type}_${genreId}_${page}`);
-    // Back to genre list
-    keyboard.row().text(t.Back, `disc_type_${type}`);
+    // Toggle to list view  (srch_lv = list view)
+    keyboard.row().text(`📋 ${t.list_view}`, `srch_lv_${queryB64}_${page}`);
 
     const photo = item.poster || "https://placehold.co/500x750.png";
+    console.log("poster", photo);
+
+    if (process.env.NODE_ENV === "development") {
+        console.log(`[Search] Showing item ${safeIndex + 1}/${total}. Photo: ${photo}`);
+    }
 
     try {
         if (isPhotoMessage(ctx)) {
@@ -177,7 +164,7 @@ export async function showDiscoveryResults(
                 if (err.message?.includes("message is not modified")) {
                     // ignore
                 } else {
-                    console.warn(`[Discover] editMessageMedia failed, falling back to replyWithPhoto: ${err.message}`);
+                    console.warn(`[Search] editMessageMedia failed, falling back to replyWithPhoto: ${err.message}`);
                     // Fallback: delete old and send new
                     try { await ctx.deleteMessage(); } catch { /* ignore */ }
                     await ctx.replyWithPhoto(photo, {
@@ -198,16 +185,15 @@ export async function showDiscoveryResults(
             });
         }
     } catch (err) {
-        console.error("showDiscoveryResults error:", err);
+        console.error("showSearchResults error:", err);
     }
 }
 
 // ─── LIST VIEW ─────────────────────────────────────────────────────────────
 
-export async function showListView(
+export async function showSearchListView(
     ctx: MyContext,
-    type: "movie" | "tv",
-    genreId: string,
+    query: string,
     page = 1
 ) {
     const lang = (ctx.language || "en") as Language;
@@ -215,35 +201,20 @@ export async function showListView(
     const tLang = tmdbLang(lang);
     const userId = ctx.user?.id;
 
-    const data = await getDiscoverMedia(type, genreId, userId, String(page), tLang);
+    const data = await searchMedia(query, userId, String(page), tLang);
 
     if (!data.results?.length) {
-        await ctx.reply(t.empty_results);
+        await sendOrEditText(ctx, t.empty_results, {});
         return;
     }
 
     const totalPages = data.total_pages ?? 1;
+    const queryB64 = Buffer.from(query).toString("base64");
 
-    // ── Plain Markdown list (no MarkdownV2 — avoids escaping issues with titles) ──
-    // const lines = data.results.map((item: any, i: number) => {
-    //     const num = (page - 1) * 10 + i + 1;
-    //     const year = item.release_year || "";
-    //     // escapeMarkdown only escapes _ * ` [ ] for safe Markdown v1
-    //     return `${num}. *${escapeMarkdown(item.title)}* (${year})`;
-    // });
-
-    const icon = type === "movie" ? "🎬" : "📺";
-    const genreName = t[genreId as keyof typeof t] || genreId;
-
-    const header = `${icon} *${t.list_view} ${type === "movie" ? t.genre_movies : t.genre_tv_shows}*\n` +
-        `${t.genre}: ${genreName}\n` +
+    const header = `🔍 *${t.search_title.replace("{query}", query)}*\n` +
         `_${t.page} (${page}/${totalPages})_`;
 
-    const linkUrl = `${process.env.BETTER_AUTH_URL}/${lang === 'uk' ? 'ua' : lang}/${type === "movie" ? "movies" : "tvseries"}?category=genres&genreId=${genreId}`;
-
-    const linkText = `🔗 [${t.view_on_site || "View on Website"}](${linkUrl})`;
-    const listText = `${header}\n\n${linkText}`;
-
+    const listText = `${header}`;
 
     // ── Keyboard: each item taps to card view ──────────────────────────────
     const keyboard = new InlineKeyboard();
@@ -251,17 +222,16 @@ export async function showListView(
     data.results.forEach((item: any, i: number) => {
         const num = (page - 1) * 20 + i + 1;
         const year = item.release_year || "—";
-        const label = truncate(`${num}. ${item.title} (${year})`, 40);
-        keyboard.text(label, `disc_r_${type}_${genreId}_${page}_${i}`).row();
+        const icon = item.type === "movie" ? "🎬" : "📺";
+        const label = truncate(`${num}. ${icon} ${item.title} (${year})`, 40);
+        keyboard.text(label, `srch_r_${queryB64}_${page}_${i}`).row();
     });
 
     // Toggle to card view + page navigation
-    keyboard.text(`🃏 ${t.card_view}`, `disc_r_${type}_${genreId}_${page}_0`).row();
+    keyboard.text(`🃏 ${t.card_view}`, `srch_r_${queryB64}_${page}_0`).row();
 
-    if (page > 1) keyboard.text("⬅️", `disc_lv_${type}_${genreId}_${page - 1}`);
-    if (totalPages > page) keyboard.text("➡️", `disc_lv_${type}_${genreId}_${page + 1}`);
-
-    keyboard.row().text(t.Back, `disc_type_${type}`);
+    if (page > 1) keyboard.text("⬅️", `srch_lv_${queryB64}_${page - 1}`);
+    if (totalPages > page) keyboard.text("➡️", `srch_lv_${queryB64}_${page + 1}`);
 
     await sendOrEditText(ctx, listText, {
         parse_mode: "Markdown",

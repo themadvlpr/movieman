@@ -70,6 +70,8 @@ function getPoster(media: any, lang: string) {
 
 // ── Main library screen ─────────────────────────────────────────────────────
 export async function libraryCommand(ctx: MyContext) {
+    ctx.session.step = 'idle';
+
     const user = ctx.user;
     const lang = (ctx.language || "en") as Language;
     const t = locales[lang];

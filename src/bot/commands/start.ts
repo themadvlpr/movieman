@@ -7,6 +7,8 @@ export async function startCommand(ctx: MyContext) {
     const telegramId = ctx.from?.id.toString();
     if (!telegramId) return;
 
+    ctx.session.step = 'idle';
+
     const cryptoString = ctx.match;
     const lang = (ctx.user?.language as Language) || (ctx.from?.language_code as Language) || "en";
     const t = locales[lang] || locales.en;

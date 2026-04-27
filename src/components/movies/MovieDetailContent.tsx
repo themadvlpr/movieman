@@ -123,7 +123,7 @@ export default function MovieDetailContent({ data, userId }: Props) {
     const formatRuntime = (minutes: number) => {
         const h = Math.floor(minutes / 60)
         const m = minutes % 60
-        return `${h}h ${m}m`
+        return `${h}${t('common', 'hour')} ${m}${t('common', 'minute')}`
     }
 
     if (!movie) return <Loader />

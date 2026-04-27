@@ -166,6 +166,14 @@ export const translations = {
             removedFrom: 'Removed from',
             list: 'List',
             created: 'created',
+            ReturningSeries: "Returning Series",
+            Ended: "Ended",
+            Canceled: "Canceled",
+            InProduction: "In Production",
+            Planned: "Planned",
+            Pilot: "Pilot",
+            hour: 'h',
+            minute: 'm'
         },
         genres: {
             28: "Action",
@@ -374,6 +382,14 @@ export const translations = {
             removedFrom: 'Удалено из',
             list: 'Список',
             created: 'создан',
+            ReturningSeries: "Выходит",
+            Ended: "Завершен",
+            Canceled: "Отменен",
+            InProduction: "В производстве",
+            Planned: "Анонсирован",
+            Pilot: "Пилот",
+            hour: 'ч',
+            minute: 'м'
         },
         genres: {
             28: "Боевик",
@@ -582,6 +598,14 @@ export const translations = {
             removedFrom: 'Видалено з',
             list: 'Список',
             created: 'створено',
+            ReturningSeries: "Виходить",
+            Ended: "Завершено",
+            Canceled: "Скасовано",
+            InProduction: "В производстве",
+            Planned: "Анонсирован",
+            Pilot: "Пилот",
+            hour: 'г',
+            minute: 'хв'
         },
         genres: {
             28: "Бойовик",

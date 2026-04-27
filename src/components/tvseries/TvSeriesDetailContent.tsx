@@ -261,7 +261,7 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
 
                                 <div className='flex items-center gap-1.5 text-zinc-300'>
                                     <Info className='w-4 h-4' />
-                                    <span>{series.status}</span>
+                                    <span>{t('common', series.status?.split(' ').join(''))}</span>
                                 </div>
                             </div>
 

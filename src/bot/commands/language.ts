@@ -3,6 +3,9 @@ import { MyContext } from "@/bot/core";
 import { locales, Language } from "@/bot/locales";
 
 export async function languageCommand(ctx: MyContext) {
+
+    ctx.session.step = 'idle';
+
     const lang = (ctx.user?.language || ctx.language) as Language || "en";
     const t = locales[lang];
 
