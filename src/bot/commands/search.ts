@@ -2,6 +2,7 @@ import { InlineKeyboard } from "grammy";
 import { MyContext } from "@/bot/core";
 import { locales, Language } from "@/bot/locales";
 import { searchMedia } from "@/lib/tmdb/searchMedia";
+import { InputFile } from "grammy";
 
 function tmdbLang(lang: string) {
     return lang === "ru" ? "ru-RU" : lang === "uk" ? "uk-UA" : "en-US";
@@ -148,6 +149,7 @@ export async function showSearchResults(
 
     const photo = item.poster || "https://placehold.co/500x750.png";
     console.log("poster", photo);
+    console.log("caption", caption);
 
     if (process.env.NODE_ENV === "development") {
         console.log(`[Search] Showing item ${safeIndex + 1}/${total}. Photo: ${photo}`);
@@ -157,32 +159,45 @@ export async function showSearchResults(
         if (isPhotoMessage(ctx)) {
             try {
                 await ctx.editMessageMedia(
-                    { type: "photo", media: photo, caption, parse_mode: "Markdown" },
+                    {
+                        type: "photo",
+                        media: photo,
+                        caption,
+                        parse_mode: "Markdown"
+                    },
                     { reply_markup: keyboard }
                 );
             } catch (err: any) {
-                if (err.message?.includes("message is not modified")) {
-                    // ignore
-                } else {
-                    console.warn(`[Search] editMessageMedia failed, falling back to replyWithPhoto: ${err.message}`);
-                    // Fallback: delete old and send new
-                    try { await ctx.deleteMessage(); } catch { /* ignore */ }
-                    await ctx.replyWithPhoto(photo, {
-                        caption,
-                        parse_mode: "Markdown",
-                        reply_markup: keyboard,
-                    });
-                }
+                if (err.message?.includes("message is not modified")) return;
+
+                console.warn(`[Search] Edit failed, trying to send new message with InputFile...`);
+
+                try { await ctx.deleteMessage(); } catch { }
+
+                await ctx.replyWithPhoto(new InputFile({ url: photo }), {
+                    caption,
+                    parse_mode: "Markdown",
+                    reply_markup: keyboard,
+                });
             }
         } else {
             if (ctx.callbackQuery) {
-                try { await ctx.deleteMessage(); } catch { /* ignore */ }
+                try { await ctx.deleteMessage(); } catch { }
             }
-            await ctx.replyWithPhoto(photo, {
-                caption,
-                parse_mode: "Markdown",
-                reply_markup: keyboard,
-            });
+
+            try {
+
+                await ctx.replyWithPhoto(new InputFile({ url: photo }), {
+                    caption,
+                    parse_mode: "Markdown",
+                    reply_markup: keyboard,
+                });
+            } catch (sendErr) {
+                await ctx.reply(caption, {
+                    parse_mode: "Markdown",
+                    reply_markup: keyboard,
+                });
+            }
         }
     } catch (err) {
         console.error("showSearchResults error:", err);
