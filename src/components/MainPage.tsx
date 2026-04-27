@@ -9,7 +9,7 @@ import { ChevronDown, Check } from "lucide-react"
 import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
 import { genresById } from "@/lib/tmdb/types/tmdb-types"
 import Cookies from "js-cookie"
-import { useSearchParams, usePathname  } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { useLocalizedRouter as useRouter } from '@/components/navigation/useRouter';
 import Loader from "@/components/ui/Loader"
 import { Movie } from "@/lib/tmdb/types/tmdb-types"

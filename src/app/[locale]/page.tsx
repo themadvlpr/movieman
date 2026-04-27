@@ -4,7 +4,6 @@ import { getAuthSession } from "@/lib/auth-sessions";
 import { getDiscoverMovies } from "@/lib/tmdb/getDiscoverMovies";
 import MainPage from "@/components/MainPage";
 import Loader from '@/components/ui/Loader';
-import { getLocale } from '@/lib/i18n/get-locale';
 import { TMDB_LANGUAGES, Locale } from '@/lib/i18n/languageconfig';
 
 export default async function Home({
@@ -28,7 +27,7 @@ async function MainContent({ params, fetchParams }: { params: Promise<{ locale: 
         cookies(),
         getAuthSession(),
     ]);
-    
+
     const locale = resolvedParamsObj.locale as Locale;
     const tmdbLang = TMDB_LANGUAGES[locale];
 
