@@ -168,7 +168,7 @@ export default function MediaVirtualList<T extends { id: number | string }>({
         if (!lastItem || rows.length === lastFetchedIndexRef.current) return;
 
         // Check: are we really at the bottom of the page
-        const scrolledNearBottom = window.scrollY + window.innerHeight >= document.body.scrollHeight - 800;
+        const scrolledNearBottom = window.scrollY + window.innerHeight >= document.body.scrollHeight - 500;
 
         if (lastItem.index >= rows.length - 3 && scrolledNearBottom) {
             lastFetchedIndexRef.current = rows.length;
