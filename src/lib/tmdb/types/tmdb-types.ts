@@ -68,6 +68,14 @@ export interface TvSeries extends BaseMedia {
     number_of_seasons: number;
     number_of_episodes: number;
     status: string;
+    seasons?: {
+        id: number;
+        season_number: number;
+        name: string;
+        overview: string;
+        air_date: string;
+        episode_count: number;
+    }[];
     created_by?: {
         id: number;
         name: string;

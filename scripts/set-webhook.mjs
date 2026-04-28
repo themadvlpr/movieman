@@ -8,7 +8,7 @@
 // it automatically updates webhook
 // npm run dev
 // ngrok http 3000
-// npm run webhook ngrok url
+// npm run webhook ngrok_url
 
 
 const token = process.env.TELEGRAM_BOT_TOKEN;

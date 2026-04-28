@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { motion, AnimatePresence } from 'framer-motion'
@@ -45,6 +45,7 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
     const [isCreatorsExpanded, setIsCreatorsExpanded] = useState(false)
     const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
     const [isVideoOpen, setIsVideoOpen] = useState(false)
+    const [showSeasons, setShowSeasons] = useState(false)
     const [editNote, setEditNote] = useState(false)
 
 
@@ -72,31 +73,6 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
         }
     }
 
-    // useEffect(() => {
-    //     if (!series.id) return;
-
-    //     const currentNote = note.trim();
-    //     const savedNote = initialDbState?.userComment || '';
-
-    //     const timer = setTimeout(async () => {
-    //         if (initialDbState?.isWatched && currentNote !== savedNote) {
-
-    //             const toastId = toast.loading(t('common', 'savingComment'));
-
-    //             const result = await updateMediaDetailsAction(series.id, 'tv', {
-    //                 userComment: currentNote
-    //             });
-
-    //             if (result.success) {
-    //                 toast.success(t('common', 'commentUpdated'), { id: toastId });
-    //             } else {
-    //                 toast.error(result.error || "Something went wrong", { id: toastId });
-    //             }
-    //         }
-    //     }, 3000);
-
-    //     return () => clearTimeout(timer);
-    // }, [note, series.id, initialDbState]);
 
     const handleSaveNote = async () => {
         setEditNote(false);
@@ -145,6 +121,10 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
     });
 
     const mainTvCrew = Object.values(mainTvCrewMap);
+
+    const realSeasons = data.series?.seasons?.filter((s) => s.season_number > 0) || [];
+    console.log('data', realSeasons);
+
 
 
     return (
@@ -231,10 +211,45 @@ export default function TvSeriesDetailContent({ data, userId }: Props) {
                                     </>
                                 )}
                             </div>
-                            <div className='flex items-center gap-1.5 text-sm sm:text-base font-semibold text-zinc-300'>
+                            <div
+                                onClick={() => setShowSeasons(!showSeasons)}
+                                className='flex items-center gap-1.5 text-sm sm:text-base font-semibold text-zinc-300 cursor-pointer hover:text-white transition-colors w-fit group'
+                            >
                                 <List className='w-4 h-4' />
                                 <span>{series.number_of_seasons} {series.number_of_seasons !== 1 ? t('common', 'seasons') : t('common', 'season')} • {series.number_of_episodes} {series.number_of_episodes !== 1 ? t('common', 'episodes') : t('common', 'episode')}</span>
+                                <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${showSeasons ? 'rotate-90' : ''}`} />
                             </div>
+
+                            <AnimatePresence>
+                                {showSeasons && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="flex flex-col gap-3 py-2">
+                                            {realSeasons.map((season) => (
+                                                <div key={season.id} className="group/item w-fit flex flex-col gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <span className="text-zinc-200 font-bold text-base sm:text-md">{season.name}</span>
+                                                        <span className="text-zinc-500 text-xs font-black uppercase tracking-widest bg-black/40 px-2 py-1 rounded-md">
+                                                            {season.episode_count} {season.episode_count !== 1 ? t('common', 'episodes') : t('common', 'episode')}
+                                                        </span>
+                                                    </div>
+                                                    {season.air_date && (
+                                                        <div className="flex items-center gap-1.5 text-zinc-500 text-xs font-semibold">
+                                                            <Calendar className="w-3 h-3" />
+                                                            <span>{season.air_date.split('-').reverse().join('.')}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                             <div className='flex flex-wrap items-center gap-4 text-sm sm:text-base font-semibold text-zinc-400'>
                                 <div className='flex items-center gap-1.5 text-zinc-300'>
                                     <Calendar className='w-4 h-4' />

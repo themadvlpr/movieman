@@ -17,14 +17,14 @@ export default function TvSeriesDetail({ tvId, userId }: { tvId: string, userId:
 	const tmdbLang = TMDB_LANGUAGES[locale as Locale];
 
 
-	const { data } = useQuery<TvSeriesDetailProps & { initialDbState?: dbState }>({
+	const { data, isLoading } = useQuery<TvSeriesDetailProps & { initialDbState?: dbState }>({
 		queryKey: ['tv', tvId],
 		queryFn: () => getTVDetails(tvId, tmdbLang),
 		staleTime: Infinity,
 	});
 
 
-	if (!data) return <Loader2 />
+	if (isLoading || !data) return <Loader2 />
 
 	return <TvSeriesDetailContent data={data} userId={userId} />
 }
