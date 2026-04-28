@@ -12,7 +12,7 @@ import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import MediaPageLayout from "@/components/movie-tv/MediaPageLayout"
 
 // Contextual scroll state to handle "Back" vs "New" navigation
-let _moviesScrollState = { offset: 0, params: "" };
+let _moviesScrollState = { offset: 0, index: -1, params: "" };
 
 interface Props {
     initialViewMode: 'grid' | 'list';
@@ -73,9 +73,10 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
         router.push(pathname + '?' + params.toString(), { scroll: true });
     }, [searchParams, pathname, router]);
 
-    const handleItemClick = useCallback(() => {
+    const handleItemClick = useCallback((index: number) => {
         _moviesScrollState = {
             offset: window.scrollY,
+            index: index,
             params: searchParams.toString()
         };
     }, [searchParams]);
@@ -166,7 +167,8 @@ export default function MoviesPage({ initialViewMode, userId }: Props) {
             fetchNextPage={fetchNextPage}
             categoryStyle={categoryStyle}
             restoreScrollOffset={_moviesScrollState.params === searchParams.toString() ? _moviesScrollState.offset : 0}
-            onScrollRestored={() => { _moviesScrollState = { offset: 0, params: "" } }}
+            restoreScrollIndex={_moviesScrollState.params === searchParams.toString() ? _moviesScrollState.index : -1}
+            onScrollRestored={() => { _moviesScrollState = { offset: 0, index: -1, params: "" } }}
         />
     )
 }

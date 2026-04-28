@@ -1,39 +1,40 @@
-'use client'
+'use client';
 
-import { Filter } from "lucide-react";
-import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useMemo, useRef, useEffect, useState, useLayoutEffect, useCallback } from "react";
-import { usePathname, useSearchParams } from 'next/navigation';
-import { useLocalizedRouter as useRouter } from '@/components/navigation/useRouter';;
+import React, { useRef, useState, useMemo, useCallback, useEffect, useLayoutEffect } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { Filter } from 'lucide-react';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 interface MediaVirtualListProps<T> {
-    status: string;
     items: T[];
-    viewMode: 'grid' | 'list';
     activeCategory: string;
+    viewMode: 'grid' | 'list';
+    status: 'pending' | 'success' | 'error';
     hasNextPage: boolean;
     isFetchingNextPage: boolean;
     fetchNextPage: () => void;
-    t: (category: string, key: string) => string;
-    renderCard: (item: T, index: number) => React.ReactNode;
-    restoreScrollOffset?: number;
-    onScrollRestored?: () => void;
     className?: string;
+    restoreScrollOffset?: number;
+    restoreScrollIndex?: number;
+    onScrollRestored?: () => void;
+    renderCard: (item: T, index: number) => React.ReactNode;
+    t: any;
 }
 
-export default function MediaVirtualList<T extends { id: number | string }>({
-    status,
+export default function MediaVirtualList<T extends { id: string | number }>({
     items,
-    viewMode,
     activeCategory,
+    viewMode,
+    status,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-    t,
-    renderCard,
+    className = "",
     restoreScrollOffset = 0,
+    restoreScrollIndex = -1,
     onScrollRestored,
-    className = ""
+    renderCard,
+    t
 }: MediaVirtualListProps<T>) {
     const router = useRouter();
     const pathname = usePathname();
@@ -42,13 +43,13 @@ export default function MediaVirtualList<T extends { id: number | string }>({
     const parentRef = useRef<HTMLDivElement>(null);
     const [columnCount, setColumnCount] = useState(2);
     const [scrollMargin, setScrollMargin] = useState(0);
-    const lastFetchedIndexRef = useRef(-1);
+    const [measuredHeight, setMeasuredHeight] = useState<number | null>(null);
     const restorationFiredRef = useRef(false);
+    const lastFetchedIndexRef = useRef(-1);
 
-    // Adaptive grid (Columns Count)
+    // 1. Adaptive Columns
     useLayoutEffect(() => {
         const updateColumns = () => {
-            if (typeof window === 'undefined') return;
             const width = window.innerWidth;
             if (width >= 1024) setColumnCount(6);
             else if (width >= 768) setColumnCount(4);
@@ -60,32 +61,23 @@ export default function MediaVirtualList<T extends { id: number | string }>({
         return () => window.removeEventListener('resize', updateColumns);
     }, []);
 
-    // Stabilization of the margin measurement (Scroll Margin)
-    // Important for the correct operation of useWindowVirtualizer when the header is present
+    // 2. Stable Scroll Margin
     useLayoutEffect(() => {
         const updateMargin = () => {
             if (parentRef.current) {
                 const rect = parentRef.current.getBoundingClientRect();
                 const absoluteTop = Math.floor(rect.top + window.scrollY);
-
-                if (Math.abs(absoluteTop - scrollMargin) > 5 || (scrollMargin === 0 && absoluteTop > 0)) {
+                if (absoluteTop > 0 && Math.abs(absoluteTop - scrollMargin) > 5) {
                     setScrollMargin(absoluteTop);
                 }
             }
         };
-
         updateMargin();
-        window.addEventListener('resize', updateMargin);
-        // Several checks to compensate for dynamic content above the list
-        const timers = [100, 500, 1500].map(ms => setTimeout(updateMargin, ms));
+        const timers = [50, 200, 500, 1500].map(ms => setTimeout(updateMargin, ms));
+        return () => timers.forEach(clearTimeout);
+    }, [activeCategory, viewMode, scrollMargin, columnCount]);
 
-        return () => {
-            window.removeEventListener('resize', updateMargin);
-            timers.forEach(clearTimeout);
-        };
-    }, [activeCategory, viewMode, columnCount, scrollMargin]);
-
-    // Grouping elements into rows
+    // 3. Data Processing
     const effectiveColumns = viewMode === 'grid' ? columnCount : 1;
     const rows = useMemo(() => {
         const result = [];
@@ -95,95 +87,81 @@ export default function MediaVirtualList<T extends { id: number | string }>({
         return result;
     }, [items, effectiveColumns]);
 
-    // Initialization of the virtualizer
+    const estimateSize = useCallback(() => {
+        if (measuredHeight) return measuredHeight;
+        return viewMode === 'list' ? 280 : 380;
+    }, [measuredHeight, viewMode]);
+
+    const paddedRowCount = useMemo(() => {
+        if (restoreScrollIndex < 0 || restorationFiredRef.current) return rows.length;
+        const targetRowIndex = Math.floor(restoreScrollIndex / effectiveColumns);
+        return Math.max(rows.length, targetRowIndex + 8);
+    }, [rows.length, restoreScrollIndex, effectiveColumns, restorationFiredRef.current]);
+
     const virtualizer = useWindowVirtualizer({
-        count: rows.length,
-        estimateSize: useCallback(() => {
-            if (viewMode === 'list') return 280;
-            if (columnCount >= 6) return 460;
-            if (columnCount >= 4) return 420;
-            if (columnCount >= 3) return 380;
-            return 360;
-        }, [viewMode, columnCount]),
+        count: paddedRowCount,
+        estimateSize,
         overscan: 12,
         scrollMargin,
-        getItemKey: (index) => `${activeCategory}-${index}`,
+        getItemKey: (index) => `${activeCategory}-${viewMode}-${index}`,
     });
 
     const virtualRows = virtualizer.getVirtualItems();
 
-    // Logic for restoring scroll
+    // 5. Restoration Mechanism
     useEffect(() => {
-        if (restoreScrollOffset <= 0 || restorationFiredRef.current || status !== 'success' || items.length === 0) return;
-        if (scrollMargin === 0) return;
+        if (restoreScrollIndex < 0 || restorationFiredRef.current || status !== 'success' || items.length === 0) return;
 
-        // Start restoration process
-        const startTime = Date.now();
-        const timeout = 2000; // 2 seconds max for restoration
+        const targetRowIndex = Math.floor(restoreScrollIndex / effectiveColumns);
 
-        const timer = setInterval(() => {
-            const currentScroll = window.scrollY;
-            const targetScroll = restoreScrollOffset;
-            const currentHeight = document.body.scrollHeight;
-            const viewportHeight = window.innerHeight;
+        if (rows.length <= targetRowIndex && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+            return;
+        }
 
-            // 1. Check if we reached the target
-            if (Math.abs(currentScroll - targetScroll) < 10) {
-                restorationFiredRef.current = true;
-                clearInterval(timer);
-                onScrollRestored?.();
-                return;
-            }
+        // Perform the jump
+        virtualizer.scrollToIndex(targetRowIndex, { align: 'start' });
 
-            // 2. Check if we timed out
-            if (Date.now() - startTime > timeout) {
-                restorationFiredRef.current = true;
-                clearInterval(timer);
-                onScrollRestored?.();
-                return;
-            }
+        // Use double RAF to ensure we scroll AFTER the virtualizer 
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                window.scrollBy(0, -100);
+            });
+        });
 
-            // 3. If height is insufficient, try to fetch more and scroll to bottom in the meantime
-            if (currentHeight < targetScroll + (viewportHeight / 2)) {
-                if (hasNextPage && !isFetchingNextPage) {
-                    fetchNextPage();
-                }
-                window.scrollTo({ top: targetScroll, behavior: 'instant' });
-            } else {
-                // 4. Height is sufficient, scroll to target
-                window.scrollTo({ top: targetScroll, behavior: 'instant' });
-            }
-        }, 60);
+        if (rows.length > targetRowIndex) {
+            restorationFiredRef.current = true;
+            onScrollRestored?.();
+        }
+    }, [restoreScrollIndex, items.length, rows.length, status, hasNextPage, isFetchingNextPage, fetchNextPage, onScrollRestored, virtualizer, effectiveColumns]);
 
-        return () => clearInterval(timer);
+    const measureFirstRow = useCallback((el: HTMLDivElement | null) => {
+        if (!el) return;
+        virtualizer.measureElement(el);
+        const height = el.getBoundingClientRect().height;
+        if (height > 50 && Math.abs((measuredHeight || 0) - height) > 2) {
+            setMeasuredHeight(height);
+        }
+    }, [virtualizer, measuredHeight]);
 
-    }, [restoreScrollOffset, status, items.length, scrollMargin, onScrollRestored, hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-    // 6. Infinite Scroll 
+    // 6. Infinite Scroll
     useEffect(() => {
-        if (!hasNextPage || isFetchingNextPage || status !== 'success') return;
-        if (virtualRows.length === 0 || rows.length === 0) return;
-
+        if (!hasNextPage || isFetchingNextPage || status !== 'success' || rows.length === 0) return;
         const lastItem = virtualRows[virtualRows.length - 1];
         if (!lastItem || rows.length === lastFetchedIndexRef.current) return;
 
-        // Check: are we really at the bottom of the page
         const scrolledNearBottom = window.scrollY + window.innerHeight >= document.body.scrollHeight - 1500;
-
         if (lastItem.index >= rows.length - 3 && scrolledNearBottom) {
             lastFetchedIndexRef.current = rows.length;
             fetchNextPage();
         }
     }, [virtualRows, rows.length, hasNextPage, isFetchingNextPage, status, fetchNextPage]);
 
-    // Reset flags when changing category/mode
-    useLayoutEffect(() => {
-        lastFetchedIndexRef.current = -1;
+    useEffect(() => {
         restorationFiredRef.current = false;
-        virtualizer.measure();
-    }, [activeCategory, viewMode, virtualizer]);
+        lastFetchedIndexRef.current = -1;
+    }, [activeCategory, viewMode]);
 
-    // Loading and empty states
     if (status === 'pending' && items.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-40">
@@ -215,13 +193,15 @@ export default function MediaVirtualList<T extends { id: number | string }>({
     }
 
     return (
-        <div ref={parentRef} className={`relative w-full mt-15 ${className}`} style={{ minHeight: '400px', overflowAnchor: 'none' }}>
+        <div
+            ref={parentRef}
+            className={`relative w-full mt-15 ${className}`}
+            style={{ minHeight: '400px', overflowAnchor: 'none' }}
+        >
             <div style={{
                 height: `${virtualizer.getTotalSize()}px`,
                 width: '100%',
                 position: 'relative',
-                overflowAnchor: 'none',
-                pointerEvents: 'none'
             }}>
                 {virtualRows.map((virtualRow) => {
                     const rowItems = rows[virtualRow.index];
@@ -230,13 +210,12 @@ export default function MediaVirtualList<T extends { id: number | string }>({
                     return (
                         <div
                             key={virtualRow.key}
-                            ref={virtualizer.measureElement}
                             data-index={virtualRow.index}
+                            ref={virtualRow.index === 0 ? measureFirstRow : virtualizer.measureElement}
+                            className="absolute top-0 left-0 w-full"
                             style={{
-                                position: 'absolute', top: 0, left: 0, width: '100%',
                                 transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
-                                paddingBottom: viewMode === 'grid' ? '24px' : '16px',
-                                pointerEvents: 'auto',
+                                paddingBottom: viewMode === 'grid' ? '24px' : '16px'
                             }}
                         >
                             <div className={viewMode === 'grid'
@@ -251,20 +230,16 @@ export default function MediaVirtualList<T extends { id: number | string }>({
                 })}
             </div>
 
-            {/* Loading indicator */}
-            <div className="w-full flex justify-center py-20 relative z-10">
-                {hasNextPage && isFetchingNextPage ? (
-                    <div className="flex flex-col items-center gap-3">
-                        <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
-                        <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
-                    </div>
-                ) : !hasNextPage && items.length > 0 ? (
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="h-px w-20 bg-white/10" />
-                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">{t('common', 'endOfList')}</span>
-                    </div>
-                ) : null}
-            </div>
+            {hasNextPage && (
+                <div className="w-full flex justify-center py-20">
+                    {isFetchingNextPage && (
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
+                            <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

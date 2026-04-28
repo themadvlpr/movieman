@@ -13,7 +13,7 @@ import MediaPageLayout from "@/components/movie-tv/MediaPageLayout"
 
 
 // Contextual scroll state to handle "Back" vs "New" navigation
-let _tvScrollState = { offset: 0, params: "" }
+let _tvScrollState = { offset: 0, index: -1, params: "" }
 
 export default function TvSeriesPage({ initialViewMode, userId }: { initialViewMode: 'grid' | 'list', userId: string }) {
     const { t, locale } = useTranslation();
@@ -69,9 +69,10 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
         router.push(pathname + '?' + params.toString(), { scroll: true });
     }, [searchParams, pathname, router]);
 
-    const handleItemClick = useCallback(() => {
+    const handleItemClick = useCallback((index: number) => {
         _tvScrollState = {
             offset: window.scrollY,
+            index: index,
             params: searchParams.toString()
         };
     }, [searchParams]);
@@ -165,7 +166,8 @@ export default function TvSeriesPage({ initialViewMode, userId }: { initialViewM
             fetchNextPage={fetchNextPage}
             categoryStyle={categoryStyle}
             restoreScrollOffset={_tvScrollState.params === searchParams.toString() ? _tvScrollState.offset : 0}
-            onScrollRestored={() => { _tvScrollState = { offset: 0, params: "" } }}
+            restoreScrollIndex={_tvScrollState.params === searchParams.toString() ? _tvScrollState.index : -1}
+            onScrollRestored={() => { _tvScrollState = { offset: 0, index: -1, params: "" } }}
         />
     )
 }

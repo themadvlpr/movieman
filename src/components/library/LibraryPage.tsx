@@ -692,7 +692,7 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                         <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-white/30 animate-spin" />
                     </div>
                 ) : libraryData.length > 0 ? (
-                    <MediaVirtualList<LibraryResult>
+                    <MediaVirtualList
                         status={status}
                         items={libraryData}
                         viewMode={viewMode}

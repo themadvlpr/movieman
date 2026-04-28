@@ -24,9 +24,10 @@ interface MediaPageLayoutProps {
     handleCategoryChange: (key: any) => void;
     handleGenreSelect: (id: number) => void;
     toggleView: (mode: 'grid' | 'list') => void;
-    handleItemClick: (id: string) => void;
+    handleItemClick: (index: number) => void;
     fetchNextPage: () => void;
     restoreScrollOffset?: number;
+    restoreScrollIndex?: number;
     onScrollRestored?: () => void;
 }
 
@@ -35,7 +36,7 @@ const MediaPageLayout = ({
     isLoadingGenres, genres, categories, viewMode, status,
     mediaData, userId, hasNextPage, isFetchingNextPage, t,
     handleCategoryChange, handleGenreSelect, toggleView,
-    handleItemClick, fetchNextPage, restoreScrollOffset = 0, onScrollRestored
+    handleItemClick, fetchNextPage, restoreScrollOffset = 0, restoreScrollIndex = -1, onScrollRestored
 }: MediaPageLayoutProps) => {
     return (
         <div className="pt-20 min-h-screen">
@@ -118,7 +119,7 @@ const MediaPageLayout = ({
                 {/* Main Content List */}
                 {(activeCategory !== 'genres' || isGenreSelected) && (activeCategory === categoryStyle) && (
                     <MediaVirtualList
-                        status={status}
+                        status={status as 'pending' | 'success' | 'error'}
                         items={mediaData}
                         viewMode={viewMode}
                         activeCategory={activeCategory}
@@ -135,10 +136,11 @@ const MediaPageLayout = ({
                                 viewMode={viewMode}
                                 activeCategory={activeCategory as 'popular' | 'topRated' | 'upcoming' | 'genres'}
                                 userId={userId}
-                                onItemClick={handleItemClick as () => void}
+                                onItemClick={() => handleItemClick(index)}
                             />
                         )}
                         restoreScrollOffset={restoreScrollOffset}
+                        restoreScrollIndex={restoreScrollIndex}
                         onScrollRestored={onScrollRestored}
                     />
                 )}
