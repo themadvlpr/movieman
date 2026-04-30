@@ -232,7 +232,7 @@ export default function MediaVirtualList<T extends { id: string | number }>({
 
             {hasNextPage && (
                 <div className="w-full flex justify-center py-20">
-                    {isFetchingNextPage && (
+                    {(isFetchingNextPage || activeCategory === 'genres') && (
                         <div className="flex flex-col items-center gap-3">
                             <div className="w-8 h-8 rounded-full border-3 border-white/10 border-t-white/30 animate-spin" />
                             <span className="text-zinc-500 text-xs font-medium uppercase tracking-widest">{t('common', 'loading')}</span>
