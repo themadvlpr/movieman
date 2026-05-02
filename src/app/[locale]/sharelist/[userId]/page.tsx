@@ -7,9 +7,11 @@ import prisma from "@/lib/prisma";
 import { getAuthSession } from "@/lib/auth-sessions";
 import { translations } from "@/lib/i18n/translation";
 import { Locale } from "@/lib/i18n/languageconfig";
+import { decodeCryptoString, generateCryptoRandomString } from "@/lib/crypt/crypt-utils";
 
 export async function generateMetadata({ params }: { params: Promise<{ userId: string, locale: Locale }> }) {
-    const { userId, locale } = await params;
+    const { userId: encryptedUserIdFromParams, locale } = await params;
+    const userId = decodeCryptoString(encryptedUserIdFromParams) || encryptedUserIdFromParams;
     const dict = translations[locale] || translations.en;
 
     const user = await prisma.user.findUnique({
@@ -32,7 +34,9 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
 }
 
 export default async function SharedLibrary({ params, searchParams }: { params: Promise<{ userId: string, locale: string }>, searchParams: Promise<{ category?: string, type?: string, sort?: string, order?: string, genre?: string, year?: string }> }) {
-    const { userId } = await params;
+    const { userId: encryptedUserIdFromParams } = await params;
+    const userId = decodeCryptoString(encryptedUserIdFromParams) || encryptedUserIdFromParams;
+    const encryptedUserId = generateCryptoRandomString(userId);
 
     const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -107,6 +111,7 @@ export default async function SharedLibrary({ params, searchParams }: { params: 
             <LibraryPage
                 initialViewMode={viewMode as 'grid' | 'list'}
                 userId={userId}
+                encryptedUserId={encryptedUserId}
                 sessionUserId={sessionUserId}
                 isPublic={true}
                 publicProfile={{ name: user.name, image: user.image, sharedListName }}

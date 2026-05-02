@@ -7,6 +7,7 @@ import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tan
 import { redirect } from "next/navigation";
 import { translations } from "@/lib/i18n/translation";
 import { Locale } from "@/lib/i18n/languageconfig";
+import { generateCryptoRandomString } from "@/lib/crypt/crypt-utils";
 
 
 
@@ -86,9 +87,10 @@ export default async function Library({ params, searchParams }: { params: Promis
         (query.state as { dataUpdatedAt: number }).dataUpdatedAt = 1;
     });
 
+    const encryptedUserId = generateCryptoRandomString(userId);
     return (
         <HydrationBoundary state={serverState}>
-            <LibraryPage initialViewMode={viewMode as 'grid' | 'list'} userId={userId} sessionUserId={userId} />
+            <LibraryPage initialViewMode={viewMode as 'grid' | 'list'} userId={userId} encryptedUserId={encryptedUserId} sessionUserId={userId} />
         </HydrationBoundary>
     );
 }

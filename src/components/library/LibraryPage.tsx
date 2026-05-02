@@ -42,6 +42,7 @@ let _libraryScrollState = { offset: 0, params: "" }
 interface Props {
     initialViewMode: 'grid' | 'list';
     userId: string;
+    encryptedUserId?: string;
     sessionUserId?: string;
     isPublic?: boolean;
     publicProfile?: { name: string, image: string | null, sharedListName?: string };
@@ -51,7 +52,7 @@ type SortField = 'title' | 'watchedDate' | 'year' | 'userRating' | 'rating';
 type SortOrder = 'asc' | 'desc';
 type MediaType = 'all' | 'movie' | 'tv';
 
-export default function LibraryPage({ initialViewMode, userId, sessionUserId, isPublic = false, publicProfile }: Props) {
+export default function LibraryPage({ initialViewMode, userId, encryptedUserId, sessionUserId, isPublic = false, publicProfile }: Props) {
 
     const sortOptions = [
         { key: 'title', label: 'name' },
@@ -325,7 +326,7 @@ export default function LibraryPage({ initialViewMode, userId, sessionUserId, is
                         <ShareButton
                             title={(activeCategory.startsWith('list_') ? userLists.find((list: any) => list.id === activeCategory.slice(5))?.name : t('common', 'shareLibrary')) || ''}
                             buttonText={(activeCategory.startsWith('list_') ? t('common', 'share') + ' ' + userLists.find((list: any) => list.id === activeCategory.slice(5))?.name : t('common', 'shareLibrary')) || ''}
-                            currentUrl={getLocalizedUrl(`/sharelist/${userId}?category=${activeCategory}`, locale)}
+                            currentUrl={getLocalizedUrl(`/sharelist/${encryptedUserId || userId}?category=${activeCategory}`, locale)}
                         />
                     )}
                 </div>

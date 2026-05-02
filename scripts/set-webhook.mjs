@@ -1,4 +1,4 @@
-// each time i need to update webhook (for local development)
+// each time i need to update webhook for telegram bot (for local development)
 // i need to run: "npm run dev"
 // then in new terminal run: "ngrok http 3000" and get new url
 // and update webhook url in telegram 
