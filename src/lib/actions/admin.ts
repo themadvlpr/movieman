@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import { getAuthSession } from "@/lib/auth-sessions";
 
+import { generateCryptoRandomString } from "@/lib/crypt/crypt-utils";
+
 export async function getUsers() {
     const session = await getAuthSession();
     // In a real app, you'd check for an admin role here.
@@ -23,7 +25,10 @@ export async function getUsers() {
         }
     });
 
-    return users;
+    return users.map(user => ({
+        ...user,
+        encryptedId: generateCryptoRandomString(user.id)
+    }));
 }
 
 export async function getVisitors() {

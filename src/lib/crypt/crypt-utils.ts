@@ -1,4 +1,4 @@
-const SECRET = process.env.CRYPTO_GENERATE_SECRET || "default_secret_32_chars_long!!!";
+const SECRET = process.env.CRYPTO_GENERATE_SECRET || "default_secret_32_chars_long_!!!";
 
 export function generateCryptoRandomString(stringToEncrypt: string) {
     if (!SECRET || SECRET.length !== 32) {

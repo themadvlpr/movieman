@@ -1,6 +1,7 @@
 import { Film, List, User, Mail, Send, Calendar, Globe } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getLocalizedPath } from '@/lib/i18n/url-utils';
 
 interface UserTableProps {
     users: {
@@ -10,6 +11,7 @@ interface UserTableProps {
         email: string;
         image?: string;
         telegramUsername?: string;
+        encryptedId?: string;
         _count?: {
             userMedia: number;
             lists: number;
@@ -19,7 +21,10 @@ interface UserTableProps {
     locale: string;
 }
 
+
+
 export default function UserTable({ users, locale }: UserTableProps) {
+
     return (
         <div className="w-full">
             <div className="grid grid-cols-1 gap-4 md:hidden">
@@ -69,7 +74,7 @@ export default function UserTable({ users, locale }: UserTableProps) {
 
                         <div className="flex gap-3 pt-1">
                             <Link
-                                href={`/${locale}/sharelist/${user.id}`}
+                                href={getLocalizedPath(`/sharelist/${user.encryptedId || user.id}`, locale)}
                                 className="flex-1 flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 py-2 rounded-lg text-xs font-medium transition-colors border border-white/5"
                             >
                                 <Film size={14} className="text-zinc-400" />
@@ -144,7 +149,7 @@ export default function UserTable({ users, locale }: UserTableProps) {
                                 <td className="p-4">
                                     <div className="flex items-center justify-center gap-4 text-sm">
                                         <Link
-                                            href={`/${locale}/sharelist/${user.id}`}
+                                            href={getLocalizedPath(`/sharelist/${user.encryptedId || user.id}`, locale)}
                                             className="flex items-center gap-1.5 text-zinc-300 hover:text-white transition-colors group"
                                         >
                                             <Film size={14} className="text-zinc-500 group-hover:text-zinc-300" />

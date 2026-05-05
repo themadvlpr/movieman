@@ -18,7 +18,6 @@ import { getLocalizedUrl } from "@/lib/i18n/url-utils"
 import MediaVirtualList from "@/components/movie-tv/MediaVirtualList"
 import { TMDB_LANGUAGES, Locale } from "@/lib/i18n/languageconfig"
 import MediaCard from "@/components/movie-tv/MediaCard"
-import { LibraryResult } from "@/lib/tmdb/types/tmdb-types"
 import {
     Select,
     SelectContent,
