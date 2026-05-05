@@ -27,6 +27,7 @@ export type AggregateVisitor = {
 export type VisitorMinAggregateOutputType = {
   id: string | null
   ip: string | null
+  country: string | null
   browser: string | null
   os: string | null
   device: string | null
@@ -39,6 +40,7 @@ export type VisitorMinAggregateOutputType = {
 export type VisitorMaxAggregateOutputType = {
   id: string | null
   ip: string | null
+  country: string | null
   browser: string | null
   os: string | null
   device: string | null
@@ -51,6 +53,7 @@ export type VisitorMaxAggregateOutputType = {
 export type VisitorCountAggregateOutputType = {
   id: number
   ip: number
+  country: number
   browser: number
   os: number
   device: number
@@ -65,6 +68,7 @@ export type VisitorCountAggregateOutputType = {
 export type VisitorMinAggregateInputType = {
   id?: true
   ip?: true
+  country?: true
   browser?: true
   os?: true
   device?: true
@@ -77,6 +81,7 @@ export type VisitorMinAggregateInputType = {
 export type VisitorMaxAggregateInputType = {
   id?: true
   ip?: true
+  country?: true
   browser?: true
   os?: true
   device?: true
@@ -89,6 +94,7 @@ export type VisitorMaxAggregateInputType = {
 export type VisitorCountAggregateInputType = {
   id?: true
   ip?: true
+  country?: true
   browser?: true
   os?: true
   device?: true
@@ -174,6 +180,7 @@ export type VisitorGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type VisitorGroupByOutputType = {
   id: string
   ip: string
+  country: string | null
   browser: string
   os: string
   device: string
@@ -207,6 +214,7 @@ export type VisitorWhereInput = {
   NOT?: Prisma.VisitorWhereInput | Prisma.VisitorWhereInput[]
   id?: Prisma.StringFilter<"Visitor"> | string
   ip?: Prisma.StringFilter<"Visitor"> | string
+  country?: Prisma.StringNullableFilter<"Visitor"> | string | null
   browser?: Prisma.StringFilter<"Visitor"> | string
   os?: Prisma.StringFilter<"Visitor"> | string
   device?: Prisma.StringFilter<"Visitor"> | string
@@ -219,6 +227,7 @@ export type VisitorWhereInput = {
 export type VisitorOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   ip?: Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
   browser?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -235,6 +244,7 @@ export type VisitorWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.VisitorWhereInput[]
   NOT?: Prisma.VisitorWhereInput | Prisma.VisitorWhereInput[]
   ip?: Prisma.StringFilter<"Visitor"> | string
+  country?: Prisma.StringNullableFilter<"Visitor"> | string | null
   browser?: Prisma.StringFilter<"Visitor"> | string
   os?: Prisma.StringFilter<"Visitor"> | string
   device?: Prisma.StringFilter<"Visitor"> | string
@@ -247,6 +257,7 @@ export type VisitorWhereUniqueInput = Prisma.AtLeast<{
 export type VisitorOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   ip?: Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
   browser?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -265,6 +276,7 @@ export type VisitorScalarWhereWithAggregatesInput = {
   NOT?: Prisma.VisitorScalarWhereWithAggregatesInput | Prisma.VisitorScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Visitor"> | string
   ip?: Prisma.StringWithAggregatesFilter<"Visitor"> | string
+  country?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
   browser?: Prisma.StringWithAggregatesFilter<"Visitor"> | string
   os?: Prisma.StringWithAggregatesFilter<"Visitor"> | string
   device?: Prisma.StringWithAggregatesFilter<"Visitor"> | string
@@ -277,6 +289,7 @@ export type VisitorScalarWhereWithAggregatesInput = {
 export type VisitorCreateInput = {
   id?: string
   ip: string
+  country?: string | null
   browser: string
   os: string
   device: string
@@ -289,6 +302,7 @@ export type VisitorCreateInput = {
 export type VisitorUncheckedCreateInput = {
   id?: string
   ip: string
+  country?: string | null
   browser: string
   os: string
   device: string
@@ -301,6 +315,7 @@ export type VisitorUncheckedCreateInput = {
 export type VisitorUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ip?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -313,6 +328,7 @@ export type VisitorUpdateInput = {
 export type VisitorUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ip?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -325,6 +341,7 @@ export type VisitorUncheckedUpdateInput = {
 export type VisitorCreateManyInput = {
   id?: string
   ip: string
+  country?: string | null
   browser: string
   os: string
   device: string
@@ -337,6 +354,7 @@ export type VisitorCreateManyInput = {
 export type VisitorUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ip?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -349,6 +367,7 @@ export type VisitorUpdateManyMutationInput = {
 export type VisitorUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ip?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -366,6 +385,7 @@ export type VisitorIpDateCompoundUniqueInput = {
 export type VisitorCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   ip?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   browser?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -378,6 +398,7 @@ export type VisitorCountOrderByAggregateInput = {
 export type VisitorMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   ip?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   browser?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -390,6 +411,7 @@ export type VisitorMaxOrderByAggregateInput = {
 export type VisitorMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   ip?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   browser?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -404,6 +426,7 @@ export type VisitorMinOrderByAggregateInput = {
 export type VisitorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   ip?: boolean
+  country?: boolean
   browser?: boolean
   os?: boolean
   device?: boolean
@@ -416,6 +439,7 @@ export type VisitorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type VisitorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   ip?: boolean
+  country?: boolean
   browser?: boolean
   os?: boolean
   device?: boolean
@@ -428,6 +452,7 @@ export type VisitorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type VisitorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   ip?: boolean
+  country?: boolean
   browser?: boolean
   os?: boolean
   device?: boolean
@@ -440,6 +465,7 @@ export type VisitorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type VisitorSelectScalar = {
   id?: boolean
   ip?: boolean
+  country?: boolean
   browser?: boolean
   os?: boolean
   device?: boolean
@@ -449,7 +475,7 @@ export type VisitorSelectScalar = {
   date?: boolean
 }
 
-export type VisitorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ip" | "browser" | "os" | "device" | "userAgent" | "path" | "lastVisit" | "date", ExtArgs["result"]["visitor"]>
+export type VisitorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ip" | "country" | "browser" | "os" | "device" | "userAgent" | "path" | "lastVisit" | "date", ExtArgs["result"]["visitor"]>
 
 export type $VisitorPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Visitor"
@@ -457,6 +483,7 @@ export type $VisitorPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     ip: string
+    country: string | null
     browser: string
     os: string
     device: string
@@ -889,6 +916,7 @@ export interface Prisma__VisitorClient<T, Null = never, ExtArgs extends runtime.
 export interface VisitorFieldRefs {
   readonly id: Prisma.FieldRef<"Visitor", 'String'>
   readonly ip: Prisma.FieldRef<"Visitor", 'String'>
+  readonly country: Prisma.FieldRef<"Visitor", 'String'>
   readonly browser: Prisma.FieldRef<"Visitor", 'String'>
   readonly os: Prisma.FieldRef<"Visitor", 'String'>
   readonly device: Prisma.FieldRef<"Visitor", 'String'>

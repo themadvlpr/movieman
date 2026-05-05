@@ -1236,6 +1236,7 @@ export type UserListItemScalarFieldEnum = (typeof UserListItemScalarFieldEnum)[k
 export const VisitorScalarFieldEnum = {
   id: 'id',
   ip: 'ip',
+  country: 'country',
   browser: 'browser',
   os: 'os',
   device: 'device',

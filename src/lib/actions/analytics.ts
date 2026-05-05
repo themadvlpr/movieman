@@ -8,6 +8,8 @@ export async function trackVisit(path: string) {
     const ip = headerList.get("x-forwarded-for")?.split(',')[0] || "127.0.0.1";
     const uaString = headerList.get("user-agent") || "";
 
+    const country = headerList.get("x-vercel-ip-country") || "Unknown";
+
 
     const parser = new UAParser(uaString);
     const { browser, os, device } = parser.getResult();
@@ -25,6 +27,7 @@ export async function trackVisit(path: string) {
         update: {
             lastVisit: new Date(),
             path: path,
+            country: country,
             browser: browser.name || "Unknown",
             os: os.name || "Unknown",
             device: deviceModel
@@ -36,7 +39,8 @@ export async function trackVisit(path: string) {
             browser: browser.name || "Unknown",
             os: os.name || "Unknown",
             device: deviceModel,
-            path: path
+            path: path,
+            country: country,
         }
     });
 }
