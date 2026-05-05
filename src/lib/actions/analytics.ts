@@ -29,6 +29,7 @@ export async function trackVisit(path: string) {
             path: path,
             country: country,
             browser: browser.name || "Unknown",
+            userAgent: uaString,
             os: os.name || "Unknown",
             device: deviceModel
         },
