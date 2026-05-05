@@ -26,6 +26,7 @@ type UserSession = {
 		emailVerified: boolean;
 		name: string;
 		image?: string | null | undefined;
+		role: string;
 	};
 } | null
 
