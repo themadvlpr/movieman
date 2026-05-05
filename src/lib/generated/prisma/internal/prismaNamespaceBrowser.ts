@@ -58,7 +58,8 @@ export const ModelName = {
   UserMedia: 'UserMedia',
   Media: 'Media',
   UserList: 'UserList',
-  UserListItem: 'UserListItem'
+  UserListItem: 'UserListItem',
+  Visitor: 'Visitor'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -191,6 +192,21 @@ export const UserListItemScalarFieldEnum = {
 } as const
 
 export type UserListItemScalarFieldEnum = (typeof UserListItemScalarFieldEnum)[keyof typeof UserListItemScalarFieldEnum]
+
+
+export const VisitorScalarFieldEnum = {
+  id: 'id',
+  ip: 'ip',
+  browser: 'browser',
+  os: 'os',
+  device: 'device',
+  userAgent: 'userAgent',
+  path: 'path',
+  lastVisit: 'lastVisit',
+  date: 'date'
+} as const
+
+export type VisitorScalarFieldEnum = (typeof VisitorScalarFieldEnum)[keyof typeof VisitorScalarFieldEnum]
 
 
 export const SortOrder = {

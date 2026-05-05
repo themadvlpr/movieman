@@ -81,3 +81,8 @@ export type UserList = Prisma.UserListModel
  * 
  */
 export type UserListItem = Prisma.UserListItemModel
+/**
+ * Model Visitor
+ * 
+ */
+export type Visitor = Prisma.VisitorModel

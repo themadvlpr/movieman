@@ -13,6 +13,8 @@ import { getAuthSession } from '@/lib/auth-sessions'
 import { Toaster } from 'sonner';
 import { Locale } from "@/lib/i18n/languageconfig";
 import { cn } from "@/lib/utils";
+import { trackVisit } from "@/lib/actions/analytics";
+import { headers } from "next/headers";
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -51,6 +53,11 @@ export default async function RootLayout({
 	const { locale } = (await params) as { locale: Locale };
 
 	const session = await getAuthSession();
+
+	const headerList = await headers();
+	const currentPath = headerList.get("x-current-path") || "/";
+
+	trackVisit(currentPath).catch(err => console.error(err));
 
 	return (
 		<html lang={locale || 'en'} className={cn("font-sans", geist.variable)}>

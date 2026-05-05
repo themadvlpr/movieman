@@ -17,7 +17,11 @@ function getBrowserLocale(request: NextRequest): string | undefined {
 
 export function middleware(request: NextRequest) {
     const { pathname, search } = request.nextUrl;
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-current-path', pathname);
+
     const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
+
 
     const pathnameHasLocale = LOCALES.some(
         (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
@@ -30,7 +34,9 @@ export function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL(`${newPathname}${search}`, request.url));
         }
 
-        return NextResponse.next();
+        return NextResponse.next({
+            request: { headers: requestHeaders }
+        });
     }
 
     // Determine target locale: cookie first, then browser language
@@ -43,7 +49,10 @@ export function middleware(request: NextRequest) {
 
     // Rewrite if it has no locale to fallback to default (en)
     request.nextUrl.pathname = `/${DEFAULT_LOCALE}${pathname}`;
-    return NextResponse.rewrite(request.nextUrl);
+
+    return NextResponse.rewrite(request.nextUrl, {
+        request: { headers: requestHeaders }
+    });
 }
 
 export const config = {

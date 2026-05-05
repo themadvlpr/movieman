@@ -147,3 +147,17 @@ model UserListItem {
   @@index([mediaId])
   @@map("user_list_item")
 }
+
+model Visitor {
+  id        String   @id @default(cuid())
+  ip        String
+  browser   String
+  os        String
+  device    String
+  userAgent String
+  path      String
+  lastVisit DateTime @default(now())
+  date      String   
+
+  @@unique([ip, date]) 
+}
