@@ -10,10 +10,9 @@ export default async function AdminPage({
 }) {
     const { locale } = await params;
     const session = await getAuthSession();
-
-    // Basic protection - in production this should be restricted to admin emails or roles
-    if (!session) {
-        redirect(`/${locale}/library`);
+    
+    if (!session || session.user.role !== 'admin') {
+        redirect(`/${locale}`);
     }
 
     const [users, visitors] = await Promise.all([

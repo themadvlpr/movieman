@@ -7,9 +7,10 @@ import { generateCryptoRandomString } from "@/lib/crypt/crypt-utils";
 
 export async function getUsers() {
     const session = await getAuthSession();
-    // In a real app, you'd check for an admin role here.
-    // For now, we'll just allow it if authenticated.
-    if (!session) throw new Error("Unauthorized");
+    
+    if (!session || session.user.role !== 'admin') {
+        throw new Error("Unauthorized");
+    }
 
     const users = await prisma.user.findMany({
         include: {
@@ -33,7 +34,10 @@ export async function getUsers() {
 
 export async function getVisitors() {
     const session = await getAuthSession();
-    if (!session) throw new Error("Unauthorized");
+    
+    if (!session || session.user.role !== 'admin') {
+        throw new Error("Unauthorized");
+    }
 
     const visitors = await prisma.visitor.findMany({
         orderBy: {

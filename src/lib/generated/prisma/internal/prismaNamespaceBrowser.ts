@@ -87,6 +87,7 @@ export const UserScalarFieldEnum = {
   image: 'image',
   telegramId: 'telegramId',
   telegramUsername: 'telegramUsername',
+  role: 'role',
   language: 'language',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

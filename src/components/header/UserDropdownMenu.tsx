@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { motion, AnimatePresence } from 'framer-motion'
-import { LogOut, Library, Bot } from 'lucide-react'
+import { LogOut, Library, Bot, ShieldCheck } from 'lucide-react'
 import { useAuthActions } from '@/hooks/useAuthActions'
 import { useTranslation } from '@/providers/LocaleProvider'
 import { getBotLink } from '@/lib/actions/getTgbotLink';
@@ -13,6 +13,7 @@ interface UserDropdownMenuProps {
 		name: string | null
 		email: string | null
 		image?: string | null
+		role: string
 		id: string
 	}
 }
@@ -121,6 +122,17 @@ export default function UserDropdownMenu({ user }: UserDropdownMenuProps) {
 								<Library className='w-4 h-4 text-zinc-500 group-hover:text-zinc-300 transition-colors' />
 								{t('nav', 'library')}
 							</Link>
+
+							{user.role === 'admin' && (
+								<Link
+									href='/admin'
+									onClick={() => setIsOpen(false)}
+									className='flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-400 hover:text-white hover:bg-white/5 rounded-md transition-colors group'
+								>
+									<ShieldCheck className='w-4 h-4 text-zinc-500 group-hover:text-zinc-300 transition-colors' />
+									<span className='text-blue-500 font-bold'>Admin Dashboard</span>
+								</Link>
+							)}
 
 							<div className='h-px bg-white/5 my-1 mx-1' />
 

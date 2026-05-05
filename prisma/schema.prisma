@@ -17,6 +17,7 @@ model User {
   image         String?
   telegramId    String?   @unique
   telegramUsername String? @unique
+  role          String    @default("user")
   language      String    @default("en")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
