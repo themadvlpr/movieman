@@ -5,6 +5,8 @@ import { locales, Language } from "@/bot/locales";
 
 export async function startCommand(ctx: MyContext) {
     const telegramId = ctx.from?.id.toString();
+    const telegramUsername = ctx.from?.username;
+
     if (!telegramId) return;
 
     ctx.session.step = 'idle';
@@ -28,7 +30,7 @@ export async function startCommand(ctx: MyContext) {
 
             const user = await prisma.user.update({
                 where: { id: userIdFromSite },
-                data: { telegramId, language: lang }
+                data: { telegramId, telegramUsername: telegramUsername ?? null, language: lang }
             });
 
             ctx.user = user;

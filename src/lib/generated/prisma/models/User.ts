@@ -26,11 +26,13 @@ export type AggregateUser = {
 
 export type UserMinAggregateOutputType = {
   id: string | null
+  ip: string | null
   name: string | null
   email: string | null
   emailVerified: boolean | null
   image: string | null
   telegramId: string | null
+  telegramUsername: string | null
   language: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -38,11 +40,13 @@ export type UserMinAggregateOutputType = {
 
 export type UserMaxAggregateOutputType = {
   id: string | null
+  ip: string | null
   name: string | null
   email: string | null
   emailVerified: boolean | null
   image: string | null
   telegramId: string | null
+  telegramUsername: string | null
   language: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -50,11 +54,13 @@ export type UserMaxAggregateOutputType = {
 
 export type UserCountAggregateOutputType = {
   id: number
+  ip: number
   name: number
   email: number
   emailVerified: number
   image: number
   telegramId: number
+  telegramUsername: number
   language: number
   createdAt: number
   updatedAt: number
@@ -64,11 +70,13 @@ export type UserCountAggregateOutputType = {
 
 export type UserMinAggregateInputType = {
   id?: true
+  ip?: true
   name?: true
   email?: true
   emailVerified?: true
   image?: true
   telegramId?: true
+  telegramUsername?: true
   language?: true
   createdAt?: true
   updatedAt?: true
@@ -76,11 +84,13 @@ export type UserMinAggregateInputType = {
 
 export type UserMaxAggregateInputType = {
   id?: true
+  ip?: true
   name?: true
   email?: true
   emailVerified?: true
   image?: true
   telegramId?: true
+  telegramUsername?: true
   language?: true
   createdAt?: true
   updatedAt?: true
@@ -88,11 +98,13 @@ export type UserMaxAggregateInputType = {
 
 export type UserCountAggregateInputType = {
   id?: true
+  ip?: true
   name?: true
   email?: true
   emailVerified?: true
   image?: true
   telegramId?: true
+  telegramUsername?: true
   language?: true
   createdAt?: true
   updatedAt?: true
@@ -173,11 +185,13 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type UserGroupByOutputType = {
   id: string
+  ip: string | null
   name: string | null
   email: string | null
   emailVerified: boolean
   image: string | null
   telegramId: string | null
+  telegramUsername: string | null
   language: string
   createdAt: Date
   updatedAt: Date
@@ -206,11 +220,13 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.StringFilter<"User"> | string
+  ip?: Prisma.StringNullableFilter<"User"> | string | null
   name?: Prisma.StringNullableFilter<"User"> | string | null
   email?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
   telegramId?: Prisma.StringNullableFilter<"User"> | string | null
+  telegramUsername?: Prisma.StringNullableFilter<"User"> | string | null
   language?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -222,11 +238,13 @@ export type UserWhereInput = {
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  ip?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   telegramId?: Prisma.SortOrderInput | Prisma.SortOrder
+  telegramUsername?: Prisma.SortOrderInput | Prisma.SortOrder
   language?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -240,9 +258,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
   telegramId?: string
+  telegramUsername?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
+  ip?: Prisma.StringNullableFilter<"User"> | string | null
   name?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
@@ -253,15 +273,17 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   accounts?: Prisma.AccountListRelationFilter
   userMedia?: Prisma.UserMediaListRelationFilter
   lists?: Prisma.UserListListRelationFilter
-}, "id" | "email" | "telegramId">
+}, "id" | "email" | "telegramId" | "telegramUsername">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  ip?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   telegramId?: Prisma.SortOrderInput | Prisma.SortOrder
+  telegramUsername?: Prisma.SortOrderInput | Prisma.SortOrder
   language?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -275,11 +297,13 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"User"> | string
+  ip?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   telegramId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  telegramUsername?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   language?: Prisma.StringWithAggregatesFilter<"User"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -287,11 +311,13 @@ export type UserScalarWhereWithAggregatesInput = {
 
 export type UserCreateInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -303,11 +329,13 @@ export type UserCreateInput = {
 
 export type UserUncheckedCreateInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -319,11 +347,13 @@ export type UserUncheckedCreateInput = {
 
 export type UserUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -335,11 +365,13 @@ export type UserUpdateInput = {
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -351,11 +383,13 @@ export type UserUncheckedUpdateInput = {
 
 export type UserCreateManyInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -363,11 +397,13 @@ export type UserCreateManyInput = {
 
 export type UserUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -375,11 +411,13 @@ export type UserUpdateManyMutationInput = {
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -387,11 +425,13 @@ export type UserUncheckedUpdateManyInput = {
 
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  ip?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  telegramUsername?: Prisma.SortOrder
   language?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -399,11 +439,13 @@ export type UserCountOrderByAggregateInput = {
 
 export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  ip?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  telegramUsername?: Prisma.SortOrder
   language?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -411,11 +453,13 @@ export type UserMaxOrderByAggregateInput = {
 
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  ip?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  telegramUsername?: Prisma.SortOrder
   language?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -500,11 +544,13 @@ export type UserUpdateOneRequiredWithoutListsNestedInput = {
 
 export type UserCreateWithoutSessionsInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -515,11 +561,13 @@ export type UserCreateWithoutSessionsInput = {
 
 export type UserUncheckedCreateWithoutSessionsInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -546,11 +594,13 @@ export type UserUpdateToOneWithWhereWithoutSessionsInput = {
 
 export type UserUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -561,11 +611,13 @@ export type UserUpdateWithoutSessionsInput = {
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -576,11 +628,13 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
 
 export type UserCreateWithoutAccountsInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -591,11 +645,13 @@ export type UserCreateWithoutAccountsInput = {
 
 export type UserUncheckedCreateWithoutAccountsInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -622,11 +678,13 @@ export type UserUpdateToOneWithWhereWithoutAccountsInput = {
 
 export type UserUpdateWithoutAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -637,11 +695,13 @@ export type UserUpdateWithoutAccountsInput = {
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -652,11 +712,13 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
 
 export type UserCreateWithoutUserMediaInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -667,11 +729,13 @@ export type UserCreateWithoutUserMediaInput = {
 
 export type UserUncheckedCreateWithoutUserMediaInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -698,11 +762,13 @@ export type UserUpdateToOneWithWhereWithoutUserMediaInput = {
 
 export type UserUpdateWithoutUserMediaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -713,11 +779,13 @@ export type UserUpdateWithoutUserMediaInput = {
 
 export type UserUncheckedUpdateWithoutUserMediaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -728,11 +796,13 @@ export type UserUncheckedUpdateWithoutUserMediaInput = {
 
 export type UserCreateWithoutListsInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -743,11 +813,13 @@ export type UserCreateWithoutListsInput = {
 
 export type UserUncheckedCreateWithoutListsInput = {
   id?: string
+  ip?: string | null
   name?: string | null
   email?: string | null
   emailVerified?: boolean
   image?: string | null
   telegramId?: string | null
+  telegramUsername?: string | null
   language?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -774,11 +846,13 @@ export type UserUpdateToOneWithWhereWithoutListsInput = {
 
 export type UserUpdateWithoutListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -789,11 +863,13 @@ export type UserUpdateWithoutListsInput = {
 
 export type UserUncheckedUpdateWithoutListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -862,11 +938,13 @@ export type UserCountOutputTypeCountListsArgs<ExtArgs extends runtime.Types.Exte
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  ip?: boolean
   name?: boolean
   email?: boolean
   emailVerified?: boolean
   image?: boolean
   telegramId?: boolean
+  telegramUsername?: boolean
   language?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -879,11 +957,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  ip?: boolean
   name?: boolean
   email?: boolean
   emailVerified?: boolean
   image?: boolean
   telegramId?: boolean
+  telegramUsername?: boolean
   language?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -891,11 +971,13 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  ip?: boolean
   name?: boolean
   email?: boolean
   emailVerified?: boolean
   image?: boolean
   telegramId?: boolean
+  telegramUsername?: boolean
   language?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -903,17 +985,19 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 
 export type UserSelectScalar = {
   id?: boolean
+  ip?: boolean
   name?: boolean
   email?: boolean
   emailVerified?: boolean
   image?: boolean
   telegramId?: boolean
+  telegramUsername?: boolean
   language?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "telegramId" | "language" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ip" | "name" | "email" | "emailVerified" | "image" | "telegramId" | "telegramUsername" | "language" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
@@ -934,11 +1018,13 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    ip: string | null
     name: string | null
     email: string | null
     emailVerified: boolean
     image: string | null
     telegramId: string | null
+    telegramUsername: string | null
     language: string
     createdAt: Date
     updatedAt: Date
@@ -1370,11 +1456,13 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'String'>
+  readonly ip: Prisma.FieldRef<"User", 'String'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly emailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly image: Prisma.FieldRef<"User", 'String'>
   readonly telegramId: Prisma.FieldRef<"User", 'String'>
+  readonly telegramUsername: Prisma.FieldRef<"User", 'String'>
   readonly language: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>

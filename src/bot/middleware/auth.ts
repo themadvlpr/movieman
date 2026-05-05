@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 export async function authMiddleware(ctx: MyContext, next: NextFunction) {
     try {
         const tgId = ctx.from?.id.toString();
+        const telegramUsername = ctx.from?.username;
 
         if (tgId) {
             // Use upsert: if user does not exist — create, if exists — just get
@@ -13,6 +14,7 @@ export async function authMiddleware(ctx: MyContext, next: NextFunction) {
                 update: {}, // Don't change anything to avoid overwriting data from the site
                 create: {
                     telegramId: tgId,
+                    telegramUsername: telegramUsername,
                     name: ctx.from?.first_name || "Guest",
                     // Define language only on first creation
                     language: (ctx.from?.language_code === "ru" || ctx.from?.language_code === "uk")

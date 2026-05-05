@@ -2,10 +2,19 @@
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import { UAParser } from "ua-parser-js";
+import { getAuthSession } from "@/lib/auth-sessions";
 
 export async function trackVisit(path: string) {
+    const session = await getAuthSession();
     const headerList = await headers();
     const ip = headerList.get("x-forwarded-for")?.split(',')[0] || "127.0.0.1";
+
+    if (session?.user?.id) {
+        await prisma.user.update({
+            where: { id: session.user.id },
+            data: { ip }
+        }).catch(err => console.error("Error updating user IP:", err));
+    }
     const uaString = headerList.get("user-agent") || "";
 
     const country = headerList.get("x-vercel-ip-country") || "Unknown";
