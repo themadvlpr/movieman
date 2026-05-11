@@ -1,0 +1,36 @@
+{
+    "Header": {
+        "about": "About",
+        "home": "Home",
+        "movies": "Movies",
+        "tvseries": "TV Series",
+        "library": "Library",
+        "admin": "Admin dashboard",
+        "language": "Language",
+        "loading": "Loading...",
+        "Auth": {
+            "signIn": "Sign in",
+            "signInWith": "Sign in with:",
+            "logout": "Logout"
+        },
+        "SearchBar": {
+            "searchPlaceholder": "Search for movies, TV series, actors...",
+            "searchText": "Search the entire database",
+            "noResults": "No results found",
+            "movies": "Movies",
+            "series": "TV series",
+            "actors": "Actors",
+            "tv": "TV",
+            "movie": "Movie",
+            "person": "Person"
+        }
+    },
+    "NotFoundPage": {
+        "title": "Page Not Found",
+        "description": "The page you are looking for might have been removed or is temporarily unavailable.",
+        "homeButton": "Go to homepage"
+    },
+    "Footer": {
+        "rights": "All rights reserved"
+    }
+}
