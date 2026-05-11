@@ -27,5 +27,8 @@ generator client {
 npx prisma migrate dev --name init
 npx prisma generate         
 
-
+npm i shadcn   
+npx shadcn@latest init    
+npm i sonner      
+npm install @tanstack/react-query
 

@@ -5,8 +5,8 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X, Play, User as UserIcon } from 'lucide-react'
 // import { useQuery } from '@tanstack/react-query'
-import { MultiSearchResult } from '@/lib/tmdb-types'
-import { TMDB_LANGUAGES } from '@/i18n/routing'
+import { MultiSearchResult } from '@/lib/tmdb/tmdb-types'
+import { TMDB_LANGUAGES } from '@/lib/tmdb/tmdb-languages'
 import Image from 'next/image'
 import StarRating from '@/components/ui/StarRating'
 import { useTranslations, useLocale } from 'next-intl'
@@ -102,7 +102,7 @@ export default function SearchBar() {
                             initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
                             animate={{ opacity: 1, backdropFilter: 'blur(20px)' }}
                             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-                            className='fixed top-0 left-0 w-screen h-dvh z-9999 overflow-y-auto bg-black/80 flex flex-col items-center pt-10 px-4'
+                            className='fixed top-0 left-0 w-full h-full z-9999 overflow-y-auto bg-black/80 flex flex-col items-center pt-10 px-4'
                             onClick={() => { setIsExpanded(false); setSearchText(''); setDebouncedSearch(''); }}
                         >
                             <motion.div

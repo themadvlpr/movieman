@@ -8,9 +8,3 @@ export const routing = defineRouting({
     // Used when no locale matches
     defaultLocale: 'en'
 });
-
-export const TMDB_LANGUAGES: Record<Locale, string> = {
-    en: 'en-US',
-    ru: 'ru-RU',
-    ua: 'uk-UA',
-};

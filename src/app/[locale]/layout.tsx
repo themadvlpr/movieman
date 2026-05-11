@@ -5,14 +5,14 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from "next-intl/server";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer";
-import { Suspense } from "react";
-
-
+import { CookiesProvider } from 'next-client-cookies/server';
+import Providers from "@/providers/Providers";
 
 
 const montserrat = Montserrat({
     variable: "--font-montserrat",
     subsets: ["latin"],
+    display: "swap"
 });
 
 export const metadata: Metadata = {
@@ -40,17 +40,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     return (
         <html lang={htmlLang}>
             <body suppressHydrationWarning className={`${montserrat.variable} antialiased`}>
-                <NextIntlClientProvider locale={locale} messages={messages}>
-                    <div className='flex flex-col min-h-dvh'>
-                        {/* Header has fixed position, so we need to add padding to the main content to avoid overlap */}
-                        <div className="w-full h-[56px] sm:h-[76px]" />
-                        <Header />
-                        <main className='flex-1 flex flex-col'>
-                            {children}
-                        </main>
-                        <Footer />
-                    </div>
-                </NextIntlClientProvider>
+                <CookiesProvider>
+                    <NextIntlClientProvider locale={locale} messages={messages}>
+                        <Providers>
+                            <div className='flex flex-col min-h-dvh'>
+                                <Header />
+                                <main className='flex-1 flex flex-col'>
+                                    {children}
+                                </main>
+                                <Footer />
+                            </div>
+                        </Providers>
+                    </NextIntlClientProvider>
+                </CookiesProvider>
             </body>
         </html>
     );

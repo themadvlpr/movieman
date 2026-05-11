@@ -1,20 +1,29 @@
 @import "tailwindcss";
 
 :root {
-    --background: #000;
-    --foreground: #fff;
+    --background: black;
+    /* deep charcoal */
+    --foreground: #e5e7eb;
+    /* zinc-200 */
 }
 
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --font-sans: var(--font-montserrat);
+
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-popover: #0a0a0a;
+    --color-popover-foreground: var(--foreground);
+    --color-primary: white;
+    --color-primary-foreground: black;
+    --radius-lg: 0.45rem;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --background: #000;
-        --foreground: #fff;
+        --background: black;
+        --foreground: #e5e7eb;
     }
 }
 
@@ -25,6 +34,76 @@ body {
         "Segoe UI", sans-serif;
     min-width: 320px;
     width: 100%;
+}
+
+html {
+    background-color: var(--background);
+}
+
+/* Ken Burns Effect - subtle zoom/pan for hero backdrops */
+@keyframes kenburns {
+    0% {
+        transform: scale(1) translateX(0);
+    }
+
+    100% {
+        transform: scale(1.1) translateX(-1%);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes delayedFadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    75% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.animate-delayed-fade-in {
+    animation: delayedFadeIn 0.4s ease-out forwards;
+}
+
+.animate-kenburns {
+    will-change: transform;
+    animation: kenburns 20s ease-in-out infinite alternate;
+}
+
+@keyframes loader-shimmer {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
 }
 
 .animate-shimmer {
@@ -44,12 +123,23 @@ body {
     filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
 }
 
-@keyframes shimmer {
-    0% {
-        background-position: -200% center;
-    }
+.custom-scrollbar::-webkit-scrollbar {
+    height: 6px;
+    cursor: pointer;
+    width: 8px;
+}
 
-    100% {
-        background-position: 200% center;
-    }
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #374151;
+    cursor: pointer;
 }
