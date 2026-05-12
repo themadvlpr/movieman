@@ -1,28 +1,29 @@
 'use client'
 
-import Link from 'next/link';
+import { LocalizedLink as Link } from '@/components/navigation/Link';
 import { Play } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, Check } from "lucide-react"
-import LibraryControlsButtons from "@/components/ui/LibraryConrolButtons"
-import { genresById } from "@/lib/tmdb/tmdb-types"
+import LibraryControlsButtons from "@/components/ui/LibraryControlsButtons"
+import { genresById } from "@/lib/tmdb/types/tmdb-types"
+import Cookies from "js-cookie"
 import { useSearchParams, usePathname } from 'next/navigation';
-import { useRouter } from "next/navigation";
-import MainPageSkeleton from "@/components/skeletons/MainPageSkeleton"
-import { Movie } from "@/lib/tmdb/tmdb-types"
-import { dbMediaStatus } from "@/lib/db/db-types";
+import { useLocalizedRouter as useRouter } from '@/components/navigation/useRouter';
+import MainPageSkeleton from "@/components/MainPageSkeleton"
+import { Movie } from "@/lib/tmdb/types/tmdb-types"
+import { useTranslation } from "@/providers/LocaleProvider"
+import { dbMediaStatus } from "@/lib/tmdb/types/db-types";
 import StarRating from "@/components/ui/StarRating";
-import { useTranslations } from 'next-intl';
-import { useCookies } from 'next-client-cookies';
+
+
 
 export default function MainPage({ movies, initialGenreId, userId }: { movies: (Movie & { initialDbState: dbMediaStatus })[], initialGenreId: number, userId: string }) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
-    const t = useTranslations();
-    const cookies = useCookies();
+    const { t } = useTranslation()
 
     // Derive selectedGenreId from URL if present, otherwise use initialGenreId
     const urlGenre = searchParams.get('genre');
@@ -34,8 +35,6 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
     const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-
 
     // Reset carousel page when genre changes
     useEffect(() => {
@@ -87,8 +86,6 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
         initialDbState
     } = currentMovie;
 
-    console.log('currentMovie', id, title);
-
     if (!movies || movies.length === 0) {
         return <MainPageSkeleton />;
     }
@@ -115,7 +112,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
                                         <div className="absolute inset-0 blur-lg bg-white/5 rounded-full" />
                                     </div>
                                     <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 animate-pulse">
-                                        {t('MainPage.loadingPoster')}
+                                        {t('common', 'loadingPoster')}
                                     </span>
                                 </div>
                             </motion.div>
@@ -218,7 +215,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
                             className="group max-w-fit flex flex-1 sm:flex-none justify-center gap-2 sm:gap-2.5 items-center px-5 sm:px-7 py-2.5 sm:py-3 bg-white text-black rounded hover:bg-white/90 transition-all active:scale-95"
                         >
                             <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-black" />
-                            <span className="text-sm sm:text-base font-bold">{t('MainPage.discover')}</span>
+                            <span className="text-sm sm:text-base font-bold">{t('common', 'discover')}</span>
                         </Link>
                         <LibraryControlsButtons
                             mediaId={id}
@@ -243,8 +240,8 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
                             onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen) }}
                             className="group cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition-all duration-300 text-sm font-semibold text-white/90"
                         >
-                            <span className="opacity-60 font-medium">{t('MainPage.genre')}:</span>
-                            <span>{t(`genres.${selectedGenreId.toString()}`)}</span>
+                            <span className="opacity-60 font-medium">{t('common', 'genre')}:</span>
+                            <span>{t('genres', selectedGenreId.toString())}</span>
                             <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                         </button>
 
@@ -262,7 +259,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
                                             key={id}
                                             onClick={() => {
                                                 const genreIdStr = id;
-                                                cookies.set('selectedGenreId', genreIdStr);
+                                                Cookies.set('selectedGenreId', genreIdStr, { expires: 7 });
                                                 setIsDropdownOpen(false);
 
                                                 const params = new URLSearchParams(searchParams.toString());
@@ -271,7 +268,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
                                             }}
                                             className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
                                         >
-                                            {t(`genres.${id}`)}
+                                            {t('genres', id)}
                                             {selectedGenreId === Number(id) && <Check className="w-3.5 h-3.5 text-white" />}
                                         </button>
                                     ))}
@@ -305,7 +302,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
                                 onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen) }}
                                 className="group cursor-pointer mx-auto flex items-center justify-between w-full max-w-[160px] gap-1 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/10 transition-all duration-300 text-xs font-semibold text-white/90"
                             >
-                                <span className="truncate">{t(`genres.${selectedGenreId.toString()}`)}</span>
+                                <span className="truncate">{t('genres', selectedGenreId.toString())}</span>
                                 <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
 
@@ -323,7 +320,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
                                                 key={id}
                                                 onClick={() => {
                                                     const genreIdStr = id;
-                                                    cookies.set('selectedGenreId', genreIdStr);
+                                                    Cookies.set('selectedGenreId', genreIdStr, { expires: 7 });
                                                     setIsDropdownOpen(false);
 
                                                     const params = new URLSearchParams(searchParams.toString());
@@ -332,7 +329,7 @@ export default function MainPage({ movies, initialGenreId, userId }: { movies: (
                                                 }}
                                                 className="w-full cursor-pointer flex items-center justify-between px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left"
                                             >
-                                                {t(`genres.${id}`)}
+                                                {t('genres', id)}
                                                 {selectedGenreId === Number(id) && <Check className="w-3.5 h-3.5 text-white" />}
                                             </button>
                                         ))}

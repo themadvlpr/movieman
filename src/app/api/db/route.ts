@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAuthSession } from "@/lib/auth/auth-sessions";
+import { getAuthSession } from "@/lib/auth-sessions";
 
 
 import { getMediaState } from "@/lib/db/getMedia";
@@ -26,7 +26,7 @@ export async function PATCH(req: Request) {
 
         const body = await req.json();
         const { mediaId, type, action, mediaData } = body;
-
+        
         await toggleMediaStatusAction(Number(mediaId), action, type, mediaData);
 
         return NextResponse.json({ success: true });

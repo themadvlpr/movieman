@@ -1,10 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserListsAction, createUserListAction, toggleMediaInListAction } from "@/lib/actions/userListsActions";
-import { dbState } from "@/lib/db/db-types";
+import { dbState } from "@/lib/tmdb/types/db-types";
 import { toast } from "sonner";
 import { useState, useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
-
+import { useTranslation } from "@/providers/LocaleProvider";
 
 export interface UserListWithStatus {
     id: string;
@@ -23,7 +22,7 @@ export function useUserLists(
     const queryClient = useQueryClient();
     const globalListsKey = ["user-lists", userId];
 
-    const t = useTranslations();
+    const { t, locale } = useTranslation();
 
 
     // 1. Fetch ALL user lists (names/IDs) once
@@ -76,9 +75,9 @@ export function useUserLists(
             const title = variables.mediaData.titleEn || variables.mediaData.titleRu || variables.mediaData.titleUk || "Media";
 
             if (data.isNowActive) {
-                toast.success(`${t('LibraryControls.addedTo')} ${listName}`, { description: title });
+                toast.success(`${t('common', 'addedTo')} ${listName}`, { description: title });
             } else {
-                toast.info(`${t('LibraryControls.removedFrom')} ${listName}`, { description: title });
+                toast.info(`${t('common', 'removedFrom')} ${listName}`, { description: title });
             }
         },
         onError: (err, variables, context) => {
@@ -95,7 +94,7 @@ export function useUserLists(
         },
         onSuccess: (result) => {
             if (result.success && result.data) {
-                toast.success(`${t('common.list')} "${result.data.name}" ${t('common.created')}`);
+                toast.success(`${t('common', 'list')} "${result.data.name}" ${t('common', 'created')}`);
                 // Update global lists query to include the new list
                 queryClient.setQueryData<UserListWithStatus[]>(globalListsKey, (old = []) => {
                     return [result.data as UserListWithStatus, ...old];

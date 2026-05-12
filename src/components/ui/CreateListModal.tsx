@@ -1,10 +1,9 @@
 'use client'
 
+import { useTranslation } from "@/providers/LocaleProvider";
 import { createPortal } from "react-dom";
 import { useEffect } from "react";
 import { X } from "lucide-react";
-import { useTranslations } from "next-intl";
-
 
 interface CreateListModalProps {
     handleCreateList: (e: React.FormEvent) => void;
@@ -19,7 +18,7 @@ export default function CreateListModal({
     setNewListName,
     setIsCreatingList
 }: CreateListModalProps) {
-    const t = useTranslations();
+    const { t } = useTranslation();
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -42,7 +41,7 @@ export default function CreateListModal({
 
                 <div className="space-y-2 text-center">
                     <h2 className="text-blue-400/80 text-xl font-black uppercase tracking-tight">
-                        {t("CreateList.createNewList")}
+                        {t("common", "createNewList")}
                     </h2>
 
                 </div>
@@ -54,7 +53,7 @@ export default function CreateListModal({
                             type="text"
                             value={newListName}
                             onChange={(e) => setNewListName(e.target.value)}
-                            placeholder={t("CreateList.listNamePlaceholder")}
+                            placeholder={t("common", "listNamePlaceholder")}
                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all text-lg"
                         />
                     </div>
@@ -66,14 +65,14 @@ export default function CreateListModal({
                             disabled={!newListName.trim()}
                             className="w-full py-4 bg-white text-black hover:bg-zinc-200 disabled:opacity-20 rounded-2xl font-black uppercase text-sm transition-all active:scale-[0.98] cursor-pointer shadow-lg shadow-white/5"
                         >
-                            {t("CreateList.create")}
+                            {t("common", "create")}
                         </button>
                         <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); setIsCreatingList(false); }}
                             className="w-full py-2 bg-transparent text-zinc-500 hover:text-white rounded-xl text-[10px] uppercase font-bold tracking-[0.2em] transition-colors cursor-pointer"
                         >
-                            {t("CreateList.cancel")}
+                            {t("common", "cancel")}
                         </button>
                     </div>
                 </form>

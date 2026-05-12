@@ -1,0 +1,179 @@
+import React, { memo } from 'react';
+import { ChevronLeft, Grid, List } from 'lucide-react';
+import GenreCard from '@/components/ui/GenreCard';
+import MediaVirtualList from '@/components/movie-tv/MediaVirtualList';
+import MediaCard from '@/components/movie-tv/MediaCard';
+import MediaCardSkeleton from '@/components/movie-tv/MediaCardSkeleton';
+import GenreCardSkeleton from '@/components/ui/GenreCardSkeleton';
+import { Movie, TvSeries, LibraryResult } from '@/lib/tmdb/types/tmdb-types';
+
+interface MediaPageLayoutProps {
+    type: 'movies' | 'tvseries';
+    categoryStyle: string;
+    activeCategory: string;
+    genreId?: string;
+    isGenreSelected: boolean;
+    isLoadingGenres: boolean;
+    genres: any[];
+    categories: { key: string; label?: string }[];
+    viewMode: 'grid' | 'list';
+    status: string;
+    mediaData: any;
+    userId: string;
+    hasNextPage: boolean;
+    isFetchingNextPage: boolean;
+    t: any;
+    handleCategoryChange: (key: any) => void;
+    handleGenreSelect: (id: number) => void;
+    toggleView: (mode: 'grid' | 'list') => void;
+    handleItemClick: (index: number) => void;
+    fetchNextPage: () => void;
+    restoreScrollOffset?: number;
+    restoreScrollIndex?: number;
+    onScrollRestored?: () => void;
+}
+
+const MediaPageLayout = ({
+    type, categoryStyle, activeCategory, genreId, isGenreSelected,
+    isLoadingGenres, genres, categories, viewMode, status,
+    mediaData, userId, hasNextPage, isFetchingNextPage, t,
+    handleCategoryChange, handleGenreSelect, toggleView,
+    handleItemClick, fetchNextPage, restoreScrollOffset = 0, restoreScrollIndex = -1, onScrollRestored
+}: MediaPageLayoutProps) => {
+    return (
+        <div className="pt-20 min-h-screen">
+            <div className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-2">
+                {/* Header */}
+                <h1 className="text-3xl sm:text-5xl font-bold mb-5">
+                    {genreId ? t('common', 'genre') : t('nav', type)}: {genreId ? t('genres', genreId) : t('categories', categoryStyle)}
+                </h1>
+
+
+                {/* Filters & Toggles */}
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 mb-8">
+                    <div className="flex flex-wrap items-center gap-1 w-full sm:w-fit bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar">
+                        {categories.map(({ key, label }) => (
+                            <button
+                                key={key}
+                                onClick={() => handleCategoryChange(key)}
+                                className={`relative flex-1 sm:flex-none px-2 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer whitespace-nowrap
+                                    ${categoryStyle === key
+                                        ? 'bg-white text-black shadow-lg shadow-white/10'
+                                        : 'text-zinc-400 hover:text-white hover:bg-white/10'
+                                    }`}
+                            >
+                                <span className="relative z-10">{label || t('categories', key)}</span>
+                            </button>
+                        ))}
+                    </div>
+
+
+                    <div className="flex items-center justify-between gap-3 sm:gap-4">
+                        <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
+                            <button onClick={() => toggleView('list')} className={`p-2 cursor-pointer rounded-lg transition-all duration-300 ${viewMode === 'grid' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white hover:bg-none'}`}>
+                                <Grid className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => toggleView('grid')} className={`p-2 cursor-pointer rounded-lg transition-all duration-300 ${viewMode === 'list' ? 'bg-white text-black' : 'text-zinc-400 hover:text-white hover:bg-none'}`}>
+                                <List className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {isGenreSelected && (
+                    <button
+                        onClick={() => handleCategoryChange('genres')}
+                        className="group mb-2 flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-lg transition-all duration-300 cursor-pointer active:scale-95"
+                    >
+                        <ChevronLeft className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
+                            {t('common', 'backToGenres')}
+                        </span>
+                    </button>
+                )}
+
+                {/* Loading State */}
+                {activeCategory !== categoryStyle && (
+                    categoryStyle === 'genres' ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-20 mt-15">
+                            {[...Array(12)].map((_, i) => (
+                                <GenreCardSkeleton key={i} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className={viewMode === 'grid' 
+                            ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6 pb-20 mt-15"
+                            : "flex flex-col gap-3 sm:gap-4 pb-20 mt-15"}>
+                            {[...Array(12)].map((_, i) => (
+                                <MediaCardSkeleton key={i} viewMode={viewMode} />
+                            ))}
+                        </div>
+                    )
+                )}
+
+                {/* Genre Grid */}
+                {activeCategory === 'genres' && categoryStyle === 'genres' && !isGenreSelected && (
+                    isLoadingGenres ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-20 mt-15">
+                            {[...Array(12)].map((_, i) => (
+                                <GenreCardSkeleton key={i} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-20">
+                            {genres.map((genre, idx) => (
+                                <GenreCard key={genre.id} genreId={genre.id} genreName={t('genres', genre.id)} genreBackDrop={genre.backdrop_path} idx={idx}
+                                    onClick={() => handleGenreSelect(genre.id.toString())} />
+                            ))}
+                        </div>
+                    )
+                )}
+
+
+
+                {/* Main Content List */}
+                {(activeCategory !== 'genres' || isGenreSelected) && (activeCategory === categoryStyle) && (
+                    <MediaVirtualList
+                        status={status as 'pending' | 'success' | 'error'}
+                        items={mediaData}
+                        viewMode={viewMode}
+                        activeCategory={activeCategory}
+                        hasNextPage={hasNextPage}
+                        isFetchingNextPage={isFetchingNextPage}
+                        fetchNextPage={fetchNextPage}
+                        t={t}
+                        renderCard={(movie, index) => (
+                            <MediaCard
+                                key={movie.id + type + index}
+                                item={movie as LibraryResult & Movie & TvSeries}
+                                type={type}
+                                idx={index}
+                                viewMode={viewMode}
+                                activeCategory={activeCategory as 'popular' | 'topRated' | 'upcoming' | 'genres'}
+                                userId={userId}
+                                onItemClick={() => handleItemClick(index)}
+                            />
+                        )}
+                        restoreScrollOffset={restoreScrollOffset}
+                        restoreScrollIndex={restoreScrollIndex}
+                        onScrollRestored={onScrollRestored}
+                    />
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default memo(MediaPageLayout, (prev, next) => {
+    return (
+        prev.viewMode === next.viewMode &&
+        prev.isLoadingGenres === next.isLoadingGenres &&
+        prev.categoryStyle === next.categoryStyle &&
+        prev.activeCategory === next.activeCategory &&
+        prev.isGenreSelected === next.isGenreSelected &&
+        prev.genreId === next.genreId &&
+        prev.genres === next.genres &&
+        prev.mediaData === next.mediaData &&
+        prev.status === next.status
+    );
+});

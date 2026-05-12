@@ -1,0 +1,121 @@
+import LibraryPage from "@/components/library/LibraryPage";
+import { cookies } from 'next/headers';
+import { getLibraryAction } from "@/lib/actions/getLibraryAction";
+import { dehydrate, HydrationBoundary, QueryClient, DehydratedState } from "@tanstack/react-query";
+import { notFound } from "next/navigation";
+import prisma from "@/lib/prisma";
+import { getAuthSession } from "@/lib/auth-sessions";
+import { translations } from "@/lib/i18n/translation";
+import { Locale } from "@/lib/i18n/languageconfig";
+import { decodeCryptoString, generateCryptoRandomString } from "@/lib/crypt/crypt-utils";
+
+export async function generateMetadata({ params }: { params: Promise<{ userId: string, locale: Locale }> }) {
+    const { userId: encryptedUserIdFromParams, locale } = await params;
+    const userId = decodeCryptoString(encryptedUserIdFromParams) || encryptedUserIdFromParams;
+    const dict = translations[locale] || translations.en;
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true }
+    });
+
+    if (!user) return { title: dict.about.notFound, description: dict.about.libraryNotFound };
+    const userName = user.name || "User";
+    const name = userName.split(' ')[0];
+
+    return {
+        title: `${name}: ${(dict.nav.library).split(' ')[1].toLowerCase()} | MovieMan`,
+        description: `${dict.about.metaShareListDestiption} ${name} | MovieMan`,
+        openGraph: {
+            title: `${name} ${(dict.nav.library).split(' ')[1].toLowerCase()} | MovieMan`,
+            description: `${dict.about.metaShareListDestiption} ${name} | MovieMan`,
+        },
+    };
+}
+
+export default async function SharedLibrary({ params, searchParams }: { params: Promise<{ userId: string, locale: string }>, searchParams: Promise<{ category?: string, type?: string, sort?: string, order?: string, genre?: string, year?: string }> }) {
+    const { userId: encryptedUserIdFromParams } = await params;
+    const userId = decodeCryptoString(encryptedUserIdFromParams) || encryptedUserIdFromParams;
+    const encryptedUserId = generateCryptoRandomString(userId);
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true, image: true }
+    });
+
+    if (!user || !user.name) {
+        notFound();
+    }
+
+    const cookieStore = await cookies();
+    const viewMode = cookieStore.get('libraryViewMode')?.value || 'grid';
+    const { locale } = await params;
+
+    const searchParameters = await searchParams;
+    const {
+        category = 'watched',
+        type = 'all',
+        sort = 'watchedDate',
+        order = 'desc',
+        genre = 'all',
+        year = 'all'
+    } = searchParameters;
+
+    let sharedListName: string | undefined = undefined;
+    if (category.startsWith('list_')) {
+        const listId = category.slice(5);
+        const list = await prisma.userList.findUnique({
+            where: { id: listId, userId }
+        });
+        if (!list) {
+            notFound();
+        }
+        sharedListName = list.name;
+    }
+
+    const queryClient = new QueryClient();
+    const session = await getAuthSession();
+    const sessionUserId = session?.user?.id;
+
+    const isPublic = true;
+
+    await queryClient.prefetchInfiniteQuery({
+        queryKey: ['library-list', category, type, sort, order, locale, genre, year, sessionUserId, isPublic],
+        queryFn: async ({ pageParam = 1 }) => {
+            const tmdbLang = locale === 'ru' ? 'ru-RU' : locale === 'ua' ? 'uk-UA' : 'en-US';
+            const res = await getLibraryAction(
+                userId,
+                category as any,
+                type as any,
+                sort as any,
+                order as any,
+                pageParam.toString(),
+                tmdbLang,
+                genre !== 'all' ? parseInt(genre) : null,
+                year !== 'all' ? year : null,
+                sessionUserId
+            );
+            return res.success ? res.data : null;
+        },
+        initialPageParam: 1,
+    });
+
+    const serverState: DehydratedState = dehydrate(queryClient);
+
+    serverState.queries.forEach((query) => {
+        (query.state as { dataUpdatedAt: number }).dataUpdatedAt = 1;
+    });
+
+    return (
+        <HydrationBoundary state={serverState}>
+            <LibraryPage
+                initialViewMode={viewMode as 'grid' | 'list'}
+                userId={userId}
+                encryptedUserId={encryptedUserId}
+                sessionUserId={sessionUserId}
+                isPublic={true}
+                publicProfile={{ name: user.name, image: user.image, sharedListName }}
+            />
+        </HydrationBoundary>
+    );
+}

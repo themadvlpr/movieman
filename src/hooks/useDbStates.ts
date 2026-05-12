@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toggleMediaStatusAction } from "@/lib/actions/toggleMediaStatus";
-import { dbMediaStatus, dbState } from "@/lib/db/db-types";
+import { dbMediaStatus, dbState } from "@/lib/tmdb/types/db-types";
 import { toast } from "sonner";
-import { useTranslations } from "next-intl";
-import { useLocale } from "next-intl";
+import { useTranslation } from "@/providers/LocaleProvider";
 
 export function useMediaActions(
     mediaId: number,
@@ -12,8 +11,7 @@ export function useMediaActions(
     initialState?: dbMediaStatus
 ) {
     const queryClient = useQueryClient();
-    const t = useTranslations();
-    const locale = useLocale();
+    const { t, locale } = useTranslation();
 
     const queryKey = ["media-state", mediaId, userId, locale];
 
@@ -54,23 +52,23 @@ export function useMediaActions(
                     : mediaData.titleEn || "Media";
 
 
-            const label = t(`common.${action.slice(2).toLowerCase()}`);
+            const label = t('common', action.slice(2).toLowerCase()).toLocaleLowerCase();
 
 
             if (isNowActive) {
-                toast.success(`${t('LibraryControls.addedTo')} ${label}`, {
+                toast.success(t('common', 'addedTo') + ' ' + label, {
                     description: title,
                 });
             } else {
-                toast.info(t('LibraryControls.removedFrom') + ' ' + label, {
+                toast.info(t('common', 'removedFrom') + ' ' + label, {
                     description: title,
                 });
             }
         },
         onError: (err, variables, context) => {
             queryClient.setQueryData(queryKey, context?.previous);
-            toast.error(t('common.error'), {
-                description: t('common.tryAgain')
+            toast.error(t('errors', 'updateFailed'), {
+                description: t('errors', 'tryAgain')
             });
         },
     });

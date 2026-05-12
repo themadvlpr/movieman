@@ -1,12 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import { Home } from 'lucide-react';
+import { LocalizedLink as Link } from '@/components/navigation/Link';
+import { useTranslation } from '@/providers/LocaleProvider';
+import { Home, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
-    const t = useTranslations('NotFoundPage');
+    const { t } = useTranslation();
 
     return (
         <div className="relative flex-1 w-full flex flex-col items-center justify-center bg-black overflow-hidden select-none">
@@ -32,11 +32,13 @@ export default function NotFound() {
                     className="-mt-12 sm:-mt-20"
                 >
                     <h2 className="text-3xl sm:text-5xl font-bold text-white mb-4 text-mdnichrome uppercase tracking-tight">
-                        {t('title')}
+                        {t('about', 'notFound')}
                     </h2>
-
+                    <p className="text-zinc-500 text-base sm:text-lg max-w-md mx-auto mb-10 font-medium">
+                        {t('about', 'pageNotFound')}
+                    </p>
                     <p className='text-zinc-500 text-base sm:text-lg max-w-md mx-auto mb-10 font-medium'>
-                        {t('description')}
+                        {t('about', 'notFoundDescription')}
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -45,7 +47,7 @@ export default function NotFound() {
                             className="group relative flex items-center gap-2 px-8 py-4 bg-white text-black rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all duration-300"
                         >
                             <Home className="w-5 h-5" />
-                            <span>{t('homeButton')}</span>
+                            <span>{t('nav', 'home')}</span>
                         </Link>
 
 

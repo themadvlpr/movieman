@@ -242,7 +242,7 @@ export type UserMediaGroupByOutputType = {
   _max: UserMediaMaxAggregateOutputType | null
 }
 
-export type GetUserMediaGroupByPayload<T extends UserMediaGroupByArgs> = Prisma.PrismaPromise<
+type GetUserMediaGroupByPayload<T extends UserMediaGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UserMediaGroupByOutputType, T['by']> &
       {

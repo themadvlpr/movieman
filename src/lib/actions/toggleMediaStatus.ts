@@ -1,9 +1,9 @@
 'use server'
 
-import { getAuthSession } from "@/lib/auth/auth-sessions";
+import { getAuthSession } from "@/lib/auth-sessions";
 import { revalidatePath } from "next/cache";
-import { dbState } from "@/lib/db/db-types";
-import { toggleMediaStatus } from "@/lib/db/toggleMedia";
+import { dbState } from "../tmdb/types/db-types";
+import { toggleMediaStatus } from "@/lib/db/media";
 
 export async function toggleMediaStatusAction(
     mediaId: number,

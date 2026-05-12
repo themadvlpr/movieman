@@ -1,12 +1,11 @@
 'use server'
 
 import prisma from "@/lib/prisma";
-import { getAuthSession } from "@/lib/auth/auth-sessions";
+import { getAuthSession } from "@/lib/auth-sessions";
 import { revalidatePath } from "next/cache";
-import { dbState } from "@/lib/db/db-types";
-import { tmdbFetch } from "@/lib/tmdb/tmdb-requests/tmdb-api";
-import { TMDB_LANGUAGES } from "@/lib/tmdb/tmdb-languages";
-import { CacheConfig } from "@/lib/cache-config";
+import { dbState } from "../tmdb/types/db-types";
+import { tmdbFetch, CacheConfig } from "@/lib/tmdb/tmdb-api";
+import { TMDB_LANGUAGES } from "@/lib/i18n/languageconfig";
 
 export async function getUserListsAction(mediaId?: number) {
     const session = await getAuthSession();

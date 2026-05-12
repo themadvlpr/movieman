@@ -1,18 +1,16 @@
-import { NextConfig } from 'next';
-import createNextIntlPlugin from 'next-intl/plugin';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    images: {
-        qualities: [75, 90],
-        unoptimized: true, // Disables Vercel's image optimization service
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: 'image.tmdb.org',
-            },
-        ],
-    },
+  images: {
+    qualities: [75, 90],
+    unoptimized: true, // Disables Vercel's image optimization service
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'image.tmdb.org',
+      },
+    ],
+  },
 };
 
-const withNextIntl = createNextIntlPlugin();
-export default withNextIntl(nextConfig);
+export default nextConfig;
